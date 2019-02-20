@@ -58,10 +58,10 @@ public class Main {
 		// Adding all Handlers, that we want. There so is the Debug Handler
 		// and a console Handler
 		SOutHandler h = new SOutHandler();
-		try {
-			l1.addHandler(new DebugCSVHandler());
+		//try {
+			//l1.addHandler(new DebugCSVHandler());
 			l1.addHandler(h);
-		} catch (IOException e) { e.printStackTrace(); }
+		//} catch (IOException e) { e.printStackTrace(); }
 
 		// for the Console Handler it could be decided which Level
 		// should be used.
