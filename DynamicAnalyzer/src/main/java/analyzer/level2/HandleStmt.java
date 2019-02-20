@@ -655,8 +655,7 @@ public class HandleStmt {
                         field,
                         handleStatementUtils.joinWithGPC(objectmap
                                                                  .getAssignmentLevel())});
-        objectmap.setField(object, field, handleStatementUtils
-                .joinWithGPC(objectmap.getAssignmentLevel()));
+        objectmap.setField(object, field, handleStatementUtils.joinWithGPC(objectmap.getAssignmentLevel()));
         logger.log(Level.INFO, "New level of field {0} is {1}", new Object[]{
                 field, objectmap.getFieldLevel(object, field)});
         objectmap.clearAssignmentLevel();
