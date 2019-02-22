@@ -11,8 +11,10 @@ import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -82,8 +84,7 @@ public class Main {
 	 *
 	 * @param args Commandline-Args for analysis
 	 */
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) throws UnsupportedEncodingException {
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
 		MethodTypings methodTypings;
 		if (sootOptionsContainer.usePublicTyping()) {
@@ -95,13 +96,17 @@ public class Main {
 	}
 
 
-	public static void execute(String[] args, MethodTypings m, Casts c) {
+
+
+	public static void execute(String[] args,
+								MethodTypings m,
+							    Casts c) throws UnsupportedEncodingException {
 	    doSootSetup(args);
 		executeWithoutSootSetup(args, m, c);
 	}
 
 	// TODO: move to another package (or even project) as this kind of setup is used by the whole application, not only DA
-    public static void doSootSetup(String[] args) {
+    public static void doSootSetup(String[] args) throws UnsupportedEncodingException {
 
         ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
 
@@ -135,7 +140,7 @@ public class Main {
         ClassLoader cxClassloader = Thread.currentThread().getContextClassLoader();
         if (cxClassloader instanceof URLClassLoader) {
 			for (URL url : Arrays.asList(((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs())) {
-				cpath.add(url.getFile());
+				cpath.add(URLDecoder.decode(url.getPath(), "UTF-8"));
 			}
 		} else {
         	// throw new RuntimeException("Cannot get URLs needed for the soot classpath from current contextclassloader");
