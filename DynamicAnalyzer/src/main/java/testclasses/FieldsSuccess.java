@@ -1,9 +1,11 @@
 package testclasses;
 
 import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
+import de.unifreiburg.cs.proglang.jgs.support.Sec;
 
 public class FieldsSuccess {
-	
+
+	@Sec("?")
 	static String field = "testfield";
 
 	public static void main(String[] args) {

@@ -63,14 +63,6 @@ public class HandleStmt<Level> {
      * It triggers the setup of the logger.
      */
     public static void init() {
-        /*
-        try {
-            // L2Logger.setup();
-        } catch (IOException e) {
-            logger.warning("Set up of logger failed");
-            e.printStackTrace();
-        }
-        // Do not need */
         // Todo: Put this logger stuff somewhere else.
         logger.setLevel(java.util.logging.Level.INFO);
         logger.addHandler(new SOutHandler());
@@ -425,8 +417,8 @@ public class HandleStmt<Level> {
     public void storeArgumentLevels(String... arguments) {
         logger.info("Store arguments " + Arrays.toString(arguments) + " in LocalMap");
         ArrayList<Object> levelArr = new ArrayList<Object>();
-        for (String el : arguments) {
-            levelArr.add(localmap.getLevel(el));
+        for (String arg : arguments) {
+            levelArr.add(localmap.getLevel(arg));
         }
         objectmap.setActualArguments(levelArr);
     }
@@ -661,14 +653,14 @@ public class HandleStmt<Level> {
     // TODO: checking the local pc is only a "partial" enforcement primitive, that is, it is never useful by itself. E.g. it is used in assignments and method returns. So, it should be packed together with the other actions needed for the "complete" enforcement primitive.
     // TODO: before fixing the issue above, check why returning from functions  and assignments are different cases.
     public void checkLocalPC(String var) {
-        logger.info("NSU check for local {0}" + var);
+        logger.info("NSU check for " + var);
 
         if (localmap == null) {
             throw new InternalAnalyzerException("LocalMap is null");
         }
         //check if local is initialized
         if (!localmap.isTracked(var)) {
-            logger.info("Local {0} is not tracked; skipping NSU check" + var);
+            logger.info("Local" + var + " is not tracked; skipping NSU check");
             return;
         }
 
@@ -696,22 +688,22 @@ public class HandleStmt<Level> {
     /**
      * Check level of signature is less/equal than @param level
      *
-     * @param signature signature of the local to test
+     * @param var signature of the local to test
      * @param level     level which mustn't be exceeded
      */
     // TODO: This method is called whenever a local variable is compared to a security level. This comparison happens in several cases: casts, passing of arguments, maybe more. These cases should be distinguished.
     // against remove in favor of more specific checks (casts, etc)
-    public void checkThatLe(String signature, String level) {
-        checkThatLe(signature, level,"Passed argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" + " which requires a" + " security level of less/equal " + level);
+    public void checkThatLe(String var, String level) {
+        checkThatLe(var, level,"Passed argument " + var + " with level " + localmap.getLevel(var) + " to some method" + " which requires a" + " security level of less/equal " + level);
     }
 
-    public void checkCastToStatic(String signature, String level) {
-        checkThatLe(signature, level, "Illegal cast to static type " + level + " of " + signature + "(" + localmap.getLevel(signature) + ")");
+    public void checkCastToStatic(String var, String level) {
+        checkThatLe(var, level, "Illegal cast to static type " + level + " of " + var + "(" + localmap.getLevel(var) + ")");
     }
 
-    public void checkThatLe(String signature, String level, String msg) {
-        logger.info("Check if " + signature + " <= " + level);
-        if (!CurrentSecurityDomain.le(localmap.getLevel(signature), CurrentSecurityDomain.readLevel(level))) {
+    public void checkThatLe(String var, String level, String msg) {
+        logger.info("Check if " + var + " <= " + level);
+        if (!CurrentSecurityDomain.le(localmap.getLevel(var), CurrentSecurityDomain.readLevel(level))) {
             handleStatementUtils.abort(new IllegalFlowError(msg));
         }
     }

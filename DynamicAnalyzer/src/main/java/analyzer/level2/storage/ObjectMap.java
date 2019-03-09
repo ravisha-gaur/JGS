@@ -225,7 +225,8 @@ public class ObjectMap<Level> {
     public Level popGlobalPC() {
         if (globalPC == null || globalPC.size() < 1 )
             throw new InternalAnalyzerException("GPC is empty.");
-        if (globalPC.size() > 1) return globalPC.pop();
+        if (globalPC.size() > 1)
+            return globalPC.pop();
         return globalPC.getFirst();
     }
 
@@ -258,7 +259,8 @@ public class ObjectMap<Level> {
      */
     public void setField(Object object, String field, Level securityLevel) {
         HashMap<String, Level> objMap = (!objectMap.containsKey(object)) ? new HashMap<>() : objectMap.get(object);
-        objMap.put(field, securityLevel); objectMap.put(object, objMap);
+        objMap.put(field, securityLevel);
+        objectMap.put(object, objMap);
     }
 
     /**
@@ -290,7 +292,8 @@ public class ObjectMap<Level> {
      */
     public Level getFieldLevel(Object object, String field) {
         HashMap<String, Level> objMap = !objectMap.containsKey(object) ? new HashMap<>() : objectMap.get(object);
-        if (!objMap.containsKey(field)) objMap.put(field, secDomain.bottom());
+        if (!objMap.containsKey(field))
+            objMap.put(field, secDomain.bottom());
         objectMap.put(object, objMap);
         return objectMap.get(object).get(field);
     }

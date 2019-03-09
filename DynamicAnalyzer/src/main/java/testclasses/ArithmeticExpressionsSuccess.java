@@ -1,14 +1,19 @@
 package testclasses;
 
+import de.unifreiburg.cs.proglang.jgs.support.Casts;
+
 public class ArithmeticExpressionsSuccess {
 	
 	/**
 	 * Simple test of all arithmetic functions.
 	 * @param args Not used.
 	 */
-	public static void main(String[] args) {
-		System.out.println("2 + 3 = " + addExpr(2,3));
-		System.out.println("2 - 3 = " + subExpr(2,3));
+		public static void main(String[] args) {
+            int a = Casts.cast("LOW ~> ?", 2);
+            int b = Casts.cast("LOW ~> ?", 3);
+			int m = addExpr(a,b);
+			System.out.println(m);
+		/*System.out.println("2 - 3 = " + subExpr(2,3));
 		System.out.println("2 * 3 = " + mulExpr(2,3));
 		System.out.println("2 / 3 = " + divExpr(2,3));
 		System.out.println("2 | 3 = " + orExpr(2,3));
@@ -19,14 +24,14 @@ public class ArithmeticExpressionsSuccess {
 		System.out.println("2 >>> 3 = " + shiftrzerofillExpr(2,3));
 		System.out.println("~2 = " + notExpr(2));
 		System.out.println("++2 = " + incrExpr(2));
-		System.out.println("--2 = " + decrExpr(2));
+		System.out.println("--2 = " + decrExpr(2));*/
 	}
 
 	static int addExpr(int x, int y) {
-		return x + y;
+		return x - y;
 	}
 	
-	static int subExpr(int x, int y) {
+	/*static int subExpr(int x, int y) {
 		return x - y;
 	}
 	
@@ -72,6 +77,6 @@ public class ArithmeticExpressionsSuccess {
 	
 	static int decrExpr(int x) {
 		return --x;
-	}
+	}*/
 	
 }

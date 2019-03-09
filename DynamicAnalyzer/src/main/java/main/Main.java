@@ -185,9 +185,9 @@ public class Main {
 
         BodyAnalyzer<L> bodyAnalyzer = new BodyAnalyzer<>(methodTypings, casts);
 
-		PackManager.v()
-        	.getPack("jtp").add(new Transform("jtp.analyzer", bodyAnalyzer));
-
+		PackManager.v().getPack("jtp").add(new Transform("jtp.analyzer", bodyAnalyzer));
+        BodyAnalyzer<L> bodyAnalyzerNew = new BodyAnalyzer<>(methodTypings, casts);
+		//PackManager.v().getPack("jtp").add(new Transform("jtp.analyzer", bodyAnalyzerNew));
 
 		soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
 

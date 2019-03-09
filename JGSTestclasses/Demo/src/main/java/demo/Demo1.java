@@ -16,33 +16,36 @@ public class Demo1 {
     @Sec("HIGH")
     static String staticField;
 
-    @Constraints("LOW <= @0")
-    @Effects({"LOW", "?"})
+    @Constraints({"LOW <= @0", "@0 <= ret"})
+    @Effects({"?"})
     public static void main(String[] args) {
-        int a = z;
-        int x = 7;
-        int e = x;
-        int y = 5;
-        int g = x + y;
 
-        String check = new String("");
-
-        int c = Casts.cast("? ~> MEDIUM", x);
-
-        Demo1 demo1 = new Demo1();
-        demo1.dynField = "2";
-        dynField = "5";
-
-        Float f = 5.0f;
-        String.valueOf(f);
-        int u = f.intValue();
-
-
-        String secret = IOUtils.readSecret(); // <- library method
+        //String secret = IOUtils.readSecret(); // <- library method
         /* secret has level H as it is read using readSecret() */
-        IOUtils.printSecret(secret);          // <- no leak
+        //IOUtils.printSecret(secret);          // <- no leak
 
         /* secret has level H, hence println() causes an error */
+
+
+       /* String y = Casts.cast("HIGH ~> ?", "Hello");
+        String z = y ;
+
+        int a = Casts.cast("? ~> LOW", 5);
+        int b = a ;*/
+
+        Casts.castCxLowToDyn();
+        int x = 5;
+        while (x < 10) {
+            x++;
+        }
+        //System.out.println(x);
+        Casts.castCxEnd();
+
+
+
+        //String secret = IOUtils.readSecret(); // <- library method
+
+        //IOUtils.printSecret(secret);          // <- no leak
         // System.out.println(secret);        // <- static leak
 
         /* dynField has level ? and it cannot be cast to HIGH which is secret's level, hence causes an error */

@@ -8,10 +8,17 @@ import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
  */
 public class AccessFieldsOfObjectsFail {
 
+    static String abc;
+
 	public static void main(String[] args) {
-		SimpleObject oneObject = new SimpleObject();
+		/*SimpleObject oneObject = new SimpleObject();
 		oneObject.field = DynamicLabel.makeHigh("New field value");
-		System.out.println(oneObject.field);
+		System.out.println(oneObject.field);*/
+
+		AccessFieldsOfObjectsFail accessFieldsOfObjectsFail = new AccessFieldsOfObjectsFail();
+		String v1 = accessFieldsOfObjectsFail.abc;
+		String v2 = accessFieldsOfObjectsFail.abc;
+		String v = v1 + v2;
 	}
 
 }

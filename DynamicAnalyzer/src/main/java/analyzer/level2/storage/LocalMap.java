@@ -58,8 +58,7 @@ public class LocalMap<Level> {
 	public void isEmptyLPC() {
 		localPC.pop();
 		if (!localPC.isEmpty())
-			throw new InternalAnalyzerException("LocalPC is not empty at the end of the method. "
-												+"There are still " + localPC.size() + " elements.");
+			throw new InternalAnalyzerException("LocalPC is not empty at the end of the method. " + "There are still " + localPC.size() + " elements.");
 	}
 
     // <editor-fold desc="Putting stuff into LPC">
@@ -96,7 +95,8 @@ public class LocalMap<Level> {
 	 */
 	public void popLocalPC(int dominatorIdentity) {
 		int n = localPC.size();
-		if (n < 1) throw new InternalAnalyzerException("localPC-stack is empty");
+		if (n < 1)
+			throw new InternalAnalyzerException("localPC-stack is empty");
 		if (!dominatorIdentityEquals(dominatorIdentity))
 			throw new InternalAnalyzerException("Trying to pop LPC with wrong identity");
 		localPC.pop();
@@ -141,13 +141,13 @@ public class LocalMap<Level> {
     /**
      * Gets the security level of the given identification of a local. If the signature is <i>unknown</i>, it will
      * create an entry for it with the default security level {@link SecDomain#bottom()}.
-     * @param signature The signature of a local, which security level is wanted.
+     * @param var The signature of a local, which security level is wanted.
      * @return The security Level of the identification.
      */
-    public Level getLevel(String signature) {
-        Level result = (localMap.containsKey(signature)) ? localMap.get(signature) : secDomain.bottom();
+    public Level getLevel(String var) {
+        Level result = (localMap.containsKey(var)) ? localMap.get(var) : secDomain.bottom();
         // Todo: Check, if the Bottom shall be saved... asumed yes - but was not
-        if (!localMap.containsKey(signature)) logger.fine("Local "+signature+" is not tracked!");
+        if (!localMap.containsKey(var)) logger.fine("Local "+var+" is not tracked!");
         return result;
     }
 
@@ -171,8 +171,7 @@ public class LocalMap<Level> {
 	 */
 	public void printElements() {
 		for (Map.Entry<String, Level> entry : localMap.entrySet()) {
-			System.out.println("Key " + entry.getKey() + " , Value: " 
-					+ entry.getValue());
+			System.out.println("Key " + entry.getKey() + " , Value: " + entry.getValue());
 		}
 	}
 	

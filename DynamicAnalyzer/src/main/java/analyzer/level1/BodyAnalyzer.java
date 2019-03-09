@@ -5,6 +5,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.*;
+import soot.toolkits.graph.BriefUnitGraph;
+import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.graph.TrapUnitGraph;
+import soot.toolkits.graph.UnitGraph;
 import soot.util.Chain;
 import util.dominator.DominatorFinder;
 import util.dominator.WriteEffectCollector;
@@ -62,6 +66,13 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	@Override
 	protected void internalTransform(Body body, String s, Map<String, String> map) {
 		logger.info(" Analyze of :\"" + body.getMethod().getName() + "\" started.");
+
+		// either create new method body for debugging to look at the cfg or temporary changes here.
+		UnitGraph g = new BriefUnitGraph(body);
+
+		UnitGraph g1 = new ExceptionalUnitGraph(body);
+
+		UnitGraph g2 = new TrapUnitGraph(body);
 
 		SootMethod sootMethod = body.getMethod();
 		Chain<Unit> units  = body.getUnits();
