@@ -1,0 +1,1193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0a86baa9-9c40-4b62-aaa2-851320e3afba" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Notes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arithmetic" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/field_constant_var" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/field_constant_var_code" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/if" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/if_2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jgs.ipr" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jgs.iws" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/method_call" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/value_cast" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/while" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/InstrumentJimple.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/InstrumentJimple.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/AnnotatedSootProgramm.txt" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/AnnotatedSootProgramm.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/Dominator.txt" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/Dominator.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/Dominator_v2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/Dominator_v2.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/LogLevelMeaning.txt" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/LogLevelMeaning.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/ReadWriteEffects.txt" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/ReadWriteEffects.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/UserManual.txt" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/UserManual.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level1/BodyAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level1/BodyAnalyzer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level1/JimpleInjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level1/JimpleInjector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/ActiveController.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/ActiveController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/CurrentSecurityDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/CurrentSecurityDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/HandleStmt.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/HandleStmt.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/SecurityMonitorLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/SecurityMonitorLog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/LPCDominatorPair.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/LPCDominatorPair.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/LocalMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/LocalMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/ObjectMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/ObjectMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/SecurityOptional.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/SecurityOptional.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/main/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/EqualObjectsVerifySuccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/EqualObjectsVerifySuccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/ExternalFail1.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/ExternalFail1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/ExternalFail2.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/ExternalFail2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/FieldsSuccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/FieldsSuccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/LowPlusPublic.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/LowPlusPublic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_FieldAccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_FieldAccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_FieldAccess2.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_FieldAccess2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_IfStmtSpecialCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_IfStmtSpecialCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_SwitchStmtFail.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_SwitchStmtFail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NoNSUForUninitializedVariables.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NoNSUForUninitializedVariables.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/PrivateVariableSuccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/PrivateVariableSuccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/SimpleDebug.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/SimpleDebug.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/SystemOut2.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/SystemOut2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/castStatic2Static_Fail.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/castStatic2Static_Fail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/dominator/DominatorFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/dominator/DominatorFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/dominator/WriteEffectCollector.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/dominator/WriteEffectCollector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/exceptions/IllegalArgumentsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/exceptions/IllegalArgumentsException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/logging/DateFormatter.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/logging/DateFormatter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/logging/DebugCSVHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/logging/DebugCSVHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/parser/ArgumentContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/parser/ArgumentContainer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/visitor/AnnotationValueSwitch.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/visitor/AnnotationValueSwitch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/RunAllTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/RunAllTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/ArraysFail.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/ArraysFail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/AssignLocalsFail.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/AssignLocalsFail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/MultiArrayFail.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/MultiArrayFail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/ReturnStmtFail.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/ReturnStmtFail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/StaticFieldsFail.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/StaticFieldsFail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/StaticFieldsSuccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/StaticFieldsSuccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/storage/LowMiddleHighTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/storage/LowMiddleHighTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/storage/ObjectMapTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/analyzer/level2/storage/ObjectMapTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/classfiletests/utils/ClassRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/classfiletests/utils/ClassRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/end2endtest/AllEndToEndTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/end2endtest/AllEndToEndTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/end2endtest/FakeMethodTypings.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/end2endtest/FakeMethodTypings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/end2endtest/SingleEndToEndTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/end2endtest/SingleEndToEndTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/tests/testclasses/TestClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/tests/testclasses/TestClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/util/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/util/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/util/jimple/SootTypeUtilTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/src/test/java/util/jimple/SootTypeUtilTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/analyzer/level1/BodyAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/analyzer/level1/BodyAnalyzer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/analyzer/level1/JimpleInjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/analyzer/level1/JimpleInjector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/testclasses/ForLoopSuccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/testclasses/ForLoopSuccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/utils/dominator/DominatorFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/utils/dominator/DominatorFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/constraints/TypeViews.scala" beforeDir="false" afterPath="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/constraints/TypeViews.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/instrumentation/Casts.java" beforeDir="false" afterPath="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/instrumentation/Casts.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/typing/ExampleTypes.scala" beforeDir="false" afterPath="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/typing/ExampleTypes.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GradualConstraints/src/main/java/de/unifreiburg/cs/proglang/jgs/constraints/CTypeViews.scala" beforeDir="false" afterPath="$PROJECT_DIR$/GradualConstraints/src/main/java/de/unifreiburg/cs/proglang/jgs/constraints/CTypeViews.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GradualConstraints/src/main/java/de/unifreiburg/cs/proglang/jgs/constraints/ConstraintSet.scala" beforeDir="false" afterPath="$PROJECT_DIR$/GradualConstraints/src/main/java/de/unifreiburg/cs/proglang/jgs/constraints/ConstraintSet.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo11.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo11.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo12.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo12.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo2.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo3.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo4.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo4.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo5.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo5.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo0.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo0.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo2.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo3.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/ExamplesFromPaper/src/pkg2/Examples.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/ExamplesFromPaper/src/pkg2/Examples.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/InitializeLocalWithDynamicField.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/InitializeLocalWithDynamicField.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/NSUPolicy.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/NSUPolicy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/NSUPolicyWithMakeHigh.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/NSUPolicyWithMakeHigh.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/PolymorphicMethods1_Fail.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/PolymorphicMethods1_Fail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/PolymorphicMethods1_Success.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/PolymorphicMethods1_Success.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/PolymorphicMethods2_Fail.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/PolymorphicMethods2_Fail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/PolymorphicMethods2_Success.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/PolymorphicMethods2_Success.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/ScratchMonomorphic_Success.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/ScratchMonomorphic_Success.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCast_Fail.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCast_Fail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCast_Fail2.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCast_Fail2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCast_Fail3.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCast_Fail3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCast_Fail4.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCast_Fail4.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCasts.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleCasts.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleSuccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/JGSTestclasses/Scratch/src/main/java/jgstestclasses/SimpleSuccess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out-instrumented/testclasses.AccessFieldsOfObjectsFail_Works.jimple" beforeDir="false" afterPath="$PROJECT_DIR$/out-instrumented/testclasses.AccessFieldsOfObjectsFail_Works.jimple" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out-instrumented/testclasses.AccessFieldsOfObjectsSuccess_works.jimple" beforeDir="false" afterPath="$PROJECT_DIR$/out-instrumented/testclasses.AccessFieldsOfObjectsSuccess_works.jimple" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/target/" />
+    <ignored path="$PROJECT_DIR$/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/project/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/target/" />
+    <ignored path="$PROJECT_DIR$/JGSSupport/target/" />
+    <ignored path="$PROJECT_DIR$/JGSTestclasses/Scratch/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/Tests/target/" />
+    <ignored path="$PROJECT_DIR$/LMHSecurityDomain/target/" />
+    <ignored path="$PROJECT_DIR$/DynamicAnalyzer/target/" />
+    <ignored path="$PROJECT_DIR$/JGSTestclasses/Demo/target/" />
+    <ignored path="$PROJECT_DIR$/UserDefinedSecurityDomain/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/target/" />
+    <ignored path="$PROJECT_DIR$/jgsDemo/target/" />
+    <ignored path="$PROJECT_DIR$/DynamicAnalyzer/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/DynamicAnalyzer/project/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/project/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/project/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/Tests/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/GradualConstraints/Tests/project/target/" />
+    <ignored path="$PROJECT_DIR$/jgsDemo/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/jgsDemo/project/target/" />
+    <ignored path="$PROJECT_DIR$/JGSSupport/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/JGSSupport/project/target/" />
+    <ignored path="$PROJECT_DIR$/JGSTestclasses/Demo/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/JGSTestclasses/Demo/project/target/" />
+    <ignored path="$PROJECT_DIR$/JGSTestclasses/Scratch/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/JGSTestclasses/Scratch/project/target/" />
+    <ignored path="$PROJECT_DIR$/LMHSecurityDomain/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/LMHSecurityDomain/project/target/" />
+    <ignored path="$PROJECT_DIR$/UserDefinedSecurityDomain/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/UserDefinedSecurityDomain/project/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="2029380228">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.106" value="1" />
+          <entry key="project.open.time.31" value="1" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.opened" value="3" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="CLASS" value="3" />
+          <entry key="JAVA" value="111" />
+          <entry key="PLAIN_TEXT" value="4" />
+          <entry key="Scala" value="5" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JAVA" value="379" />
+        </counts>
+      </usages-collector>
+    </session>
+    <session id="-103274929">
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JAVA" value="161" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="JAVA" value="2" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/AccessFieldsOfObjectsFail.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="13" column="43" selection-start-line="13" selection-start-column="43" selection-end-line="13" selection-end-column="43" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/sootOutput/junit/testclasses.AccessFieldsOfObjectsFail.jimple">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="511">
+              <caret line="103" selection-start-line="103" selection-end-line="103" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/test/java/classfiletests/utils/ClassCompiler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="136">
+              <caret line="22" column="102" selection-start-line="22" selection-start-column="102" selection-end-line="22" selection-end-column="102" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/JGSSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/support/Casts.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="17" column="7" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
+              <folding>
+                <element signature="e#404#405#0" expanded="true" />
+                <element signature="e#428#429#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/HandleStmt.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="230">
+              <caret line="491" column="86" selection-start-line="491" selection-start-column="86" selection-end-line="491" selection-end-column="86" />
+              <folding>
+                <element signature="e#633#657#0" expanded="true" />
+                <element signature="e#3377#3378#0" expanded="true" />
+                <element signature="e#3438#3439#0" expanded="true" />
+                <element signature="e#3651#3652#0" expanded="true" />
+                <element signature="e#3706#3707#0" expanded="true" />
+                <element signature="e#5585#5586#0" expanded="true" />
+                <element signature="e#5640#5641#0" expanded="true" />
+                <element signature="e#6205#6206#0" expanded="true" />
+                <element signature="e#6259#6260#0" expanded="true" />
+                <element signature="e#8962#8963#0" expanded="true" />
+                <element signature="e#9007#9008#0" expanded="true" />
+                <element signature="e#10811#10812#0" expanded="true" />
+                <element signature="e#10855#10856#0" expanded="true" />
+                <element signature="e#11360#11361#0" expanded="true" />
+                <element signature="e#11406#11407#0" expanded="true" />
+                <element signature="e#11556#11557#0" expanded="true" />
+                <element signature="e#11602#11603#0" expanded="true" />
+                <element signature="e#17233#17241#0" expanded="true" />
+                <element signature="e#35678#35705#2" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/ObjectMap.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="258" column="16" selection-start-line="258" selection-start-column="16" selection-end-line="258" selection-end-column="16" />
+              <folding>
+                <element signature="e#3245#3246#0" expanded="true" />
+                <element signature="e#3267#3268#0" expanded="true" />
+                <element signature="e#4008#4009#0" expanded="true" />
+                <element signature="e#4054#4055#0" expanded="true" />
+                <element signature="e#4356#4357#0" expanded="true" />
+                <element signature="e#4385#4386#0" expanded="true" />
+                <element signature="e#4674#4675#0" expanded="true" />
+                <element signature="e#4711#4712#0" expanded="true" />
+                <element signature="e#5031#5032#0" expanded="true" />
+                <element signature="e#5080#5081#0" expanded="true" />
+                <element signature="e#5322#5323#0" expanded="true" />
+                <element signature="e#5362#5363#0" expanded="true" />
+                <element signature="e#5732#5733#0" expanded="true" />
+                <element signature="e#5779#5780#0" expanded="true" />
+                <element signature="e#6083#6084#0" expanded="true" />
+                <element signature="e#6121#6122#0" expanded="true" />
+                <element signature="e#6410#6411#0" expanded="true" />
+                <element signature="e#6462#6463#0" expanded="true" />
+                <element signature="e#6921#6922#0" expanded="true" />
+                <element signature="e#6965#6966#0" expanded="true" />
+                <element signature="e#7288#7289#0" expanded="true" />
+                <element signature="e#7330#7331#0" expanded="true" />
+                <element signature="e#8497#8498#0" expanded="true" />
+                <element signature="e#8577#8578#0" expanded="true" />
+                <element signature="e#11576#11577#0" expanded="true" />
+                <element signature="e#11615#11616#0" expanded="true" />
+                <element signature="e#11977#11978#0" expanded="true" />
+                <element signature="e#12028#12029#0" expanded="true" />
+                <element signature="e#12484#12485#0" expanded="true" />
+                <element signature="e#12536#12537#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/CurrentSecurityDomain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="31" column="24" selection-start-line="31" selection-start-column="18" selection-end-line="31" selection-end-column="24" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#151#197#0" expanded="true" />
+                <element signature="e#2712#2713#0" expanded="true" />
+                <element signature="e#2751#2752#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/constraints/SecDomain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="11" column="47" lean-forward="true" selection-start-line="11" selection-start-column="47" selection-end-line="11" selection-end-column="47" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/HandleStmtUtils.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="238">
+              <caret line="22" column="40" selection-start-line="22" selection-start-column="40" selection-end-line="22" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/LocalMap.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1029">
+              <caret line="163" column="13" selection-start-line="163" selection-start-column="13" selection-end-line="163" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>$r1</find>
+      <find>r1</find>
+      <find>joinleveloffie</find>
+      <find>joinLevelOfFieldAndAssignmentLevel</find>
+      <find>checkcast</find>
+      <find>setlocalfromstring</find>
+      <find>staticinvoke</find>
+      <find>setLocalToCurrentAssingmentLevel(</find>
+      <find>joinLevelOfLocalAndAssignmentLevel(</find>
+      <find>storeArgumentLevels(</find>
+      <find>initHandleStmtUtils</find>
+      <find>@0 &lt;</find>
+      <find>context</find>
+      <find>castHighToDyn</find>
+      <find>lit(lo</find>
+      <find>setLevelOfField</find>
+      <find>assignStmtLevel</find>
+      <find>setLocalToCurrentAssingmentLevel</find>
+      <find>joinLevelOfLocalAndAssignmentLevel</find>
+      <find>setLocalFromString</find>
+      <find>cast(</find>
+      <find>setlocalfroms</find>
+      <find>checkcasttos</find>
+      <find>assignArgumentToLocal</find>
+      <find>local pc</find>
+      <find>checklocal</find>
+      <find>storeArgumentLevels</find>
+      <find>setReturnLevelAfterInvokeStmt</find>
+      <find>out-ins</find>
+      <find>sootCp</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>necessary</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GradleLocalSettings">
+    <option name="projectSyncType">
+      <map>
+        <entry key="$USER_HOME$/Documents/svn/intellij-plugin" value="PREVIEW" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/ExampleTests.java" />
+        <option value="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo3.java" />
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/visitor/AnnotationStmtSwitch.java" />
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level1/JimpleInjector.java" />
+        <option value="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/instrumentation/Casts.java" />
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/visitor/AnnotationValueSwitch.java" />
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/developer_docu/AnnotatedSootProgramm.txt" />
+        <option value="$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo1.java" />
+        <option value="$PROJECT_DIR$/jgsDemo/src/main/scala/de/unifreiburg/cs/proglang/jgs/JgsDemo.scala" />
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/main/Main.java" />
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/CurrentSecurityDomain.java" />
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/ObjectMap.java" />
+        <option value="$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/HandleStmt.java" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="190" />
+    <option name="y" value="43" />
+    <option name="width" value="1616" />
+    <option name="height" value="876" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="jgs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="JGS" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="jgs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="JGS" type="462c0819:PsiDirectoryNode" />
+              <item name="DynamicAnalyzer" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="jgs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="JGS" type="462c0819:PsiDirectoryNode" />
+              <item name="DynamicAnalyzer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="jgs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="JGS" type="462c0819:PsiDirectoryNode" />
+              <item name="DynamicAnalyzer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="jgs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="JGS" type="462c0819:PsiDirectoryNode" />
+              <item name="DynamicAnalyzer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="jgs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="JGS" type="462c0819:PsiDirectoryNode" />
+              <item name="DynamicAnalyzer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="jgs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="JGS" type="462c0819:PsiDirectoryNode" />
+              <item name="JGSTestclasses" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1550499777215" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="vcs.Subversion.Presentation" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="demo.Demo1" />
+      <module name="DemoTestclasses" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="demo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Demo1" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SbtLocalSettings">
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="jgs" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="GradualConstraints [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/GradualConstraints" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="JGSSupport [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/JGSSupport" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="ScratchTestclasses [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/JGSTestclasses/Scratch" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="GradualConstraintsTests [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/GradualConstraints/Tests" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="LMHSecurityDomain [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/LMHSecurityDomain" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="jgs [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="DynamicAnalyzer [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/DynamicAnalyzer" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="DemoTestclasses [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/JGSTestclasses/Demo" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="UserDefinedSecurityDomain [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/UserDefinedSecurityDomain" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="InstrumentationSupport [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="jgsDemo [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/jgsDemo" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="jgs-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="DynamicAnalyzer-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/DynamicAnalyzer/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="GradualConstraints-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/GradualConstraints/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="InstrumentationSupport-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="GradualConstraintsTests-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/GradualConstraints/Tests/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="jgsDemo-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/jgsDemo/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="JGSSupport-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/JGSSupport/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="DemoTestclasses-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/JGSTestclasses/Demo/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="ScratchTestclasses-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/JGSTestclasses/Scratch/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="LMHSecurityDomain-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/LMHSecurityDomain/project" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="UserDefinedSecurityDomain-build [file:/C:/Users/t_ravisha.gaur/jgs_new/JGS/]" />
+                <option name="path" value="$PROJECT_DIR$/UserDefinedSecurityDomain/project" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="modificationStamps">
+      <map>
+        <entry key="$PROJECT_DIR$" value="3100448501762" />
+        <entry key="$PROJECT_DIR$/build.sbt" value="1340263781" />
+        <entry key="$PROJECT_DIR$/project/build.properties" value="2073824194" />
+      </map>
+    </option>
+    <option name="projectSyncType">
+      <map>
+        <entry key="$USER_HOME$/jgs" value="PREVIEW" />
+      </map>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\t_ravisha.gaur\AppData\Roaming\Subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f914e3be-1330-4c94-9d74-464b578b429e" name="Default Changelist" comment="" />
+      <created>1550224639946</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1550224639946</updated>
+      <workItem from="1550224644264" duration="33782000" />
+      <workItem from="1550419024338" duration="18653000" />
+      <workItem from="1550652799413" duration="417000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="54206000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49762282" visible="true" weight="0.15586503" />
+      <window_info id="Structure" order="1" sideWeight="0.50237715" side_tool="true" weight="0.15854311" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Favorites" order="5" sideWeight="0.50237715" side_tool="true" weight="0.15854311" />
+      <window_info id="Capture Tool" order="6" />
+      <window_info id="Web" order="7" sideWeight="0.50237715" side_tool="true" weight="0.15854311" />
+      <window_info anchor="bottom" id="Build" order="0" weight="0.32974428" />
+      <window_info active="true" anchor="bottom" id="Application Servers" order="1" sideWeight="0.49919656" visible="true" weight="0.33044422" />
+      <window_info anchor="bottom" id="sbt-shell-toolwindow" order="2" />
+      <window_info anchor="bottom" id="Message" order="3" />
+      <window_info anchor="bottom" id="Find" order="4" weight="0.32839838" />
+      <window_info anchor="bottom" id="Run" order="5" sideWeight="0.4975897" weight="0.39569312" />
+      <window_info anchor="bottom" id="Debug" order="6" weight="0.34777898" />
+      <window_info anchor="bottom" id="Cvs" order="7" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="8" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="9" />
+      <window_info anchor="bottom" id="Spring" order="10" sideWeight="0.4997322" weight="0.32936078" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.4997322" weight="0.32936078" />
+      <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.5024103" side_tool="true" weight="0.6034669" />
+      <window_info anchor="bottom" id="Java Enterprise" order="13" sideWeight="0.4997322" weight="0.32936078" />
+      <window_info anchor="bottom" id="Database Changes" order="14" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="15" show_stripe_button="false" sideWeight="0.4997322" weight="0.32936078" />
+      <window_info anchor="bottom" id="Messages" order="16" sideWeight="0.49812534" weight="0.31628534" />
+      <window_info anchor="right" id="Gradle" order="0" />
+      <window_info anchor="right" id="sbt" order="1" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="2" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="3" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="4" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Maven Projects" order="7" weight="0.3299411" />
+      <window_info anchor="right" id="Database" order="8" />
+      <window_info anchor="right" id="Palette&#9;" order="9" />
+      <window_info anchor="right" id="Theme Preview" order="10" />
+      <window_info anchor="right" id="Bean Validation" order="11" />
+      <window_info anchor="right" id="My Sample Tool Window" order="12" weight="0.33154795" />
+    </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49762282" visible="true" weight="0.21396251" />
+      <window_info id="Structure" order="1" sideWeight="0.50237715" side_tool="true" weight="0.15854311" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Favorites" order="5" sideWeight="0.50237715" side_tool="true" weight="0.15854311" />
+      <window_info id="Capture Tool" order="6" />
+      <window_info id="Web" order="7" sideWeight="0.50237715" side_tool="true" weight="0.15854311" />
+      <window_info anchor="bottom" id="Build" order="0" weight="0.32974428" />
+      <window_info active="true" anchor="bottom" id="Application Servers" order="1" sideWeight="0.49919656" visible="true" weight="0.33044422" />
+      <window_info anchor="bottom" id="sbt-shell-toolwindow" order="2" />
+      <window_info anchor="bottom" id="Message" order="3" />
+      <window_info anchor="bottom" id="Find" order="4" visible="true" weight="0.32839838" />
+      <window_info anchor="bottom" id="Run" order="5" sideWeight="0.4975897" weight="0.39569312" />
+      <window_info anchor="bottom" id="Debug" order="6" weight="0.34777898" />
+      <window_info anchor="bottom" id="Cvs" order="7" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="8" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="9" />
+      <window_info anchor="bottom" id="Spring" order="10" sideWeight="0.4997322" weight="0.32936078" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.4997322" weight="0.32936078" />
+      <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.5024103" side_tool="true" weight="0.6034669" />
+      <window_info anchor="bottom" id="Java Enterprise" order="13" sideWeight="0.4997322" weight="0.32936078" />
+      <window_info anchor="bottom" id="Database Changes" order="14" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="15" show_stripe_button="false" sideWeight="0.4997322" weight="0.32936078" />
+      <window_info anchor="bottom" id="Messages" order="16" sideWeight="0.49812534" weight="0.31628534" />
+      <window_info anchor="right" id="Gradle" order="0" />
+      <window_info anchor="right" id="sbt" order="1" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="2" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="3" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="4" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Maven Projects" order="7" weight="0.3299411" />
+      <window_info anchor="right" id="Database" order="8" />
+      <window_info anchor="right" id="Palette&#9;" order="9" />
+      <window_info anchor="right" id="Theme Preview" order="10" />
+      <window_info anchor="right" id="Bean Validation" order="11" />
+      <window_info anchor="right" id="My Sample Tool Window" order="12" weight="0.33154795" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="jar://$PROJECT_DIR$/lib/soot-trunk-2017-09-11.jar!/soot/BodyTransformer.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="13">
+          <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GradualConstraints/src/main/java/de/unifreiburg/cs/proglang/jgs/JgsCheck.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="312" column="23" lean-forward="true" selection-start-line="312" selection-start-column="23" selection-end-line="312" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/soot-trunk-2017-09-11.jar!/soot/jimple/InvokeStmt.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="13" column="15" selection-start-line="13" selection-start-column="15" selection-end-line="13" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/instrumentation/Casts.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="26" column="19" lean-forward="true" selection-start-line="26" selection-start-column="19" selection-end-line="26" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TaintTracking/src/junit/TestComponent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1075">
+          <caret line="118" column="39" selection-start-line="118" selection-start-column="39" selection-end-line="118" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/testing_external/src/main/java/analyzer/level1/BodyAnalyzer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="47" column="51" selection-start-line="47" selection-start-column="51" selection-end-line="47" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/developer_docu/JimpleMultyArrays.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="11" selection-start-line="1" selection-start-column="11" selection-end-line="1" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/test/java/end2endtest/FakeTypingMaps.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="15" column="32" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/test/java/end2endtest/AllEndToEndTests.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1836" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/developer_docu/AnnotatedSootProgramm.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="105" column="140" lean-forward="true" selection-start-line="105" selection-start-column="140" selection-end-line="105" selection-end-column="140" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/developer_docu/MakeHighMethod.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="8" selection-start-line="6" selection-start-column="8" selection-end-line="6" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level1/BodyAnalyzer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="68" column="74" lean-forward="true" selection-start-line="68" selection-start-column="74" selection-end-line="68" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/visitor/AnnotationStmtSwitch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="31" column="32" selection-start-line="31" selection-start-column="32" selection-end-line="31" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/visitor/ExternalClasses.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="125" column="64" selection-start-line="125" selection-start-column="64" selection-end-line="125" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo3.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="429">
+          <caret line="46" column="26" lean-forward="true" selection-start-line="46" selection-start-column="26" selection-end-line="46" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo3.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="714">
+          <caret line="44" column="44" lean-forward="true" selection-start-line="44" selection-start-column="44" selection-end-line="44" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="48" column="54" lean-forward="true" selection-start-line="48" selection-start-column="54" selection-end-line="48" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/LowHigh.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="26" column="24" selection-start-line="26" selection-start-column="18" selection-end-line="26" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/exceptions/SuperfluousInstrumentation/storeArgumentLevelsException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="11" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/util/visitor/AnnotationValueSwitch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="565" column="39" selection-start-line="565" selection-start-column="39" selection-end-line="565" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/IfStmtFail.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="22" column="20" lean-forward="true" selection-start-line="22" selection-start-column="20" selection-end-line="22" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/NSU_IfStmtSpecialCase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="20" column="8" lean-forward="true" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc2" />
+    <entry file="file://$PROJECT_DIR$/JGSSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/support/IOUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/unifreiburg/cs/proglang/jgs/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1496">
+          <caret line="99" column="67" selection-start-line="99" selection-start-column="67" selection-end-line="99" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LMHSecurityDomain/src/main/java/de/unifreiburg/cs/proglang/jgs/rt/LowMediumHigh.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="32" column="15" selection-start-line="32" selection-start-column="15" selection-end-line="32" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/MethodBodies/src/pkg/MethodBodies.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/HandleStmtUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="22" column="40" selection-start-line="22" selection-start-column="40" selection-end-line="22" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo4.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo5.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo11.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo12.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo0.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="33" column="18" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/WhileLoop.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="11" column="21" lean-forward="true" selection-start-line="11" selection-start-column="21" selection-end-line="11" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo2/Demo1.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-243">
+          <caret line="12" column="37" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="29" column="67" lean-forward="true" selection-start-line="29" selection-start-column="67" selection-end-line="29" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/support/Casts.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="7" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
+          <folding>
+            <element signature="e#404#405#0" expanded="true" />
+            <element signature="e#428#429#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSTestclasses/Demo/src/main/java/demo/Demo1.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="318">
+          <caret line="40" column="29" selection-start-line="40" selection-start-column="29" selection-end-line="40" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/LPCDominatorPair.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="30" lean-forward="true" selection-start-line="14" selection-start-column="30" selection-end-line="14" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JGSSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/support/DynamicLabel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="39" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/LocalMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1029">
+          <caret line="163" column="13" selection-start-line="163" selection-start-column="13" selection-end-line="163" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/IfStmtSuccess.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="4" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level1/JimpleInjector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="536">
+          <caret line="113" column="49" lean-forward="true" selection-start-line="113" selection-start-column="49" selection-end-line="113" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jgsDemo/src/main/scala/de/unifreiburg/cs/proglang/jgs/JgsDemo.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="838">
+          <caret line="104" column="1" selection-start-line="104" selection-start-column="1" selection-end-line="104" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/main/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="63" column="10" selection-start-line="63" selection-start-column="10" selection-end-line="63" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/testclasses/AccessFieldsOfObjectsSuccess.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/sootOutput/junit/testclasses.AccessFieldsOfObjectsSuccess.jimple">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="426">
+          <caret line="49" column="105" selection-start-line="49" selection-start-column="71" selection-end-line="49" selection-end-column="105" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/src/main/java/de/unifreiburg/cs/proglang/jgs/constraints/SecDomain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="47" lean-forward="true" selection-start-line="11" selection-start-column="47" selection-end-line="11" selection-end-column="47" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/CurrentSecurityDomain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="31" column="24" selection-start-line="31" selection-start-column="18" selection-end-line="31" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#151#197#0" expanded="true" />
+            <element signature="e#2712#2713#0" expanded="true" />
+            <element signature="e#2751#2752#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/storage/ObjectMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="258" column="16" selection-start-line="258" selection-start-column="16" selection-end-line="258" selection-end-column="16" />
+          <folding>
+            <element signature="e#3245#3246#0" expanded="true" />
+            <element signature="e#3267#3268#0" expanded="true" />
+            <element signature="e#4008#4009#0" expanded="true" />
+            <element signature="e#4054#4055#0" expanded="true" />
+            <element signature="e#4356#4357#0" expanded="true" />
+            <element signature="e#4385#4386#0" expanded="true" />
+            <element signature="e#4674#4675#0" expanded="true" />
+            <element signature="e#4711#4712#0" expanded="true" />
+            <element signature="e#5031#5032#0" expanded="true" />
+            <element signature="e#5080#5081#0" expanded="true" />
+            <element signature="e#5322#5323#0" expanded="true" />
+            <element signature="e#5362#5363#0" expanded="true" />
+            <element signature="e#5732#5733#0" expanded="true" />
+            <element signature="e#5779#5780#0" expanded="true" />
+            <element signature="e#6083#6084#0" expanded="true" />
+            <element signature="e#6121#6122#0" expanded="true" />
+            <element signature="e#6410#6411#0" expanded="true" />
+            <element signature="e#6462#6463#0" expanded="true" />
+            <element signature="e#6921#6922#0" expanded="true" />
+            <element signature="e#6965#6966#0" expanded="true" />
+            <element signature="e#7288#7289#0" expanded="true" />
+            <element signature="e#7330#7331#0" expanded="true" />
+            <element signature="e#8497#8498#0" expanded="true" />
+            <element signature="e#8577#8578#0" expanded="true" />
+            <element signature="e#11576#11577#0" expanded="true" />
+            <element signature="e#11615#11616#0" expanded="true" />
+            <element signature="e#11977#11978#0" expanded="true" />
+            <element signature="e#12028#12029#0" expanded="true" />
+            <element signature="e#12484#12485#0" expanded="true" />
+            <element signature="e#12536#12537#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DynamicAnalyzer/src/main/java/analyzer/level2/HandleStmt.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="491" column="86" selection-start-line="491" selection-start-column="86" selection-end-line="491" selection-end-column="86" />
+          <folding>
+            <element signature="e#633#657#0" expanded="true" />
+            <element signature="e#3377#3378#0" expanded="true" />
+            <element signature="e#3438#3439#0" expanded="true" />
+            <element signature="e#3651#3652#0" expanded="true" />
+            <element signature="e#3706#3707#0" expanded="true" />
+            <element signature="e#5585#5586#0" expanded="true" />
+            <element signature="e#5640#5641#0" expanded="true" />
+            <element signature="e#6205#6206#0" expanded="true" />
+            <element signature="e#6259#6260#0" expanded="true" />
+            <element signature="e#8962#8963#0" expanded="true" />
+            <element signature="e#9007#9008#0" expanded="true" />
+            <element signature="e#10811#10812#0" expanded="true" />
+            <element signature="e#10855#10856#0" expanded="true" />
+            <element signature="e#11360#11361#0" expanded="true" />
+            <element signature="e#11406#11407#0" expanded="true" />
+            <element signature="e#11556#11557#0" expanded="true" />
+            <element signature="e#11602#11603#0" expanded="true" />
+            <element signature="e#17233#17241#0" expanded="true" />
+            <element signature="e#35678#35705#2" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>11</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.24932249" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

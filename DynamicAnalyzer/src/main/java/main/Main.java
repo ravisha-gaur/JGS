@@ -2,10 +2,8 @@ package main;
 
 import analyzer.level1.BodyAnalyzer;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
-import scala.collection.immutable.Stream;
 import soot.*;
 import util.logging.DebugCSVHandler;
-import util.logging.L1Logger;
 import util.logging.SOutHandler;
 import util.parser.ArgParser;
 import util.parser.ArgumentContainer;
@@ -20,7 +18,6 @@ import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,13 +26,53 @@ import static soot.SootClass.SIGNATURES;
 
 
 /**
- * @author Regina Koenig, Nicolas Müller
+ * This is the Main Entry for the Dynamic Analyzer.
+ * It has some useful Methods, that are used in the first place,
+ * to set up things  to run the Dynamic Analyzer.
+ *
+ * It provides also a main Entry to run it as a program.
+ * @author Regina Koenig, Nicolas Müller, Karsten Fix
  */
 public class Main {
 
+	// <editor-fold desc="Logger Setup">
+	/** The logger, that prints log messages. */
 	private static final Logger logger = Logger.getLogger(Main.class.getName());
 
+	/** Flag for the logger setup, only to assure, that it does not call
+	 * the logger setup more then required. */
 	private static boolean loggerSetup = false;
+	
+	/**
+	 * Sets up the logger. Thereby it removes the standard Handlers and replaces
+	 * them by our own defined Handlers and Formatter.
+	 */
+	public static void setupLogger() {
+		if (loggerSetup) return;
+		// Setting up the loggers of the different levels.
+		// The logger for the instrumentation, is the Package Name of the BodyAnalyser.
+		Logger l1 = Logger.getLogger("");
+		l1.setLevel(Level.ALL);
+
+		// Avoiding passing the Messages more up. Abd removing all standard
+		// Handlers, such that the Messages only appearing, where we want.
+		// l1.setUseParentHandlers(false);
+		for (Handler h : l1.getHandlers()) l1.removeHandler(h);
+
+		// Adding all Handlers, that we want. There so is the Debug Handler
+		// and a console Handler
+		SOutHandler h = new SOutHandler();
+		//try {
+			//l1.addHandler(new DebugCSVHandler());
+			l1.addHandler(h);
+		//} catch (IOException e) { e.printStackTrace(); }
+
+		// for the Console Handler it could be decided which Level
+		// should be used.
+		h.setLevel(Level.INFO);
+		loggerSetup = true;
+	}
+	// </editor-fold>
 
     /**
 	 * The entry point for compilation and instrumentation (that is, adding the appropriate
@@ -59,38 +96,13 @@ public class Main {
 	}
 
 
+
+
 	public static void execute(String[] args,
 								MethodTypings m,
 							    Casts c) throws UnsupportedEncodingException {
 	    doSootSetup(args);
 		executeWithoutSootSetup(args, m, c);
-	}
-
-	public static void setupLogger() {
-		if (loggerSetup) return;
-		// Setting up the loggers of the different levels.
-		// The logger for the instrumentation, is the Package Name of the BodyAnalyser.
-		Logger l1 = Logger.getLogger("");
-		l1.setLevel(Level.ALL);
-
-		// Avoiding passing the Messages more up. Abd removing all standart
-		// Handlers, such that the Messages only appearing, where we want.
-		// l1.setUseParentHandlers(false);
-		for (Handler h : l1.getHandlers()) l1.removeHandler(h);
-
-		// Adding all Handlers, that we want. There so is the Debug Handler
-		// and a console Handler
-		SOutHandler h = new SOutHandler();
-		// FIXME: the csv handler is disabled because it throws weird errors... we might want to enable it sometime
-//		try {
-			// l1.addHandler(new DebugCSVHandler());
-			l1.addHandler(h);
-//		} catch (IOException e) { e.printStackTrace(); }
-
-		// for the Console Handler it could be decided which Level
-		// should be used.
-		h.setLevel(Level.INFO);
-		loggerSetup = true;
 	}
 
 	// TODO: move to another package (or even project) as this kind of setup is used by the whole application, not only DA
@@ -99,8 +111,6 @@ public class Main {
         ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
 
         setupLogger();
-
-
 
         String javaHome = System.getProperty("java.home");    //gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
 
@@ -122,8 +132,8 @@ public class Main {
         String extraCpClasses = String.join(File.pathSeparator, sootOptionsContainer.getAddClassesToClasspath());
         classPath = String.join(File.pathSeparator, extraCpDirs, classPath, extraCpClasses);
 
-        // Add the current classpath to soots classpath
-		// TODO: this is only a quick hack for testing. We should figure out precicely how the soot classpath should look.
+        // Add the current classpath to soot classpath
+		// TODO: this is only a quick hack for testing. We should figure out precisely how the soot classpath should look.
 		List<String> cpath = new ArrayList<>();
         // TODO: Lu: I'm also not sure what a "ContextClassLoader" is.
 		// (pasted from https://stackoverflow.com/questions/11613988/how-to-get-classpath-from-classloader)
@@ -164,7 +174,8 @@ public class Main {
                 "--d", sootOptionsContainer.getOutputFolderAbsolutePath()
 				));         // sets output folder
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
-		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
+		    sootOptions.add(s);
+		    // add further files to be instrumented (-f flag)
         }
 
         // ====== Create / load fake static analysis results ======
@@ -172,10 +183,10 @@ public class Main {
 		Casts<L> casts = c;
 
 
-        BodyAnalyzer<L> banalyzer = new BodyAnalyzer<>(methodTypings, casts);
+        BodyAnalyzer<L> bodyAnalyzer = new BodyAnalyzer<>(methodTypings, casts);
 
 		PackManager.v()
-        	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer));
+        	.getPack("jtp").add(new Transform("jtp.analyzer", bodyAnalyzer));
 
 
 		soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
