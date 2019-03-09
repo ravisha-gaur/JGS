@@ -576,7 +576,7 @@ public class HandleStmt<Level> {
      * @return Returns the new SecurityLevel of the array-element
      */
 
-    public Object setLevelOfArrayField(Object object, String field, String localForObject) {
+    public Object setLevelOfArrayField(Object object, String field, String localForObject, String localForIndex) {
         logger.info( "Set level of array-field "+field+" to "+handleStatementUtils.joinWithGPC(objectmap.getAssignmentLevel()));
         objectmap.setField(object, field, handleStatementUtils.joinWithGPC(objectmap.getAssignmentLevel()));
         logger.info("New level of array-field "+field+" is " +  objectmap.getFieldLevel(object, field));
@@ -597,7 +597,7 @@ public class HandleStmt<Level> {
      * @return Returns the new SecurityLevel of the array-element
      */
 
-    public Object setLevelOfArrayField(Object object, String field) {
+    public Object setLevelOfArrayField(Object object, String field, String localForObject) {
         logger.info("Set level of array-field "+field+" to " + handleStatementUtils.joinWithGPC(objectmap.getAssignmentLevel()));
         objectmap.setField(object, field, handleStatementUtils.joinWithGPC(objectmap.getAssignmentLevel()));
         logger.info("New level of array-field "+field+" is "+ objectmap.getFieldLevel(object, field));

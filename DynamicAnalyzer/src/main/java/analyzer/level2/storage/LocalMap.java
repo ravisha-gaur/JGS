@@ -111,19 +111,19 @@ public class LocalMap<Level> {
     // <editor-fold desc="Putting Stuff into LMap"
     /**
      * Sets the security level of the given Signature to the given Level.
-     * @param signature The signature of the local, which security Level will now be tracked.
+     * @param var The signature of the local, which security Level will now be tracked.
      * @param securityLevel The security level, the Local will have now.
      */
-    public void setLevel(String signature, Level securityLevel) {
-        localMap.put(signature, securityLevel);
+    public void setLevel(String var, Level securityLevel) {
+        localMap.put(var, securityLevel);
     }
 
     /**
      * Sets the security level of the given signature to {@link SecDomain#bottom()}.
-     * @param signature The signature of the local, which level shall be reset.
+     * @param var The signature of the local, which level shall be reset.
      */
-    public void setToBottom(String signature) {
-        localMap.put(signature, secDomain.bottom());
+    public void setToBottom(String var) {
+        localMap.put(var, secDomain.bottom());
     }
     // </editor-fold>
 
@@ -131,11 +131,11 @@ public class LocalMap<Level> {
 
     /**
      * Tells, if the given local identification is tracked by this Local Map
-     * @param signature The identification of the local, that could be tracked
+     * @param var The identification of the local, that could be tracked
      * @return <b>true</b> if the identification is within the Local Map or <b>false</b> otherwise.
      */
-    public boolean isTracked(String signature) {
-        return localMap.containsKey(signature);
+    public boolean isTracked(String var) {
+        return localMap.containsKey(var);
     }
 
     /**
@@ -158,10 +158,10 @@ public class LocalMap<Level> {
     /**
      * Removes the Security Level of the given Signature. This methods stops the tracking of the
      * given identification of a Local.
-     * @param signature The identification of a Local.
+     * @param var The identification of a Local.
      */
-    public void removeLocal(String signature) {
-        localMap.remove(signature);
+    public void removeLocal(String var) {
+        localMap.remove(var);
     }
     // </editor-fold>
 	// </editor-fold>
