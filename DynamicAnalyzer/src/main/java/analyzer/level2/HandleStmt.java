@@ -127,7 +127,7 @@ public class HandleStmt<Level> {
         logger.info("Add Field "+var+" to object" + object);
         handleStatementUtils.checkIfObjectExists(object);
         Level fieldLevel = secDomain.bottom();
-        objectmap.setField(object, var, CurrentSecurityDomain.bottom());
+        objectmap.setField(object, var, fieldLevel);
         if (!objectmap.containsField(object, var)) {
             throw new InternalAnalyzerException("Add field " + var + " to ObjectMap failed");
         }

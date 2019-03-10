@@ -147,7 +147,8 @@ public class LocalMap<Level> {
     public Level getLevel(String var) {
         Level result = (localMap.containsKey(var)) ? localMap.get(var) : secDomain.bottom();
         // Todo: Check, if the Bottom shall be saved... asumed yes - but was not
-        if (!localMap.containsKey(var)) logger.fine("Local "+var+" is not tracked!");
+        if (!localMap.containsKey(var))
+            logger.fine("Local "+var+" is not tracked!");
         return result;
     }
 
