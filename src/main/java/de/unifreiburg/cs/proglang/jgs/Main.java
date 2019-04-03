@@ -91,6 +91,9 @@ public class Main {
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.String)>",
                             new JgsCheck.Annotation(new String[]{},
                                                     new String[]{"LOW"}));
+        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{"LOW"}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printPublicDynamic(java.lang.String)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= ?"},
                                                     new String[]{"?"}));
@@ -103,13 +106,22 @@ public class Main {
         externalMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
                                                     new String[]{}));
+        externalMethods.put("<java.lang.Double: java.lang.Double valueOf(double)>",
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
         externalMethods.put("<java.lang.String: java.lang.String valueOf(int)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
                                                     new String[]{}));
+        externalMethods.put("<java.lang.String: java.lang.String valueOf(double)>",
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
         externalMethods.put("<java.lang.String: java.lang.String valueOf(java.lang.Object)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
                                                     new String[]{}));
         externalMethods.put("<java.lang.Integer: int intValue()>",
+                            new JgsCheck.Annotation(new String[]{},
+                                                    new String[]{}));
+        externalMethods.put("<java.lang.Double: int doubleValue()>",
                             new JgsCheck.Annotation(new String[]{},
                                                     new String[]{}));
         externalMethods.put("<java.lang.String: boolean equals(java.lang.Object)>",

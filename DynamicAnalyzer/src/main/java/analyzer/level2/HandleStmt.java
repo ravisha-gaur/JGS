@@ -43,6 +43,7 @@ public class HandleStmt {
     public HandleStmt() {
         localmap = new LocalMap();
         objectmap = ObjectMap.getInstance();
+        logger.setLevel(Level.ALL);
     }
 
     @SuppressWarnings("unused")
@@ -418,9 +419,7 @@ public class HandleStmt {
         // the beginning of the method, where the context is public
 
         localmap.setLevel(signature,
-                          handleStatementUtils.joinWithLPC(objectmap
-                                                                   .getArgLevelAt
-                                                                           (pos)));
+                          handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
         return localmap.getLevel(signature);
     }
 
@@ -504,6 +503,16 @@ public class HandleStmt {
                                                                         .getLocalPC()));
         logger.info("New LPC is " + localmap.getLocalPC().toString());
     }
+
+    public void ctxCastStToDyn(String dominatorIdentity, String args) {
+        //logger.info("Check condition of ifStmt");
+        logger.info("args : " + args);
+        localmap.pushLocalPC(handleStatementUtils.joinWithLPC(handleStatementUtils.joinLocalLevel(args)), Integer.valueOf(dominatorIdentity));
+        objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
+        logger.info("New LPC is " + localmap.getLocalPC().toString());
+    }
+
+
 
     /**
      * Exit scope of an if-Statement. For each if-statement which ends at this
@@ -621,7 +630,7 @@ public class HandleStmt {
      * @param signature signature of the local
      * @return new security-level
      */
-    public Object setLocalToCurrentAssingmentLevel(String signature) {
+    public Object setLocalToCurrentAssignmentLevel(String signature) {
         // For assignments like a = x + y, we need to calculate the
         // new security-level of a: this sec-level depends either on
         // the local PC (for example, if inside a high-security if), or on either

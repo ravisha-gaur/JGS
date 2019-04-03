@@ -103,9 +103,12 @@ public class ExternalClasses {
 		instrumentationForSpecialMethods.put("<java.lang.Boolean: java.lang"
 											 + ".Boolean valueOf(boolean)>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new JoinLevels());
+        instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Double valueOf(integer)>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.String valueOf(int)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Double: java.lang.Double valueOf(double)>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: int intValue()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Double: int doubleValue()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.List: java.util.Iterator iterator()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.Iterator: boolean hasNext()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.Iterator: java.lang.Object next()>", new DoNothing());
@@ -114,6 +117,12 @@ public class ExternalClasses {
 
 		// Handling of uninstrumented methods that occur in the testcases
 		instrumentationForSpecialMethods.put("<testclasses.util.SimpleObject: void <init>()>", new DoNothing());
+        instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
+                new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
+				new MaxLevelAllowedForPrintOutput("LOW"));
+        instrumentationForSpecialMethods.put("<java.lang.String: java.lang.String valueOf(int)>",
+                new JoinLevels());
 	}
 
 	public static boolean isSpecialMethod(SootMethod m) {
@@ -161,7 +170,7 @@ public class ExternalClasses {
 			}
 			
 			// If print Statement is called, context must not be high: This, we can always check
-			JimpleInjector.checkThatPCLe(level, pos);
+			JimpleInjector.checkThatPCLe(level, pos, false);
 			
 			// Also, we might print in low context: If so, we mustn't print a high-sec param
 			for (Local param: params) {

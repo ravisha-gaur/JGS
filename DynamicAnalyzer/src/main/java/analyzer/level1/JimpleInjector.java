@@ -2,6 +2,7 @@ package analyzer.level1;
 
 import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
+import com.sun.javafx.binding.ObjectConstant;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import scala.Option;
 import soot.*;
@@ -45,6 +46,10 @@ public class JimpleInjector {
 
     /** Chain with all locals in the actual method-body. */
     private static Chain<Local> locals = b.getLocals();
+
+    private static boolean ctxCastCalledFlag = false;
+
+    private static Stack stack = new Stack();
 
     /**
      * Stores the position of
@@ -419,31 +424,41 @@ public class JimpleInjector {
 
         String signature = getSignatureForLocal(l);
 
-        // insert setLocalToCurrentAssingmentLevel, which accumulates the PC and the right-hand side of the assign stmt.
+        // insert setLocalToCurrentAssignmentLevel, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
-        Unit invoke = fac.createStmt("setLocalToCurrentAssingmentLevel", StringConstant.v(signature));
+        Unit invoke = fac.createStmt("setLocalToCurrentAssignmentLevel", StringConstant.v(signature));
 
         Stmt stmt = (Stmt) pos;
-        de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
+        if(!ctxCastCalledFlag) {
+            de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
+            Unit checkLocalPCExpr = typeBefore.isPublic()
+                    ? fac.createStmt("checkNonSensitiveLocalPC")
+                    : fac.createStmt("checkLocalPC", StringConstant.v(signature));
+
+            if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
+                // insert NSU check only if PC is dynamic!
+                if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+                    units.insertBefore(checkLocalPCExpr, pos);
+                }
+                units.insertBefore(invoke, pos);
+            }
+        }
+        else {
+            Unit checkLocalPCExpr = fac.createStmt("checkNonSensitiveLocalPC");
+            units.insertBefore(checkLocalPCExpr, pos);
+            units.insertBefore(invoke, pos);
+        }
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
         // only needs to be done if CxTyping of Statement is Dynamic.
         // Also, if the variable to update is public, the PC should be "bottom"
-        Unit checkLocalPCExpr = typeBefore.isPublic()
-                                ? fac.createStmt("checkNonSensitiveLocalPC")
-                                : fac.createStmt("checkLocalPC", StringConstant.v(signature));
+
 
         // TODO i did comment this out for some reason .. but why?
         // if variable l is not dynamic after stmt pos,
-        // we do not need to call setLocalToCurrentAssingmentLevel at all,
+        // we do not need to call setLocalToCurrentAssignmentLevel at all,
         // and we especially do not need to perform a NSU check!
-        if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
-            // insert NSU check only if PC is dynamic!
-            if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-                units.insertBefore(checkLocalPCExpr, pos);
-            }
-            units.insertBefore(invoke, pos);
-        }
+
         lastPos = pos;
     }
 
@@ -485,9 +500,14 @@ public class JimpleInjector {
         // see NSU_FieldAccess tests why this is needed
         units.insertBefore(pushInstanceLevelToGlobalPC, pos);
 
-        // only if context ist dynamic / pc is dynamc
-        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+        if(ctxCastCalledFlag){
             units.insertBefore(checkGlobalPCExpr, pos);
+        }
+        else {
+            // only if context ist dynamic / pc is dynamc
+            if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+                units.insertBefore(checkGlobalPCExpr, pos);
+            }
         }
 
         units.insertBefore(Arrays.asList(assignExpr, popGlobalPC), pos);
@@ -518,10 +538,14 @@ public class JimpleInjector {
                 StringConstant.v(signature)
                 );
 
-        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+        if(ctxCastCalledFlag){
             units.insertBefore(checkGlobalPCExpr, pos);
         }
-
+        else {
+            if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+                units.insertBefore(checkGlobalPCExpr, pos);
+            }
+        }
         units.insertBefore(assignExpr, pos);
         lastPos = pos;
     }
@@ -762,8 +786,8 @@ public class JimpleInjector {
      * @param level level that the PC must not exceed
      * @param pos   position where to insert statement
      */
-    public static void checkThatPCLe(String level, Unit pos) {
-        logger.info("Check that context is " + level + "or above");
+    public static void checkThatPCLe(String level, Unit pos, boolean ctxCastFlag) {
+        logger.info("Check that context is " + level + " or above");
 
         if (pos == null) {
             throw new InternalAnalyzerException("Position is Null");
@@ -777,12 +801,21 @@ public class JimpleInjector {
                         "checkThatPCLe", paramTypes, VoidType.v(), false), StringConstant.v(level));
         Unit invoke = Jimple.v().newInvokeStmt(checkPC);
 
-        // only if PC is dynamic
-        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+        if(ctxCastFlag || ctxCastCalledFlag){
             units.insertBefore(invoke, pos);
             lastPos = pos;
         }
+        else
+        {
+            // only if PC is dynamic
+            if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+                units.insertBefore(invoke, pos);
+                lastPos = pos;
+            }
+        }
+
     }
+
 
     /**
      * Check condition of if statements. Needed parameters are all locals (no constants)
@@ -825,7 +858,7 @@ public class JimpleInjector {
         }
 
         // Invoke HandleStmt.checkCondition(String domHash, String... locals)
-        Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
+        /*Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "checkCondition", paramTypes, VoidType.v(), false),
                 StringConstant.v(domIdentity), local_for_String_Arrays);
@@ -840,7 +873,7 @@ public class JimpleInjector {
             lastPos = u;
         }
         units.insertAfter(invokeCC, lastPos);
-        lastPos = invokeCC;
+        lastPos = invokeCC;*/
 
     }
 
@@ -869,6 +902,29 @@ public class JimpleInjector {
 
         units.insertBefore(inv, pos);
         lastPos = pos;
+    }
+
+
+    public static void exitCtxCastScope(Unit pos) {
+        logger.info("Exit context cast scope in method " + b.getMethod().getName());
+
+        ArrayList<Type> paramTypes = new ArrayList<>();
+        paramTypes.add(RefType.v("java.lang.String"));
+
+        if(!stack.isEmpty()) {
+            String domIdentity = stack.pop().toString();
+            logger.info("Dominator \"" + pos.toString() + "\" has identity " + domIdentity);
+
+            Expr specialIn = Jimple.v().newVirtualInvokeExpr(
+                    hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+                            "exitInnerScope", paramTypes, VoidType.v(), false),
+                    StringConstant.v(domIdentity));
+
+            Unit inv = Jimple.v().newInvokeStmt(specialIn);
+
+            units.insertBefore(inv, pos);
+            lastPos = pos;
+        }
     }
 	
 /*
@@ -1068,6 +1124,52 @@ public class JimpleInjector {
         }
     }
 
+    public static void handleCtxCast(Stmt stmt, Local[] args){
+        if(casts.isCxCastStart(stmt)){
+            Casts.Conversion conversion = casts.getCxCast(stmt);
+            logger.fine("Found context cast: " + conversion);
+            ctxCastCalledFlag = true;
+            if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
+                logger.fine("Conversion is: dynamic->static");
+                Object destLevel = conversion.getDestType().getLevel();
+                checkThatPCLe(destLevel.toString(), stmt, true);
+                logger.fine("Setting destination variable to: " + destLevel);
+            }
+            else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
+                logger.fine("Conversion is: static->dynamic");
+                Object srcLevel = conversion.getSrcType().getLevel();
+                ctxCastStToDyn(stmt, srcLevel.toString());
+            }
+
+            else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
+                logger.fine("Conversion is: dynamic->dynamic");
+                logger.fine("Ignoring trivial conversion.");
+            } else {
+                logger.fine("Conversion is: static->static");
+                logger.fine("Ignoring trivial conversion.");
+            }
+        }
+    }
+
+
+    public static void ctxCastStToDyn(Unit pos, String srcLevel){
+        ArrayList<Type> paramTypes = new ArrayList<>();
+        paramTypes.add(RefType.v("java.lang.String"));
+        paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1));
+
+        Random randomNumber = new Random();
+        String domIdentity = String.valueOf(randomNumber.nextInt());
+        stack.push(domIdentity);
+
+        Expr newStringArray = Jimple.v().newNewArrayExpr(RefType.v("java.lang.String"), IntConstant.v(1));
+
+        Unit assignNewArray = Jimple.v().newAssignStmt(local_for_String_Arrays, newStringArray);
+        Unit invoke = fac.createStmt("ctxCastStToDyn", StringConstant.v(domIdentity), StringConstant.v(srcLevel));
+
+        units.insertBefore(assignNewArray, pos);
+        units.insertAfter(invoke, pos);
+        lastPos = invoke;
+    }
 
     /**
      * Insert "stopTrackingLocal" call.

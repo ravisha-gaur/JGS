@@ -66,7 +66,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD, 
 		SET_RETURN_LEVEL,
 		MAKE_HIGH, MAKE_MEDIUM, MAKE_LOW,
-		CAST
+		CAST, CTXCAST
 	} 
 	
 	private Set<RequiredActionForRHS> requiredActionForRHS =
@@ -552,14 +552,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				// TODO: implement context cast handling here
 			} else if (casts.isCxCastStart(callingStmt)){
 				Casts.Conversion<?> conversion = casts.getCxCast(callingStmt);
-				logger.info(String.format("Found cx cast %s at %s", conversion, callingStmt));
-
-				logger.severe("Cx cast detected but the instrumentation of cx casts is not implemented yet.");
-
-
+				logger.info(String.format("Found ctx cast %s at %s", conversion, callingStmt));
+				JimpleInjector.handleCtxCast(callingStmt, args);
 			} else if (casts.isCxCastEnd(callingStmt)) {
-				logger.info(String.format("Found cx cast end at %s for id %s", callingStmt, "??"));
-				logger.severe("Cx cast end detected but the instrumentation of cx casts is not implemented yet.");
+				logger.info(String.format("Found ctx cast end at %s ", callingStmt));
+				JimpleInjector.exitCtxCastScope(callingStmt);
 
 			} else if (ExternalClasses.isSpecialMethod(method)) {
 				logger.fine("Found special method: " + method);

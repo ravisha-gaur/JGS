@@ -1,6 +1,7 @@
 package analyzer.level2;
 
 import analyzer.level2.storage.LocalMap;
+import analyzer.level2.storage.LowMediumHigh;
 import analyzer.level2.storage.ObjectMap;
 import util.exceptions.IFCError;
 import util.exceptions.InternalAnalyzerException;
@@ -96,6 +97,12 @@ public class HandleStmtUtils {
 		for (String op: stringList) {
 			result = CurrentSecurityDomain.lub(result, localmap.getLevel(op));
 		}
+		return result;
+	}
+
+	protected Object joinLocalLevel(String level) {
+		Object result = CurrentSecurityDomain.bottom();
+		result = CurrentSecurityDomain.lub(result, CurrentSecurityDomain.readLevel(level));
 		return result;
 	}
 	
