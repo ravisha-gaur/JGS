@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * JimpleInjector is handles the inserts of additional instructions in a methods
+ * JimpleInjector handles the inserts of additional instructions in a methods
  * body, such that the Dynamic Checking is possible.
  *
  * @author Regina Koenig (2015), Karsten Fix (2017), fennell (2017)
@@ -98,7 +98,7 @@ public class JimpleInjector {
      *
      * @param pos   Statement / Unit where to insert setReturnLevelAfterInvokeStmt
      */
-    public static void setReturnLevelAfterInvokeStmt(Local l, Unit pos) {
+    public static void  setReturnLevelAfterInvokeStmt(Local l, Unit pos) {
         Unit invoke = fac.createStmt("setReturnLevelAfterInvokeStmt", StringConstant.v(getSignatureForLocal(l)));
         // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
         if ( varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
@@ -416,6 +416,7 @@ public class JimpleInjector {
     public static void setLevelOfAssignStmt(Local l, Unit pos) {
         // Checking, if current Policy is NSU, before performing the NSU_Check.
         // Means: If not, then we can break up here.
+        // Todo:Move to the right place. Somewhere in HandleStmt.
         if (DynamicPolicy.selected != DynamicPolicy.Policy.NSU_POLICY) {
             logger.info("Do not use NSU Policy.");
             return;

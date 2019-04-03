@@ -3,15 +3,12 @@ package end2endtest;
 import analyzer.level2.SecurityMonitoringEvent;
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
-
 import main.Main;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import util.logging.L1Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -31,7 +28,7 @@ public class AllEndToEndTests {
 	 * @param name
 	 *            Name of the class
 	 * @param securityMonitoringEvent
-	 *            specifiy if, and what kind of exception is expected
+	 *            specify if, and what kind of exception is expected
 	 * @param involvedVars
 	 *            variables which are expected to be involved in the exception
 	 */
@@ -60,10 +57,10 @@ public class AllEndToEndTests {
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 	    List<Object[]> cases = Arrays.asList(
-				new Object[] {"AccessFieldsOfObjectsFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.String_$r6" } },
 				new Object[] {"AccessFieldsOfObjectsSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
-				
-				new Object[] {"ArithmeticExpressionsFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0" } },
+				new Object[] {"AccessFieldsOfObjectsFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.String_$r6" } }
+
+				/*new Object[] {"ArithmeticExpressionsFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0" } },
 				new Object[] {"ArithmeticExpressionsSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
 				
 				new Object[] {"ArrayRefFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.String_$r7"} },
@@ -170,7 +167,7 @@ public class AllEndToEndTests {
 				new Object[] {"SwitchStmt", SecurityMonitoringEvent.PASSED, new String[] {} },
 				
 				new Object[] {"WhileLoop", SecurityMonitoringEvent.PASSED, new String[] {} },
-				new Object[] {"WhileLoopFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int_i1" } });
+				new Object[] {"WhileLoopFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int_i1" } }*/);
 	    return cases;
 	}
 
