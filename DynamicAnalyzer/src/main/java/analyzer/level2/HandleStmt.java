@@ -1,5 +1,6 @@
 package analyzer.level2;
 
+import analyzer.level2.storage.LPCDominatorPair;
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import util.exceptions.IllegalFlowError;
@@ -10,6 +11,7 @@ import util.logging.L2Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -510,6 +512,19 @@ public class HandleStmt {
         logger.info("New LPC is " + localmap.getLocalPC().toString());
     }
 
+    public void updateCondition(String dominatorIdentity) {
+        logger.info("Update condition of ifStmt");
+        LinkedList<LPCDominatorPair> localPC = new LinkedList<LPCDominatorPair>();
+        localPC.push(new LPCDominatorPair(CurrentSecurityDomain.bottom(), -1));
+        Object securityLevel = handleStatementUtils.joinWithLPC(objectmap.getAssignmentLevel());
+        localPC.push(new LPCDominatorPair(securityLevel, Integer.valueOf(dominatorIdentity)));
+        localmap.setLocalPC(localPC);
+        LinkedList<Object> globalPC = new LinkedList<>();
+        globalPC.push(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
+        objectmap.setGlobalPC(globalPC);
+        logger.info("New LPC is " + localmap.getLocalPC().toString());
+    }
+
     public void ctxCastStToDyn(String dominatorIdentity, String level) {
         logger.info("level : " + level);
         localmap.pushLocalPC(handleStatementUtils.joinLocalLevel(level), Integer.valueOf(dominatorIdentity));
@@ -527,9 +542,7 @@ public class HandleStmt {
      * @param dominatorIdentity identity of the dominator.
      */
     public void exitInnerScope(String dominatorIdentity) {
-        while (localmap.dominatorIdentityEquals(Integer
-                .valueOf
-                        (dominatorIdentity))) {
+        while (localmap.dominatorIdentityEquals(Integer.valueOf(dominatorIdentity))) {
             logger.info("Pop LPC for identity " + dominatorIdentity);
             localmap.popLocalPC(Integer.valueOf(dominatorIdentity));
             objectmap.popGlobalPC();    // pop needs to be removed

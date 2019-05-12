@@ -137,6 +137,10 @@ public class ObjectMap{
 		return globalPC.getFirst();
 	}
 
+	public void setGlobalPC(LinkedList<Object> globalPC){
+		this.globalPC = globalPC;
+	}
+
 	/**
 	 * Set the return level of the actual return operation.
 	 * @param securityLevel Level of actual return-operation.

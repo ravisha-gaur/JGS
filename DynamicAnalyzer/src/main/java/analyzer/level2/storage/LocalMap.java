@@ -41,7 +41,8 @@ public class LocalMap<L> {
 	 * element at the beginning.
 	 */
 	public void checkisLPCStackEmpty() {
-		localPC.pop();
+		if(localPC.size() > 0)
+			localPC.pop();
 		if (!localPC.isEmpty()) {
 			int n = localPC.size();
 			throw new InternalAnalyzerException("LocalPC stack is not empty at the "
@@ -58,6 +59,10 @@ public class LocalMap<L> {
 			throw new InternalAnalyzerException("LocalPCStack is empty");
 		}
 		return localPC.getFirst().getSecurityLevel();
+	}
+
+	public void setLocalPC(LinkedList<LPCDominatorPair> localPC){
+		this.localPC = localPC;
 	}
 	
 	/**
@@ -152,6 +157,9 @@ public class LocalMap<L> {
 	 * @return true if the identity equals to the first element on the stack.
 	 */
 	public boolean dominatorIdentityEquals(int dominatorIdentity) {
-		return localPC.getFirst().getPostDominatorIdentity() == dominatorIdentity;	
+		if(localPC.size() > 0)
+			return localPC.getFirst().getPostDominatorIdentity() == dominatorIdentity;
+		else
+			return false;
 	}
 }

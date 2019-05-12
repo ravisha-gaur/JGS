@@ -54,7 +54,9 @@ public class JimpleInjector {
 
     public static boolean arithmeticExpressionFlag = false;
 
-    public static boolean levelOfConditionVarNotUpdated = false;
+    public static boolean checkConditionCalledFlag = false;
+
+    public static boolean loopFlag = false;
 
     private static int count = 0;
 
@@ -73,16 +75,6 @@ public class JimpleInjector {
     // It Should stay, because it is easier; at least for the Moment.
     private static Unit lastPos;
     public static Unit conditionPos;
-
-
-    // </editor-fold>
-
-    // <editor-fold desc="Locals, that shall be removed">
-
-    /** Local where String arrays can be stored. Needed to store arguments for injected methods. */
-    private static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
-
-    // </editor-fold>
 
     /** Logger */
     private static Logger logger = Logger.getLogger(JimpleInjector.class.getName());;
@@ -462,7 +454,8 @@ public class JimpleInjector {
 
                     if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
                         // insert NSU check only if PC is dynamic!
-                        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic() && !levelOfConditionVarNotUpdated) {
+                        //if (cxTyping.get(instantiation, (Stmt) pos).isDynamic() && !levelOfConditionVarNotUpdated) {
+                        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
                             units.insertBefore(checkLocalPCExpr, pos);
                         }
                         if (!lastPos.toString().contains("setLocalFromString") && !JimpleInjector.arithmeticExpressionFlag)
@@ -700,83 +693,6 @@ public class JimpleInjector {
      * @param pos        position of actual statement
      * @param lArguments list of arguments
      */
-
-    // obect map ist global erreichbar. dahin lege temporär die argumente.
-    // dann beim aufruf schaut die neue local map in der neuen methode in die global
-    // map und nimmt sich von da die level der gerade übergebenen argumente.
-    /*public static void storeArgumentLevels(Unit pos, Local... lArguments) {
-
-        logger.info("Store Arguments for next method in method " +
-                b.getMethod().getName());
-
-        int length = lArguments.length;
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1));
-
-        Expr paramArray = Jimple.v().newNewArrayExpr(RefType.v(
-                "java.lang.String"), IntConstant.v(length));
-
-        Unit assignNewStringArray = Jimple.v().newAssignStmt(
-                local_for_String_Arrays, paramArray);
-
-        Unit[] tmpUnitArray = new Unit[length];
-
-        boolean dynamicArgsExist = false;
-        for (int i = 0; i < length; i++) {
-
-            // This results in code like: local_for_String_Arrays[0] = "boolean_z0";
-            // for each local that is given as an argument, jimple code is injected that assigns this local to a slot
-            // in a vector. This vector is given to the HandleStmt.storeArgumentLevels method.
-            // It's possible to get a null vector as an argument. This happens,
-            // if a constant is set as argument.
-            //if (lArguments[i] != null && varTyping.getBefore(instantiation, (Stmt) pos, lArguments[i]).isDynamic()) {
-
-            if (lArguments[i] != null) {
-                String signature = getSignatureForLocal(lArguments[i]);
-                tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
-                        local_for_String_Arrays, IntConstant.v(i)),
-                        StringConstant.v(signature));
-                dynamicArgsExist = true;
-                // else if () ..
-
-            } else if (lArguments[i] != null && ! varTyping.getBefore(instantiation, (Stmt) pos, lArguments[i]).isDynamic()) {
-                tmpUnitArray[i] = null;
-            } else {
-                // if arguments are all constants
-                String var = "signature" + i;
-                tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
-                        local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(var));
-                //StringConstant.v("DEFAULT_LOW"));
-                dynamicArgsExist = true;        // this is neccessary, else VerifyError ...?
-            }
-        }
-
-        Expr storeArgs = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
-                Scene.v().getSootClass(HANDLE_CLASS), "storeArgumentLevels",
-                parameterTypes, VoidType.v(), false), local_for_String_Arrays);
-        Stmt invokeStoreArgs = Jimple.v().newInvokeStmt(storeArgs);
-
-        // only store arguments if it's even neccessary (e.g. one of the arguments is public)
-        // if no argument is dynamic, don't even call storeArgumentLevels
-        if(dynamicArgsExist) {
-            units.insertBefore(assignNewStringArray, pos);
-        }
-        for (Unit el : tmpUnitArray) {
-            if (el != null) {
-                // if el.equals(null), the corresponding local is public. See loop above.
-                units.insertBefore(el, pos);
-            }
-        }
-        if (dynamicArgsExist) {
-            units.insertBefore(invokeStoreArgs, pos);
-            lastPos = pos;
-        }
-
-    }*/
-
-
-
     public static void storeArgumentLevels(Unit pos, Local... lArguments) {
 
         logger.info("Store Arguments for next method in method " + b.getMethod().getName());
@@ -888,23 +804,47 @@ public class JimpleInjector {
         if(numberOfLocals < 1)
             throw new InternalAnalyzerException("Argument is null");
 
-        if(count != 1) {
-            Unit invokeJoin = null;
-
-            for (int i = 0; i < numberOfLocals; i++) {
-                String signature = getSignatureForLocal(locals[i]);
-                invokeJoin = fac.createStmt("joinLevelOfLocalAndAssignmentLevel", StringConstant.v(signature));
-                units.insertBefore(invokeJoin, conditionPos);
+        if(!loopFlag) {
+            if (count != 1) {
+                callJoinLevel(numberOfLocals, false, locals);
+                Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
+                checkConditionCalledFlag = true;
+                count += 1;
+                units.insertAfter(invoke, lastPos);
+                lastPos = invoke;
+            } else {
+                callJoinLevel(numberOfLocals, true, locals);
+                Unit invokeUpdate = fac.createStmt("updateCondition", StringConstant.v(domIdentity));
+                units.insertAfter(invokeUpdate, lastPos);
+                lastPos = invokeUpdate;
+            }
+        }
+        else {
+            if(!lastPos.toString().contains("exitInnerScope")) {
+                callJoinLevel(numberOfLocals, false, locals);
+                Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
+                units.insertAfter(invoke, lastPos);
             }
 
-            lastPos = invokeJoin;
-            Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
-            if(levelOfConditionVarNotUpdated)
-                count += 1;
-            units.insertAfter(invoke, lastPos);
-            lastPos = invoke;
-        }
+            callJoinLevel(numberOfLocals, true, locals);
 
+            Unit invokeUpdate = fac.createStmt("updateCondition", StringConstant.v(domIdentity));
+            units.insertAfter(invokeUpdate, lastPos);
+            lastPos = invokeUpdate;
+        }
+    }
+
+    private static void callJoinLevel(int numberOfLocals, Boolean beforeFlag, Local... locals){
+        Unit invokeJoin = null;
+        for (int i = 0; i < numberOfLocals; i++) {
+            String signature = getSignatureForLocal(locals[i]);
+            invokeJoin = fac.createStmt("joinLevelOfLocalAndAssignmentLevel", StringConstant.v(signature));
+            if(!beforeFlag)
+                units.insertAfter(invokeJoin, lastPos);
+            else
+                units.insertBefore(invokeJoin, conditionPos);
+        }
+        lastPos = invokeJoin;
     }
 
     /**
@@ -931,7 +871,8 @@ public class JimpleInjector {
         Unit inv = Jimple.v().newInvokeStmt(specialIn);
 
         units.insertBefore(inv, pos);
-        lastPos = pos;
+        //lastPos = pos;
+        lastPos = inv;
     }
 
 
