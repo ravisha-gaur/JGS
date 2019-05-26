@@ -2,10 +2,9 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import scala.Option;
 import soot.SootMethod;
+import sun.net.dns.ResolverConfiguration;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
 
@@ -40,7 +39,13 @@ public class SignatureTable<Level> {
     }
 
     public Option<Signature<Level>> get(SootMethod m) {
-        return Option.apply(signatureMap.get(m));
+        Option<Signature<Level>> result = Option.apply(signatureMap.get(m));
+        if (result.isEmpty()) {
+            List<SigConstraint<Level>> constraints = Collections.emptyList();
+            Effects<Level> effects = Effects.emptyEffect();
+            result = Option.apply(MethodSignatures.makeSignature(m.getParameterCount(), constraints, effects));
+        }
+        return result;
     }
 
 }
