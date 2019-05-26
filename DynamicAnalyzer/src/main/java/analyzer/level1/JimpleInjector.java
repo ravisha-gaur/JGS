@@ -60,6 +60,8 @@ public class JimpleInjector {
 
     private static int count = 0;
 
+    private static String destinationLevel;
+
     /**
      * Stores the position of
      * <ul>
@@ -519,7 +521,7 @@ public class JimpleInjector {
         // see NSU_FieldAccess tests why this is needed
         units.insertBefore(pushInstanceLevelToGlobalPC, pos);
 
-        if(ctxCastCalledFlag){
+        if(ctxCastCalledFlag && !destinationLevel.equalsIgnoreCase("LOW") && !destinationLevel.equalsIgnoreCase("MEDIUM") && !destinationLevel.equalsIgnoreCase("HIGH")){
             units.insertBefore(checkGlobalPCExpr, pos);
         }
         else {
@@ -557,7 +559,7 @@ public class JimpleInjector {
                 StringConstant.v(signature)
         );
 
-        if(ctxCastCalledFlag){
+        if(ctxCastCalledFlag && !destinationLevel.equalsIgnoreCase("LOW") && !destinationLevel.equalsIgnoreCase("MEDIUM") && !destinationLevel.equalsIgnoreCase("HIGH")){
             units.insertBefore(checkGlobalPCExpr, pos);
         }
         else {
@@ -1066,7 +1068,7 @@ public class JimpleInjector {
                     checkThatLe(rightHandLocal, destLevel.toString(), aStmt, "checkCastToStatic");
 
                     logger.fine("Setting destination variable to: " + destLevel);
-                    makeLocal((Local) aStmt.getLeftOp(), destLevel.toString(), aStmt);
+                    //makeLocal((Local) aStmt.getLeftOp(), destLevel.toString(), aStmt);
                 } else {
                     logger.info("Source value is pubilc. Not inserting checks.");
                 }
@@ -1103,6 +1105,7 @@ public class JimpleInjector {
             if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
                 logger.fine("Conversion is: dynamic->static");
                 Object destLevel = conversion.getDestType().getLevel();
+                destinationLevel = destLevel.toString();
                 checkThatPCLe(destLevel.toString(), stmt, true);
                 logger.fine("Setting destination variable to: " + destLevel);
             }

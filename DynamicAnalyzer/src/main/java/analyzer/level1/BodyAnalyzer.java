@@ -50,6 +50,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
+	private static boolean containsFieldsVarsFlag = false;
+    private static HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
+
 	/**
 	 * Constructs an new BodyAnalyzer with the given
 	 * @param m
@@ -116,6 +119,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		}
 
 		JimpleInjector.initHandleStmtUtils(controllerIsActive, expectedException);
+		ArrayList<String> fieldVars = new ArrayList<String>();
 
 		// <editor-fold desc="Add Fields to Object Map, either static or instance; determined by Method name">
 
@@ -125,7 +129,17 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		 * new object
 		 */
 		if (sootMethod.getName().equals("<init>")) {
-			JimpleInjector.addInstanceObjectToObjectMap();
+		    boolean nonStaticFieldsFlag = false;
+            for (SootField f : fields) {
+                containsFieldsVarsFlag = true;
+                fieldVars.add(f.getName());
+                if (!f.isStatic()) {
+                    nonStaticFieldsFlag = true;
+                }
+            }
+            if(fields.size() > 0 && nonStaticFieldsFlag){
+                JimpleInjector.addInstanceObjectToObjectMap();
+            }
 
 			// Add all instance fields to ObjectMap
 			for (SootField f : fields) {
@@ -135,9 +149,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			}
 
 		} else if (sootMethod.getName().equals("<clinit>")) {
-
-			SootClass sc = sootMethod.getDeclaringClass();
-			JimpleInjector.addClassObjectToObjectMap(sc);
+            SootClass sc = sootMethod.getDeclaringClass();
+            JimpleInjector.addClassObjectToObjectMap(sc);
 
 			// Add all static fields to ObjectMap
 			for (SootField f : fields) {
@@ -194,6 +207,20 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		List<String> unitRhsListString = new ArrayList<String>(); // contains the RHS of the units in string - need separate lists to deal with separate data type params
 		List<String> unitStmtsListString = new ArrayList<String>(); // contains the units in string
 
+
+        for (SootMethod m : Scene.v().getMainClass().getMethods()) {
+            if (m.getName().equals("main")) {
+                PatchingChain<Unit> stmts = m.getActiveBody().getUnits();
+                for (Unit unit : stmts) {
+                    for (String fieldVar : fieldVars) {
+                        if (Pattern.compile("\\b" + fieldVar + "\\b").matcher(unit.toString()).find()) {
+                            fieldVarMaps.put(fieldVar, true);
+                        }
+                    }
+                }
+            }
+        }
+
 		for (Unit unit: unmodifiedStmts) {
 			unitStmtsListString.add(unit.toString());
 			if (unit.toString().contains("=")) {
@@ -237,9 +264,16 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			}*/
 
 
-			if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow") || Pattern.compile("\"\\\\b\"+cast+\"\\\\b\"").matcher(unit.toString()).find()){
+            if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow") || Pattern.compile("\\bcast\\b").matcher(unit.toString()).find()){
 				dynLabelFlag = true;
 			}
+            if(containsFieldsVarsFlag && dynLabelFlag){
+                List<Unit> succ = unitGraph.getSuccsOf(unit);
+                succ = unitGraph.getSuccsOf(succ.get(0));
+                String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
+                if(fieldVarMaps.containsKey(key))
+                    dynLabelFlag = false;
+            }
 
 			if(dynLabelFlag){
 				// for int, double, boolean, float, char params

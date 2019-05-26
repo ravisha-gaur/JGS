@@ -148,8 +148,7 @@ public class HandleStmtUtils {
 
 	protected void checkIfObjectExists(Object o) {
 		if (!objectmap.containsObject(o)) {
-			throw new InternalAnalyzerException("Missing object "
-					+ o + " in ObjectMap");
+			throw new InternalAnalyzerException("Missing object " + o + " in ObjectMap");
 		}
 	}
 
