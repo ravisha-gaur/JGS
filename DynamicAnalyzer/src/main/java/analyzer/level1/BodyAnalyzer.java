@@ -52,6 +52,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 	private static boolean containsFieldsVarsFlag = false;
     private static HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
+    public static Set<String> methodNames = new HashSet<String>();
 
 	/**
 	 * Constructs an new BodyAnalyzer with the given
@@ -218,6 +219,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                         }
                     }
                 }
+            }
+            if(!m.getName().equals("<init>") && !m.getName().equals("<clinit>") && !m.getName().equals("main")){
+                methodNames.add(m.getName());
             }
         }
 

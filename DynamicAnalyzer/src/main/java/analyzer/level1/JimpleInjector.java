@@ -3,7 +3,6 @@ package analyzer.level1;
 import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
-import scala.Int;
 import scala.Option;
 import soot.*;
 import soot.Type;
@@ -17,6 +16,7 @@ import util.jimple.JimpleFactory;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * JimpleInjector is handles the inserts of additional instructions in a methods
@@ -60,7 +60,22 @@ public class JimpleInjector {
 
     private static int count = 0;
 
-    private static String destinationLevel;
+    public static boolean methodCallFlag = false;
+
+    public static boolean dynamicArgumentFlag = true;
+
+    public static ArrayList argumentsList = new ArrayList<Boolean>();
+
+    private static boolean dontSetLocalFlag = false;
+
+    private static int argumentPosition = 0;
+
+    private static String lastSignature = "signature";
+    private static ArrayList<String> signatureList = new ArrayList<String>();
+
+    private static  boolean afterAssignArgumentToLocal = false;
+
+    private static int recallMainCount = 0;
 
     /**
      * Stores the position of
@@ -104,7 +119,8 @@ public class JimpleInjector {
     public static void setReturnLevelAfterInvokeStmt(Local l, Unit pos) {
         Unit invoke = fac.createStmt("setReturnLevelAfterInvokeStmt", StringConstant.v(getSignatureForLocal(l)));
         // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
-        if ( varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
+        if (argumentsList.contains(true) && varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
+            //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
             units.insertAfter(invoke, pos);
         }
     }
@@ -182,6 +198,13 @@ public class JimpleInjector {
     static void closeHS() {
         logger.info("Closing HandleStmt in Method "+b.getMethod().getName());
         units.insertBefore(fac.createStmt("close"), units.getLast());
+
+        /*if(BodyAnalyzer.recallMainFlag && recallMainCount == 0) {
+            recallMainCount += 1;
+            BodyAnalyzer bodyAnalyzer = new BodyAnalyzer(Main.staticMethodTypings, Main.staticCasts);
+            BodyAnalyzer.applyFlag = true;
+            bodyAnalyzer.internalTransform(BodyAnalyzer.sootMainMethodBody, "", new HashMap<>());
+        }*/
     }
 
 
@@ -216,7 +239,9 @@ public class JimpleInjector {
         logger.info("Setting " + local + "to new level " + level);
 
         String signature = getSignatureForLocal(local);
-
+        dynamicArgumentFlag = true;
+        dontSetLocalFlag = false;
+        methodCallFlag = false;
         Unit setLevelOfL = fac.createStmt("setLocalFromString",
                 StringConstant.v(signature),
                 StringConstant.v(level));
@@ -346,8 +371,24 @@ public class JimpleInjector {
         String signature = getSignatureForLocal(local);
         Unit invoke = fac.createStmt("joinLevelOfLocalAndAssignmentLevel", StringConstant.v(signature));
 
+        if(afterAssignArgumentToLocal) {
+            //if(signature.equals(lastSignature)) {
+            if(signatureList.contains(signature)){
+                units.insertBefore(invoke, pos);
+                lastPos = pos;
+            }
+            return;
+        }
+        for(String methodName: BodyAnalyzer.methodNames){
+
+            if(Pattern.compile("\\b" + methodName + "\\b").matcher(pos.toString()).find()){
+                return;
+            }
+        }
+
         // only insert the joinLevelOfLocal.. stmt if local is in fact dynamically checked
         // TODO CX is irrelevant here?
+        //if(varTyping.getBefore(instantiation, (Stmt) pos, local).isDynamic()){
         if (varTyping.getAfter(instantiation, (Stmt) pos, local).isDynamic()) {
             //if(!(pos.toString().contains("makeHigh") || pos.toString().contains("makeLow")))
             units.insertBefore(invoke, pos);
@@ -438,31 +479,46 @@ public class JimpleInjector {
         logger.info("Setting level in assign statement");
 
         String signature = getSignatureForLocal(l);
+        afterAssignArgumentToLocal = false;
 
 
         // insert setLocalToCurrentAssignmentLevel, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
         Stmt stmt = (Stmt) pos;
-        //boolean containsConstantFlag = checkForConstants(stmt);
+        for(String methodName: BodyAnalyzer.methodNames){
+
+            if(Pattern.compile("\\b" + methodName + "\\b").matcher(pos.toString()).find()){
+                return;
+            }
+        }
+
         //if(!containsConstantFlag && !JimpleInjector.dynLabelFlag) {
-        if(!JimpleInjector.dynLabelFlag) {
+        boolean flag = false;
+        //if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag && !JimpleInjector.methodCallFlag && JimpleInjector.dynamicArgumentFlag)
+        if(JimpleInjector.methodCallFlag){
+            if(!JimpleInjector.argumentsList.contains(true))
+                flag = true;
+        }
+        //if(!dynLabelFlag && !methodCallFlag && !dontSetLocalFlag && dynamicArgumentFlag) {
+            //if(!dynLabelFlag && !methodCallFlag && dynamicArgumentFlag) {
+        if(!dynLabelFlag && !flag) {
             Unit invoke = fac.createStmt("setLocalToCurrentAssignmentLevel", StringConstant.v(signature));
 
             if (!ctxCastCalledFlag) {
-                    de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
-                    Unit checkLocalPCExpr = typeBefore.isPublic()
-                            ? fac.createStmt("checkNonSensitiveLocalPC")
-                            : fac.createStmt("checkLocalPC", StringConstant.v(signature));
+                de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
+                Unit checkLocalPCExpr = typeBefore.isPublic()
+                        ? fac.createStmt("checkNonSensitiveLocalPC")
+                        : fac.createStmt("checkLocalPC", StringConstant.v(signature));
 
-                    if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
-                        // insert NSU check only if PC is dynamic!
-                        //if (cxTyping.get(instantiation, (Stmt) pos).isDynamic() && !levelOfConditionVarNotUpdated) {
-                        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-                            units.insertBefore(checkLocalPCExpr, pos);
-                        }
-                        if (!lastPos.toString().contains("setLocalFromString") && !JimpleInjector.arithmeticExpressionFlag)
-                            units.insertBefore(invoke, pos);
+                if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
+                    // insert NSU check only if PC is dynamic!
+                    //if (cxTyping.get(instantiation, (Stmt) pos).isDynamic() && !levelOfConditionVarNotUpdated) {
+                    if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+                        units.insertBefore(checkLocalPCExpr, pos);
                     }
+                    if (!lastPos.toString().contains("setLocalFromString") && !arithmeticExpressionFlag)
+                        units.insertBefore(invoke, pos);
+                }
             } else {
                 Unit checkLocalPCExpr = fac.createStmt("checkLocalPC", StringConstant.v(signature));
                 units.insertBefore(checkLocalPCExpr, pos);
@@ -491,8 +547,7 @@ public class JimpleInjector {
      * @param pos The statement where this field occurs
      */
     public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
-        logger.info("Set level of field "+f.getField().getSignature()
-                +" in assign Statement located in" + b.getMethod().getName());
+        logger.info("Set level of field "+f.getField().getSignature() + " in assign Statement located in" + b.getMethod().getName());
 
         String fieldSignature = getSignatureForField(f.getField());
 
@@ -500,16 +555,13 @@ public class JimpleInjector {
         Local tmpLocal = (Local) f.getBase();
 
         // push and pop security level of instance to globalPC
-        Unit pushInstanceLevelToGlobalPC
-                = fac.createStmt("pushInstanceLevelToGlobalPC",
-                StringConstant.v(getSignatureForLocal(tmpLocal)));
-
+        Unit pushInstanceLevelToGlobalPC = fac.createStmt("pushInstanceLevelToGlobalPC", StringConstant.v(getSignatureForLocal(tmpLocal)));
 
         Unit popGlobalPC = fac.createStmt("popGlobalPC");
 
 
         // insert: checkGlobalPC(Object, String)
-        // why do we check the global PC? Because the field is possibily visible everywhere, check that sec-value of field is greater
+        // why do we check the global PC? Because the field is possibly visible everywhere, check that sec-value of field is greater
         // or equal than the global PC.
         Unit checkGlobalPCExpr = fac.createStmt("checkGlobalPC", tmpLocal, StringConstant.v(fieldSignature));
 
@@ -521,7 +573,7 @@ public class JimpleInjector {
         // see NSU_FieldAccess tests why this is needed
         units.insertBefore(pushInstanceLevelToGlobalPC, pos);
 
-        if(ctxCastCalledFlag && !destinationLevel.equalsIgnoreCase("LOW") && !destinationLevel.equalsIgnoreCase("MEDIUM") && !destinationLevel.equalsIgnoreCase("HIGH")){
+        if(ctxCastCalledFlag){
             units.insertBefore(checkGlobalPCExpr, pos);
         }
         else {
@@ -559,7 +611,7 @@ public class JimpleInjector {
                 StringConstant.v(signature)
         );
 
-        if(ctxCastCalledFlag && !destinationLevel.equalsIgnoreCase("LOW") && !destinationLevel.equalsIgnoreCase("MEDIUM") && !destinationLevel.equalsIgnoreCase("HIGH")){
+        if(ctxCastCalledFlag){
             units.insertBefore(checkGlobalPCExpr, pos);
         }
         else {
@@ -646,18 +698,36 @@ public class JimpleInjector {
         lastPos = assignExpr;
     }
 
-    public static void assignArgumentToLocal(int posInArgList, Local local) {
+    public static void assignArgumentToLocal(int posInArgList, Unit pos, Local local) {
         logger.info("Assign argument level to local " + local);
 
-        Unit assignExpr = fac.createStmt("assignArgumentToLocal",
-                IntConstant.v(posInArgList),
-                StringConstant.v(getSignatureForLocal(local)));
+        boolean argumentFlag = false;
+        if(null != argumentsList && argumentsList.size() > 0)
+            argumentFlag = (boolean) argumentsList.get(posInArgList);
+        afterAssignArgumentToLocal = true;
+        methodCallFlag = true;
 
         // only assign Argument to Local if Argument is of Dynamic Type
-        if (instantiation.get(posInArgList).isDynamic()) {
+        if (argumentFlag && instantiation.get(posInArgList).isDynamic()) {
+            dontSetLocalFlag = false;
+            //if(varTyping.getAfter(instantiation, (Stmt) pos, local).isDynamic()){
+            //Unit assignExpr = fac.createStmt("assignArgumentToLocal", IntConstant.v(posInArgList), StringConstant.v(getSignatureForLocal(local)));
+            Unit assignExpr = fac.createStmt("assignArgumentToLocal", IntConstant.v(argumentPosition), StringConstant.v(getSignatureForLocal(local)));
             units.insertAfter(assignExpr, lastPos);
             lastPos = assignExpr;
+            argumentPosition = argumentPosition + 1;
+            lastSignature = getSignatureForLocal(local);
+            signatureList.add(lastSignature);
+            dynamicArgumentFlag = true;
         }
+        if(argumentPosition < 1){
+            dontSetLocalFlag = true;
+            lastSignature = "signature";
+        }
+
+        /*BodyAnalyzer bodyAnalyzer = new BodyAnalyzer(Main.staticMethodTypings, Main.staticCasts);
+        BodyAnalyzer.applyFlag = true;
+        bodyAnalyzer.internalTransform(BodyAnalyzer.sootMainMethodBody, "", new HashMap<>());*/
     }
 
     //</editor-fold>
@@ -680,7 +750,8 @@ public class JimpleInjector {
 
         Stmt returnL = fac.createStmt("returnLocal", StringConstant.v(getSignatureForLocal(l)));
 
-        if (instantiation.getReturn().isDynamic()) {
+        //if (dynamicArgumentFlag && instantiation.getReturn().isDynamic()) {
+        if (argumentsList.contains(true) && instantiation.getReturn().isDynamic()) {
             units.insertBefore(returnL, pos);
             lastPos = pos;
         }
@@ -698,17 +769,32 @@ public class JimpleInjector {
     public static void storeArgumentLevels(Unit pos, Local... lArguments) {
 
         logger.info("Store Arguments for next method in method " + b.getMethod().getName());
+        methodCallFlag = true;
         for (int i = 0; i < lArguments.length; i++) {
-            String signature = "signature" + i;
+            //String signature = "signature" + i;
+            String signature = "";
             if (lArguments[i] != null) {
+                argumentsList.add(i, true);
+                dynamicArgumentFlag = true;
                 signature = getSignatureForLocal(lArguments[i]);
+                //Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature), IntConstant.v(i));
+                Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature));
+                units.insertBefore(invoke, pos);
+                lastPos = pos;
 
             } else if (lArguments[i] != null && ! varTyping.getBefore(instantiation, (Stmt) pos, lArguments[i]).isDynamic()) {
                 continue;
             }
-            Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature), IntConstant.v(i));
+            else {
+                argumentsList.add(i, false);
+                /*if(!BodyAnalyzer.applyFlag) {
+                    dynamicArgumentFlag = false;
+                    methodCallFlag = false;
+                }*/
+            }
+            /*Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature), IntConstant.v(i));
             units.insertBefore(invoke, pos);
-            lastPos = pos;
+            lastPos = pos;*/
         }
 
     }
@@ -1068,7 +1154,7 @@ public class JimpleInjector {
                     checkThatLe(rightHandLocal, destLevel.toString(), aStmt, "checkCastToStatic");
 
                     logger.fine("Setting destination variable to: " + destLevel);
-                    //makeLocal((Local) aStmt.getLeftOp(), destLevel.toString(), aStmt);
+                    makeLocal((Local) aStmt.getLeftOp(), destLevel.toString(), aStmt);
                 } else {
                     logger.info("Source value is pubilc. Not inserting checks.");
                 }
@@ -1105,7 +1191,6 @@ public class JimpleInjector {
             if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
                 logger.fine("Conversion is: dynamic->static");
                 Object destLevel = conversion.getDestType().getLevel();
-                destinationLevel = destLevel.toString();
                 checkThatPCLe(destLevel.toString(), stmt, true);
                 logger.fine("Setting destination variable to: " + destLevel);
             }
