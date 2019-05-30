@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class DefininedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> {
+public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> {
 
-    public DefininedByValueOfCall(DirectedGraph<Unit> graph) {
+    public DefinedByValueOfCall(DirectedGraph<Unit> graph) {
         super(graph);
         doAnalysis();
     }

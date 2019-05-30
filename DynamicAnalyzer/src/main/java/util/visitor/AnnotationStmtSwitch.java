@@ -232,6 +232,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			arguments[i] = localList.get(i);
 		}
 
+		JimpleInjector.conditionPos = stmt;
+
 		JimpleInjector.checkCondition(stmt, arguments);
 	}
 

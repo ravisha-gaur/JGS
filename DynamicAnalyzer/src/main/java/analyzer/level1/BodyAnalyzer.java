@@ -95,8 +95,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		UnitGraph unitGraph = new BriefUnitGraph(body);
 
-		DefininedByValueOfCall
-				defininedByValueOfCall = new DefininedByValueOfCall(unitGraph);
+		DefinedByValueOfCall defininedByValueOfCall = new DefinedByValueOfCall(unitGraph);
 
 		// TODO: this is output is only for demontration... it should be removed eventually
 		for (Unit unit : units) {
@@ -282,10 +281,16 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                 List<Unit> succ = unitGraph.getSuccsOf(unit);
                 succ = unitGraph.getSuccsOf(succ.get(0));
                 if(succ.size() > 0 && succ.get(0).toString().contains("=")) {
-					          String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
-					          if (fieldVarMaps.containsKey(key))
-						            dynLabelFlag = false;
-				            }
+                	String tempVar = (succ.get(0).toString().split("=")[0]);
+                	if(tempVar.contains(" ")) {
+						String[] tempArr = tempVar.split(" ");
+						if (tempArr.length > 3) {
+							String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
+							if (fieldVarMaps.containsKey(key))
+								dynLabelFlag = false;
+						}
+					}
+				}
             }
 
 			if(dynLabelFlag){

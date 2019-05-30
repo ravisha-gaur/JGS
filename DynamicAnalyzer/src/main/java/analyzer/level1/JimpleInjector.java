@@ -79,6 +79,8 @@ public class JimpleInjector {
 
     public static boolean staticDestination = false;
 
+    private static int argumentCount = 0;
+
     /**
      * Stores the position of
      * <ul>
@@ -771,7 +773,7 @@ public class JimpleInjector {
             //String signature = "signature" + i;
             String signature = "";
             if (lArguments[i] != null) {
-                argumentsList.add(i, true);
+                argumentsList.add(argumentCount, true);
                 dynamicArgumentFlag = true;
                 signature = getSignatureForLocal(lArguments[i]);
                 //Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature), IntConstant.v(i));
@@ -779,16 +781,15 @@ public class JimpleInjector {
                 units.insertBefore(invoke, pos);
                 lastPos = pos;
 
-            } else if (lArguments[i] != null && ! varTyping.getBefore(instantiation, (Stmt) pos, lArguments[i]).isDynamic()) {
-                continue;
             }
             else {
-                argumentsList.add(i, false);
+                argumentsList.add(argumentCount, false);
                 /*if(!BodyAnalyzer.applyFlag) {
                     dynamicArgumentFlag = false;
                     methodCallFlag = false;
                 }*/
             }
+            argumentCount += 1;
             /*Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature), IntConstant.v(i));
             units.insertBefore(invoke, pos);
             lastPos = pos;*/
