@@ -77,6 +77,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		SootMethod sootMethod = body.getMethod();
 
+
 		Chain<Unit> units  = body.getUnits();
 
 		AnnotationStmtSwitch stmtSwitch = new AnnotationStmtSwitch(body, casts);
@@ -93,6 +94,14 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		JimpleInjector.setBody(body);
 
 		UnitGraph unitGraph = new BriefUnitGraph(body);
+
+		DefininedByValueOfCall
+				defininedByValueOfCall = new DefininedByValueOfCall(unitGraph);
+
+		// TODO: this is output is only for demontration... it should be removed eventually
+		for (Unit unit : units) {
+			System.out.println(String.format("%s : \n  before: %s\n  after: %s", unit, defininedByValueOfCall.getFlowBefore(unit), defininedByValueOfCall.getFlowAfter(unit)));
+		}
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
 		JimpleInjector.setStaticAnalaysisResults(methodTypings.getVarTyping(sootMethod),
@@ -273,10 +282,10 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                 List<Unit> succ = unitGraph.getSuccsOf(unit);
                 succ = unitGraph.getSuccsOf(succ.get(0));
                 if(succ.size() > 0 && succ.get(0).toString().contains("=")) {
-					String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
-					if (fieldVarMaps.containsKey(key))
-						dynLabelFlag = false;
-				}
+					          String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
+					          if (fieldVarMaps.containsKey(key))
+						            dynLabelFlag = false;
+				            }
             }
 
 			if(dynLabelFlag){
