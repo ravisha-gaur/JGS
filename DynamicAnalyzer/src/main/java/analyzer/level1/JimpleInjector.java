@@ -77,6 +77,8 @@ public class JimpleInjector {
 
     private static int recallMainCount = 0;
 
+    public static boolean staticDestination = false;
+
     /**
      * Stores the position of
      * <ul>
@@ -164,16 +166,11 @@ public class JimpleInjector {
     /**
      * Inserts a call of {@link HandleStmt#initHandleStmtUtils(boolean, int)}
      * into the generated Jimple Code after the Last Position.
-     * @param controllerIsActive {@link HandleStmt#initHandleStmtUtils(boolean, int)}
-     * @param expectedException {@link HandleStmt#initHandleStmtUtils(boolean, int)}
      */
-    static void initHandleStmtUtils(boolean controllerIsActive, int expectedException) {
+    static void initHandleStmtUtils() {
         logger.info("Set Handle Stmt Utils and active/passive Mode of superfluous instrumentation checker");
 
-        Unit inv = fac.createStmt("initHandleStmtUtils",
-                BoolConstant.v(controllerIsActive),
-                IntConstant.v(expectedException));
-
+        Unit inv = fac.createStmt("initHandleStmtUtils");
 
         units.insertAfter(inv, lastPos);
         lastPos = inv;
@@ -1154,7 +1151,8 @@ public class JimpleInjector {
                     checkThatLe(rightHandLocal, destLevel.toString(), aStmt, "checkCastToStatic");
 
                     logger.fine("Setting destination variable to: " + destLevel);
-                    makeLocal((Local) aStmt.getLeftOp(), destLevel.toString(), aStmt);
+                    staticDestination = true;
+                    //makeLocal((Local) aStmt.getLeftOp(), destLevel.toString(), aStmt);
                 } else {
                     logger.info("Source value is pubilc. Not inserting checks.");
                 }
@@ -1170,6 +1168,7 @@ public class JimpleInjector {
                 }
                 logger.fine("Setting destination variable to: " + srcLevel);
                 makeLocal((Local) aStmt.getLeftOp(), srcLevel.toString(), aStmt);
+                staticDestination = false;
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 logger.fine("Conversion is: dynamic->dynamic");
                 logger.fine("Ignoring trivial conversion.");

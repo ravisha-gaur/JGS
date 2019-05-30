@@ -38,8 +38,6 @@ import java.util.regex.Pattern;
 public class BodyAnalyzer<Level> extends BodyTransformer {
 
 	private MethodTypings<Level> methodTypings;
-	private boolean controllerIsActive;
-	private int expectedException;
 	private Casts<Level> casts;
 
 	private List<Unit> successorStmt = new ArrayList<Unit>();
@@ -119,7 +117,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			JimpleInjector.initHS();
 		}
 
-		JimpleInjector.initHandleStmtUtils(controllerIsActive, expectedException);
+		JimpleInjector.initHandleStmtUtils();
 		ArrayList<String> fieldVars = new ArrayList<String>();
 
 		// <editor-fold desc="Add Fields to Object Map, either static or instance; determined by Method name">
@@ -274,9 +272,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
             if(containsFieldsVarsFlag && dynLabelFlag){
                 List<Unit> succ = unitGraph.getSuccsOf(unit);
                 succ = unitGraph.getSuccsOf(succ.get(0));
-                String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
-                if(fieldVarMaps.containsKey(key))
-                    dynLabelFlag = false;
+                if(succ.size() > 0 && succ.get(0).toString().contains("=")) {
+					String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
+					if (fieldVarMaps.containsKey(key))
+						dynLabelFlag = false;
+				}
             }
 
 			if(dynLabelFlag){
@@ -294,11 +294,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							List<Unit> tempSuccessorList = new ArrayList<Unit>();
 							tempSuccessorList.add(unit);
 
-							int u = 0;
+							/*int u = 0;
 							while(unitGraph.getSuccsOf(tempSuccessorList.get(0)).size() > 0){
 								tempSuccessorList.set(0, (unitGraph.getSuccsOf(tempSuccessorList.get(0))).get(0));
 								u += 1;
-							}
+							}*/
+							int u = unmodifiedStmts.size() - unmodifiedStmts.indexOf(unit) - 1;
 
 							tempSuccessorList.set(0, unit);
 							// TODO: get rid of hardcoded 4 !!

@@ -28,7 +28,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		hs.addLocal("int_x", CurrentSecurityDomain.bottom());
 		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		// x = LOW, lpc = HIGH
@@ -47,7 +47,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
 		hs.addLocal("int_z", CurrentSecurityDomain.top());
@@ -81,7 +81,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		hs.addLocal("TestSubClass_xy");
 		
 		TestSubClass xy;
@@ -109,7 +109,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		hs.addLocal("TestSubClass_xy");
 		hs.setLocal("TestSubClass_xy", CurrentSecurityDomain.bottom());
 		
@@ -142,7 +142,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
 		hs.addLocal("int_high", CurrentSecurityDomain.top());
@@ -180,7 +180,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
@@ -216,7 +216,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST STARTED");
 				
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		
 		/*
 		 * x++; or x += 1;  or x = x + 1;

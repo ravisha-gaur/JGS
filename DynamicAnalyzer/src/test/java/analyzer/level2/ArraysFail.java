@@ -28,7 +28,7 @@ public class ArraysFail {
 		logger.log(Level.INFO, "READ ARRAY FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 
 		hs.addLocal("int_i");
 		hs.addLocal("String[]_a");
@@ -68,7 +68,7 @@ public class ArraysFail {
 		logger.log(Level.INFO, "WRITE ARRAY FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		
 		String[] a = new String[] {"asd", "v", "v"};
 		assertEquals(3, a.length);
