@@ -20,7 +20,7 @@ public class IfStmtFail {
 		System.out.println("IF STMT FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils();
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_x");

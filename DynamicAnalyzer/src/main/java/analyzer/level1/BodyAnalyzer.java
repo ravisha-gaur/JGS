@@ -38,8 +38,6 @@ import java.util.regex.Pattern;
 public class BodyAnalyzer<Level> extends BodyTransformer {
 
 	private MethodTypings<Level> methodTypings;
-	private boolean controllerIsActive;
-	private int expectedException;
 	private Casts<Level> casts;
 
 	private List<Unit> successorStmt = new ArrayList<Unit>();
@@ -52,6 +50,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 	private static boolean containsFieldsVarsFlag = false;
     private static HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
+    public static Set<String> methodNames = new HashSet<String>();
 
 	/**
 	 * Constructs an new BodyAnalyzer with the given
@@ -127,7 +126,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			JimpleInjector.initHS();
 		}
 
-		JimpleInjector.initHandleStmtUtils(controllerIsActive, expectedException);
+		JimpleInjector.initHandleStmtUtils();
 		ArrayList<String> fieldVars = new ArrayList<String>();
 
 		// <editor-fold desc="Add Fields to Object Map, either static or instance; determined by Method name">
@@ -228,6 +227,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                     }
                 }
             }
+            if(!m.getName().equals("<init>") && !m.getName().equals("<clinit>") && !m.getName().equals("main")){
+                methodNames.add(m.getName());
+            }
         }
 
 		for (Unit unit: unmodifiedStmts) {
@@ -279,10 +281,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
             if(containsFieldsVarsFlag && dynLabelFlag){
                 List<Unit> succ = unitGraph.getSuccsOf(unit);
                 succ = unitGraph.getSuccsOf(succ.get(0));
-                System.out.println(">>> " + succ);
-                String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
-                if(fieldVarMaps.containsKey(key))
-                    dynLabelFlag = false;
+                if(succ.size() > 0 && succ.get(0).toString().contains("=")) {
+					          String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
+					          if (fieldVarMaps.containsKey(key))
+						            dynLabelFlag = false;
+				            }
             }
 
 			if(dynLabelFlag){
@@ -300,11 +303,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							List<Unit> tempSuccessorList = new ArrayList<Unit>();
 							tempSuccessorList.add(unit);
 
-							int u = 0;
+							/*int u = 0;
 							while(unitGraph.getSuccsOf(tempSuccessorList.get(0)).size() > 0){
 								tempSuccessorList.set(0, (unitGraph.getSuccsOf(tempSuccessorList.get(0))).get(0));
 								u += 1;
-							}
+							}*/
+							int u = unmodifiedStmts.size() - unmodifiedStmts.indexOf(unit) - 1;
 
 							tempSuccessorList.set(0, unit);
 							// TODO: get rid of hardcoded 4 !!

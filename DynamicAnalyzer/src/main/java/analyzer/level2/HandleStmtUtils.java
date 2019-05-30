@@ -13,17 +13,14 @@ import java.util.logging.Logger;
 
 public class HandleStmtUtils {
 
-	PassivController controller;
-
 	Logger logger = L2Logger.getLogger();
 	private LocalMap localmap;
 	private static ObjectMap objectmap;
 
 	public final static String NSU_ERROR_MESSAGE = "Sensitive update to ";
 
-	protected HandleStmtUtils(LocalMap lm, ObjectMap om, PassivController controller) {
+	protected HandleStmtUtils(LocalMap lm, ObjectMap om) {
 		this.localmap = lm;
-		this.controller = controller;
 		if (lm == null) {
 			throw new InternalAnalyzerException("LocalMap initialization has failed.");
 		}

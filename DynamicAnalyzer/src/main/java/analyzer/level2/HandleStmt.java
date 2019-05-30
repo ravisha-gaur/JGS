@@ -53,15 +53,9 @@ public class HandleStmt {
      * Initialise the HandleStmtUtils. Use also to specify if, and what kind
      * of exception we expect
      */
-    public void initHandleStmtUtils(boolean controllerIsActive, int
-            exptectedException) {
-        this.controller =
-                ControllerFactory.returnSuperfluousInstrumentationController
-                        (controllerIsActive, exptectedException);
-        handleStatementUtils =
-                new HandleStmtUtils(localmap, objectmap, this.controller);
-        objectmap.pushGlobalPC(handleStatementUtils.joinLevels(
-                objectmap.getGlobalPC(), localmap.getLocalPC()));
+    public void initHandleStmtUtils() {
+        handleStatementUtils = new HandleStmtUtils(localmap, objectmap);
+        objectmap.pushGlobalPC(handleStatementUtils.joinLevels(objectmap.getGlobalPC(), localmap.getLocalPC()));
     }
 
     /**
