@@ -5,7 +5,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
+import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
+import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
+import scala.Tuple2;
 import util.logging.L1Logger;
 import util.parser.ArgParser;
 import util.parser.ArgumentContainer;
@@ -212,11 +215,13 @@ public class Main {
                         new String[]{}));
 
         List<String> errors = new ArrayList<>();
-        MethodTypings<String> typeCheckResult;
+        MethodTypings<String> methodTypings;
+
         if (sootOptionsContainer.isOnlyDynamic()) {
-            typeCheckResult = FixedTypings.allDynamic();
+            methodTypings = FixedTypings.allDynamic();
+            throw new NotImplemented("Signature map for isOnlyDynamic not implemented yet");
         } else {
-            typeCheckResult = JgsCheck.typeCheck(
+            Tuple2<MethodTypings<String>, SignatureTable<String>> typeCheckResult = JgsCheck.typeCheck(
                     sootOptionsContainer.getMainclass(),
                     sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
                     sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
@@ -228,17 +233,20 @@ public class Main {
                     errors,
                     sootOptionsContainer.forceMonomorphicMethods()
             );
+            methodTypings = typeCheckResult._1;
+            SignatureTable<String> signatureTable = typeCheckResult._2;
+
+            if(!errors.isEmpty()) {
+                logger.severe("THERE WERE ERRORS DURING TYPECHECKING. ABORTING.");
+                System.exit(-1);
+            }
+
+            // Dynamic Check
+            // G.reset();
+            logger.info("Start Instrumentation");
+            main.Main.executeWithoutSootSetup(args,
+                    methodTypings, signatureTable, casts);
         }
 
-        if(!errors.isEmpty()) {
-            logger.severe("THERE WERE ERRORS DURING TYPECHECKING. ABORTING.");
-            System.exit(-1);
-        }
-
-        // Dynamic Check
-        // G.reset();
-        logger.info("Start Instrumentation");
-        main.Main.executeWithoutSootSetup(args,
-                typeCheckResult, casts);
     }
 }

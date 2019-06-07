@@ -70,7 +70,7 @@ lazy val jgsDemo =
 
 lazy val DynamicAnalyzer =
   (project in file("DynamicAnalyzer")).
-    dependsOn(InstrumentationSupport, JGSSupport).
+    dependsOn(InstrumentationSupport, JGSSupport, GradualConstraints).
     settings(commonSettings:_*).
     settings(
       libraryDependencies ++= dynAnalyzerDeps

@@ -2,6 +2,7 @@ package main;
 
 import analyzer.level1.BodyAnalyzer;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
+import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import scala.collection.immutable.Stream;
 import soot.*;
 import util.logging.DebugCSVHandler;
@@ -63,7 +64,8 @@ public class Main {
 								MethodTypings m,
 							    Casts c) throws UnsupportedEncodingException {
 	    doSootSetup(args);
-		executeWithoutSootSetup(args, m, c);
+	    //TODO: use a sensible SignatureTable here instead of null
+		executeWithoutSootSetup(args, m, null, c);
 	}
 
 	public static void setupLogger() {
@@ -153,7 +155,7 @@ public class Main {
      * @param args This arguments are delivered by main.Main.main.
      */
 	public static <L> void executeWithoutSootSetup(String[] args,
-												   MethodTypings<L> m,
+												   MethodTypings<L> m, SignatureTable<L> signatureTable,
 												   Casts<L> c) {
 
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);

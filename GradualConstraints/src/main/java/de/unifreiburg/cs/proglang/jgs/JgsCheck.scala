@@ -210,7 +210,7 @@ object JgsCheck {
                        casts : ACasts[Level],
                        log : Logger,
                        errors : java.util.List[String],
-                       forceMonomorphicMethods : Boolean) : MethodTypings[Level] = {
+                       forceMonomorphicMethods : Boolean) : (MethodTypings[Level], SignatureTable[Level]) = {
 
 
     val o: Options = Options.v()
@@ -239,7 +239,7 @@ object JgsCheck {
                        casts : ACasts[Level],
                        log : Logger,
                        errors : java.util.List[String],
-                       forceMonomorphicMethods : Boolean) : MethodTypings[Level] = {
+                       forceMonomorphicMethods : Boolean) : (MethodTypings[Level], SignatureTable[Level]) = {
     try {
       s.loadNecessaryClasses()
     } catch {
@@ -471,7 +471,7 @@ object JgsCheck {
       override def getEffectType(m: SootMethod): Effect[Level] = ???
     }
 
-    mtyping
+    (mtyping, signatures)
   }
 
   class Config[Level](val types: TypeDomain[Level],

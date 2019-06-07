@@ -9,6 +9,7 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.Scene;
 import soot.SootMethod;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Logger;
 
@@ -29,9 +30,9 @@ public class TypeCheckExample {
                 Collections.<String, JgsCheck.Annotation>emptyMap(),
                 Collections.<String, String>emptyMap(),
                 new LowHigh(), casts, Logger.getGlobal(),
-                new java.util.ArrayList<String>(),
+                new ArrayList<String>(),
                 false
-        );
+        )._1;
 
         for (SootMethod m : Scene.v().getMainClass().getMethods()) {
             System.out.print("Checking vartyping of method: " + m + ": ");
