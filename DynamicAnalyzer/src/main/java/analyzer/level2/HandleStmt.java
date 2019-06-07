@@ -472,17 +472,17 @@ public class HandleStmt {
         objectmap.setActualArguments(levelArr);
     }*/
 
-    /*public void storeArgumentLevel(String signature, int index) {
+    public void storeArgumentLevel(String signature, int index) {
         ArrayList<Object> levelArr = objectmap.getActualArguments();
         levelArr.add(index, localmap.getLevel(signature));
         objectmap.setActualArguments(levelArr);
-    }*/
+    }
 
-    public void storeArgumentLevel(String signature) {
+    /*public void storeArgumentLevel(String signature) {
         ArrayList<Object> levelArr = objectmap.getActualArguments();
         levelArr.add(localmap.getLevel(signature));
         objectmap.setActualArguments(levelArr);
-    }
+    }*/
 
     /**
      * Check condition of an if-statement. This operation merges the security-
