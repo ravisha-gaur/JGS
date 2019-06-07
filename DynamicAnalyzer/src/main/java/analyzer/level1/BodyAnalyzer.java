@@ -4,7 +4,10 @@ import analyzer.level2.HandleStmt;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
+import de.unifreiburg.cs.proglang.jgs.signatures.Signature;
+import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import soot.*;
+import soot.jimple.Constant;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph;
@@ -39,6 +42,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 	private MethodTypings<Level> methodTypings;
 	private Casts<Level> casts;
+	private SignatureTable<Level> signatureTable;
 
 	private List<Unit> successorStmt = new ArrayList<Unit>();
 	private List<Unit> nextSuccessorStmt = new ArrayList<Unit>();
@@ -49,17 +53,22 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private static boolean containsFieldsVarsFlag = false;
-    private static HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
+    public static HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
     public static Set<String> methodNames = new HashSet<String>();
+
+    private static int parameterCount = 0;
+
+    private static int constantCount = 0;
 
 	/**
 	 * Constructs an new BodyAnalyzer with the given
 	 * @param m
 	 * @param c
 	 */
-	public BodyAnalyzer(MethodTypings<Level> m, Casts<Level> c) {
+	public BodyAnalyzer(MethodTypings<Level> m, Casts<Level> c, SignatureTable<Level> signatureTable) {
 		methodTypings = m;
 		casts = c;
+		this.signatureTable = signatureTable;
 	}
 
 	/**
@@ -76,6 +85,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		logger.info(" Analyze of :" + body.getMethod().getName() + " started.");
 
 		SootMethod sootMethod = body.getMethod();
+
+		/*SootClass cl = sootMethod.getDeclaringClass();
+		Body newMethod = sootMethod.getActiveBody();
+		newMethod.getUnits().getFirst().clone()
+		cl.addMethod();*/
 
 
 		Chain<Unit> units  = body.getUnits();
@@ -214,11 +228,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		List<String> unitRhsListString = new ArrayList<String>(); // contains the RHS of the units in string - need separate lists to deal with separate data type params
 		List<String> unitStmtsListString = new ArrayList<String>(); // contains the units in string
 
-
+		PatchingChain<Unit> mainStmts = (PatchingChain)units;
         for (SootMethod m : Scene.v().getMainClass().getMethods()) {
-            if (m.getName().equals("main")) {
-                PatchingChain<Unit> stmts = m.getActiveBody().getUnits();
-                for (Unit unit : stmts) {
+            if (m.isMain()) {
+                mainStmts = m.getActiveBody().getUnits();
+                for (Unit unit : mainStmts) {
                     for (String fieldVar : fieldVars) {
                         if (Pattern.compile("\\b" + fieldVar + "\\b").matcher(unit.toString()).find()) {
                             fieldVarMaps.put(fieldVar, true);
@@ -226,9 +240,41 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                     }
                 }
             }
-            if(!m.getName().equals("<init>") && !m.getName().equals("<clinit>") && !m.getName().equals("main")){
-                methodNames.add(m.getName());
-            }
+            /*if(!m.getName().equals("<init>") && !m.getName().equals("<clinit>") && !m.getName().equals("main")){ // && !m.getName().equals("main")
+            	//if(!m.getName().equals("main")) {
+					methodNames.add(m.getName());
+					parameterCount = m.getParameterCount();
+				//}
+				PatchingChain<Unit> stmts = m.getActiveBody().getUnits();
+				for (Unit unit : mainStmts) {
+					for (String methodName : methodNames){
+						if (Pattern.compile("\\b" + methodName + "\\b").matcher(unit.toString()).find()) {
+							//parameterCount = m.getParameterCount();
+							List<ValueBox> valueBoxes = unit.getUseBoxes();
+							for (ValueBox valueBox : valueBoxes) {
+								if (valueBox.getValue() instanceof Constant) {
+									constantCount += 1;
+								}
+							}
+						}
+					}
+					//if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow") || Pattern.compile("\\bcast\\b").matcher(unit.toString()).find()){
+						*//*if(JimpleInjector.argumentsList.isEmpty()) {
+							JimpleInjector.argumentsList.add(true);
+							break;
+						}*//*
+						for(int i = 0; i < parameterCount - constantCount; i++){
+							JimpleInjector.argumentsList.add(true);
+						}
+					//}
+				}
+
+				for(Unit unit : stmts){
+					if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow") || Pattern.compile("\\bcast\\b").matcher(unit.toString()).find()){
+
+					}
+				}
+            }*/
         }
 
 		for (Unit unit: unmodifiedStmts) {
@@ -280,14 +326,18 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
             if(containsFieldsVarsFlag && dynLabelFlag){
                 List<Unit> succ = unitGraph.getSuccsOf(unit);
                 succ = unitGraph.getSuccsOf(succ.get(0));
+                if(succ.size() > 0 && (succ.get(0).toString().contains("intValue") || succ.get(0).toString().contains("intValue") ||
+							succ.get(0).toString().contains("intValue") || succ.get(0).toString().contains("intValue") || succ.get(0).toString().contains("intValue")))
+                	succ = unitGraph.getSuccsOf(succ.get(0));
                 if(succ.size() > 0 && succ.get(0).toString().contains("=")) {
                 	String tempVar = (succ.get(0).toString().split("=")[0]);
                 	if(tempVar.contains(" ")) {
 						String[] tempArr = tempVar.split(" ");
-						if (tempArr.length > 3) {
+						if (tempArr.length > 2) {
 							String key = (succ.get(0).toString().split("=")[0]).split(" ")[2].replace(">", "");
-							if (fieldVarMaps.containsKey(key))
+							if (fieldVarMaps.containsKey(key)) {
 								dynLabelFlag = false;
+							}
 						}
 					}
 				}
@@ -316,9 +366,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							int u = unmodifiedStmts.size() - unmodifiedStmts.indexOf(unit) - 1;
 
 							tempSuccessorList.set(0, unit);
+							if(u > 4)
+								u = 4;
 							// TODO: get rid of hardcoded 4 !!
 							//for (int m = 0; m < 4 && m <= unitStmtsListString.size() - 1; m++) {
-							for (int m = 0; m < 4 && m < u; m++) {
+							//for (int m = 0; m < 4 && m < u; m++) {
+							for (int m = 0; m < u; m++) {
 								tempSuccessorList.set(0, (unitGraph.getSuccsOf(tempSuccessorList.get(0))).get(0));
 							}
 							if (tempSuccessorList.get(0).toString().contains("makeHigh") || tempSuccessorList.get(0).toString().contains("makeLow"))

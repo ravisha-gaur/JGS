@@ -174,7 +174,7 @@ public class Main {
 		Casts<L> casts = c;
 
 
-        BodyAnalyzer<L> banalyzer = new BodyAnalyzer<>(methodTypings, casts);
+        BodyAnalyzer<L> banalyzer = new BodyAnalyzer<>(methodTypings, casts, signatureTable);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer));
