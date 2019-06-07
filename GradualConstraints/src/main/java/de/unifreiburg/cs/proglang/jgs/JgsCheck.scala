@@ -386,7 +386,7 @@ object JgsCheck {
       /** ***********************************
         * set signature table and field table
         * *****************************/
-      val signatures = SignatureTable.of[Level](
+      val signatures = SignatureTable.of[Level](secdomain,
         signatureMap ++ specialSignatures ++ configuredSignatures ++ monomorphicOverrides
       )
       val fieldTable = FieldTable.of[Level](fieldMap ++ configuredFields)

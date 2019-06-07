@@ -120,7 +120,7 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
     val tvs = new TypeVars()
     val bodyResult = new MethodBodyTyping[LowHigh.Level](Code.max, tvs, TestDomain.csets, TestDomain.cstrs,
       TestDomain.casts,
-      SignatureTable.of(Map(
+      SignatureTable.of(new LowHigh(), Map(
         Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
           List(
             MethodSignatures.le[LowHigh.Level](Param(0), Literal(TestDomain.DYN)),
@@ -153,7 +153,7 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
 
     val dynInstantiation = new AnalysisResults[LowHigh.Level]().max_methods_D_D__D.getSingleInstantiation(Code.max, Dyn())
     val result = TestDomain.mtyping.check(new TypeVars(),
-      SignatureTable.of(Map(
+      SignatureTable.of(new LowHigh(),Map(
         Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
           List(
             MethodSignatures.le[LowHigh.Level](Param(0), Literal(TestDomain.DYN)),
@@ -177,7 +177,7 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
   "type-checking max with a DD_D instantiation" should " have same vartyping as mappings_max_DD_D" in {
     val fakeResults = new AnalysisResults[LowHigh.Level]()
     val result = TestDomain.mtyping.check(new TypeVars(),
-      SignatureTable.of(Map(
+      SignatureTable.of(new LowHigh(),Map(
         Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
           List(
             MethodSignatures.le[LowHigh.Level](Param(0), Literal(TestDomain.DYN)),
