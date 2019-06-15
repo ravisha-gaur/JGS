@@ -95,7 +95,7 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
     val tvs = new TypeVars()
     val bodyResult = new MethodBodyTyping[LowHigh.Level](Code.max, tvs, TestDomain.csets, TestDomain.cstrs,
       TestDomain.casts,
-        SignatureTable.of(Map(
+        SignatureTable.of(new LowHigh(), Map(
           Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
             List(
               MethodSignatures.le[LowHigh.Level](Param(0), Literal(TestDomain.DYN)),

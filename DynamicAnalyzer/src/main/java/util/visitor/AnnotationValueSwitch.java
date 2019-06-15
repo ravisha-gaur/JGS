@@ -1,6 +1,7 @@
 package util.visitor;
 
 import analyzer.level1.BodyAnalyzer;
+import analyzer.level1.DefinedByValueOfCall;
 import analyzer.level1.JimpleInjector;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import soot.Local;
@@ -521,11 +522,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 		    boolean flag = false;
 			//if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag && !JimpleInjector.methodCallFlag && JimpleInjector.dynamicArgumentFlag)
-            if(JimpleInjector.methodCallFlag){
+            /*if(JimpleInjector.methodCallFlag){
                 if(!JimpleInjector.argumentsList.contains(true))
                     flag = true;
-            }
-			if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag && !flag)
+            }*/
+			//if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag && !flag)
+			if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag)
 				JimpleInjector.addLevelInAssignStmt(l, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(l, callingStmt);

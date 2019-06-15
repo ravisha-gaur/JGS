@@ -36,7 +36,7 @@ object MethodSignatures {
     return new Signature[Level](signatureConstraints(allConstraints), effects)
   }
 
-  private def signatureConstraints[Level](sigSet: Iterator[SigConstraint[Level]]): SigConstraintSet[Level] = {
+  def signatureConstraints[Level](sigSet: Iterator[SigConstraint[Level]]): SigConstraintSet[Level] = {
     return new SigConstraintSet[Level](sigSet.toSet)
   }
 
@@ -76,7 +76,7 @@ object MethodSignatures {
     return new SigConstraint[Level](lhs, rhs, kind)
   }
 
-  case class SigConstraintSet[Level](private val sigSet: Set[SigConstraint[Level]])
+  case class SigConstraintSet[Level](val sigSet: Set[SigConstraint[Level]])
   {
 
     def toTypingConstraints(mapping: java.util.Map[Symbol[Level], CTypes.CType[Level]]): Iterator[Constraint[Level]] = {

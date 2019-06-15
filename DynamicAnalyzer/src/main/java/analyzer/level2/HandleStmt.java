@@ -409,8 +409,9 @@ public class HandleStmt {
         // In case somebody wonders: we do not need to check the local pc
         // here. In Jimple, argument-to-local assignments (JIdentityStmt) are always
         // the beginning of the method, where the context is public
-
-        localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
+        if(objectmap.getActualArguments().size() > pos) {
+            localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
+        }
         return localmap.getLevel(signature);
     }
 
@@ -463,26 +464,11 @@ public class HandleStmt {
      *
      * @param arguments List of arguments
      */
-    /*public void storeArgumentLevels(String... arguments) {
-        logger.info("Store arguments " + Arrays.toString(arguments) + " in LocalMap");
-        ArrayList<Object> levelArr = new ArrayList<Object>();
-        for (String el : arguments) {
-            levelArr.add(localmap.getLevel(el));
-        }
-        objectmap.setActualArguments(levelArr);
-    }*/
-
-    public void storeArgumentLevel(String signature, int index) {
-        ArrayList<Object> levelArr = objectmap.getActualArguments();
-        levelArr.add(index, localmap.getLevel(signature));
-        objectmap.setActualArguments(levelArr);
-    }
-
-    /*public void storeArgumentLevel(String signature) {
+    public void storeArgumentLevel(String signature) {
         ArrayList<Object> levelArr = objectmap.getActualArguments();
         levelArr.add(localmap.getLevel(signature));
         objectmap.setActualArguments(levelArr);
-    }*/
+    }
 
     /**
      * Check condition of an if-statement. This operation merges the security-

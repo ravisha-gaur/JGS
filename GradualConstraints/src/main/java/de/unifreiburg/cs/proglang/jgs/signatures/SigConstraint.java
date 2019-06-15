@@ -14,9 +14,9 @@ import static java.util.Arrays.asList;
 
 public class SigConstraint<Level> {
 
-    private final Symbol<Level> lhs;
-    private final Symbol<Level> rhs;
-    private final ConstraintKind kind;
+    public final Symbol<Level> lhs;
+    public final Symbol<Level> rhs;
+    public final ConstraintKind kind;
 
     SigConstraint(Symbol<Level> lhs,
                   Symbol<Level> rhs, ConstraintKind kind) {

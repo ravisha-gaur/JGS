@@ -225,7 +225,7 @@ public class Code {
                                                              sigCstrs.collect(toList()), Effects.emptyEffect()));
 
         // freeze signatures
-        this.signatures = of(sigMap);
+        this.signatures = of(new LowHigh(), sigMap);
     }
 
 

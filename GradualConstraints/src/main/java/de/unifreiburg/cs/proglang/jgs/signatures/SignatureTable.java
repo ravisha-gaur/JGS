@@ -30,7 +30,7 @@ public class SignatureTable<Level> {
     }
 
     private final SecDomain<Level> secDomain;
-    private final Map<SootMethod, Signature<Level>> signatureMap;
+    public final Map<SootMethod, Signature<Level>> signatureMap;
 
     /**
      * Create a new table from a map.

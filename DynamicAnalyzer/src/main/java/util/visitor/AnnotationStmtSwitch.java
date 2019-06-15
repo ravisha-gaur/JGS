@@ -120,6 +120,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		stmt.getLeftOp().apply(leftValueSwitch);
 	}
 
+	private VisitorHelper vh = new VisitorHelper();
+
+
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
 
@@ -127,13 +130,16 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 		logger.fine(" > > > Identity statement identified < < <");
 
+		//Local[] args = vh.getArgumentsForInvokedMethod(stmt);
+
 		// for all statements i = parameter[0]
 		if (stmt.getRightOp() instanceof ParameterRef) {
 			if (!body.getMethod().isMain()) {
 				int posInArgList = ((ParameterRef) stmt.getRightOp())
 						.getIndex();
-				JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp());
-				//JimpleInjector.assignArgumentToLocal(posInArgList, stmt, (Local) stmt.getLeftOp());
+				//JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp());
+				JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp(), body.getMethod().getName());
+				//JimpleInjector.assignArgumentToLocal((Local) stmt.getLeftOp(), body.getMethod().getName());
 			}
 		} else if (stmt.getRightOp() instanceof ThisRef) {
 			// TODO im Grunde nicht nötig...
