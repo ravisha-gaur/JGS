@@ -62,6 +62,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	public static List<Unit> methodCalls = new ArrayList<Unit>();
 	public static HashMap<Unit,String> methodCallsInsideMethods = new HashMap<Unit,String>();
 	public static String callingMethod = "main";
+	public static List<String> independentVars = new ArrayList<String>();
 
 	/**
 	 * Constructs an new BodyAnalyzer with the given
@@ -136,12 +137,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 					DefinedByValueOfCall defininedByValueOfCall = new DefinedByValueOfCall(unitGraph);
 				}
 			}
-		}
+
 
 
 		//int countConstants = 0;
 		//int countLoop = 0;
-		List<String> independentVars = new ArrayList<String>(DefinedByValueOfCall.independentVarsSet);
+		independentVars = new ArrayList<String>(DefinedByValueOfCall.independentVarsSet);
 
 		for(Map.Entry<Unit, String> e: methodCallsInsideMethods.entrySet()){
 			String mn = e.getValue();
@@ -167,11 +168,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 								for (int j = 0; j < s.getUseBoxes().size(); j++) {
 									Value val = s.getUseBoxes().get(j).getValue();
 									if (!BodyAnalyzer.methodNames.stream().anyMatch(val.toString()::contains)) {
-										if(!(val instanceof Constant) && !independentVars.contains(val)){
+										if(!(val instanceof Constant) && independentVars.contains(val.toString())){
 											List<HashMap<Integer, Value>> l  = DefinedByValueOfCall.identityTargetsMap.get(mn);
 											HashMap<Integer, Value> hm = l.get(idx);
-											if(!independentVars.contains(hm.get(idx))){
+											if(!independentVars.contains(hm.get(idx).toString())){
 												independentVars.add(hm.get(idx).toString());
+												//independentVars.remove(hm.get(idx).toString());
 											}
 										}
 										idx += 1;
@@ -255,6 +257,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		}
 
 		System.out.println("++++++++++++++++++++++++++++++++++++++");
+
+		}
 
 		/*SootClass cl = sootMethod.getDeclaringClass();
 		Body newMethod = sootMethod.getActiveBody();

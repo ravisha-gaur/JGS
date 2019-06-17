@@ -470,10 +470,13 @@ public class JimpleInjector {
                 if(noTrackSignatureList.contains(sig)){
                     f = true;
                 }
+                else
+                    break;
             }
         }
         if(f) {
             dontSetLocalFlag = true;
+            noTrackSignatureList.add(getSignatureForLocal(l));
             return;
         }
 
@@ -701,17 +704,18 @@ public class JimpleInjector {
         afterAssignArgumentToLocal = true;
 
         List<HashMap<Integer, Boolean>> argList = BodyAnalyzer.argumentMap.get(methodName);
-        HashMap<Integer, Boolean> argMap = argList.get(posInArgList);
-        if (argMap.get(posInArgList)) {
-            logger.info("Assign argument level to local " + local);
-            Unit assignExpr = fac.createStmt("assignArgumentToLocal", IntConstant.v(argumentPosition), StringConstant.v(getSignatureForLocal(local)));
-            argumentPosition += 1;
-            units.insertAfter(assignExpr, lastPos);
-            lastPos = assignExpr;
-            signatureList.add(getSignatureForLocal(local));
+        if(null != argList && !argList.isEmpty()) {
+            HashMap<Integer, Boolean> argMap = argList.get(posInArgList);
+            if (argMap.get(posInArgList)) {
+                logger.info("Assign argument level to local " + local);
+                Unit assignExpr = fac.createStmt("assignArgumentToLocal", IntConstant.v(argumentPosition), StringConstant.v(getSignatureForLocal(local)));
+                argumentPosition += 1;
+                units.insertAfter(assignExpr, lastPos);
+                lastPos = assignExpr;
+                signatureList.add(getSignatureForLocal(local));
+            } else {
+                noTrackSignatureList.add(getSignatureForLocal(local));
             }
-        else {
-            noTrackSignatureList.add(getSignatureForLocal(local));
         }
     }
 
@@ -754,13 +758,11 @@ public class JimpleInjector {
      * @param lArguments list of arguments
      */
     public static void storeArgumentLevels(Unit pos, Local... lArguments) {
-        List<String> independentVars = new ArrayList<String>(DefinedByValueOfCall.independentVarsSet);
-
         logger.info("Store Arguments for next method in method " + b.getMethod().getName());
         for (int i = 0; i < lArguments.length; i++) {
             String signature = "";
             if (lArguments[i] != null) {
-                if(independentVars.contains(lArguments[i].toString()))
+                if(BodyAnalyzer.independentVars.contains(lArguments[i].toString()))
                     continue;
                 signature = getSignatureForLocal(lArguments[i]);
                 Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature));

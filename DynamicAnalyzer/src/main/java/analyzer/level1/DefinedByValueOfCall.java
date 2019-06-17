@@ -3,6 +3,7 @@ package analyzer.level1;
 import soot.Local;
 import soot.Unit;
 import soot.Value;
+import soot.jimple.Constant;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InvokeExpr;
 import soot.jimple.ReturnStmt;
@@ -64,19 +65,21 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
         }
         if(unit instanceof ReturnStmt){
             l = new ArrayList();
+            index = 0;
         }
 
 
         // handling identity statements (or method params)
         if(unit instanceof IdentityStmt){
             identityTargets.add(((IdentityStmt) unit).getLeftOp());
+
             HashMap<Integer, Value> hm = new HashMap<Integer, Value>();
             hm.put(index, ((IdentityStmt) unit).getLeftOp());
             l.add(hm);
             identityTargetsMap.put(BodyAnalyzer.callingMethod, l);
             index += 1;
         }
-        for(Unit u: BodyAnalyzer.methodCalls){
+        /*for(Unit u: BodyAnalyzer.methodCalls){
             if(u.equals(unit)){
                 for (int i = 0; i < unit.getUseBoxes().size(); i++) {
                     Value param = unit.getUseBoxes().get(i).getValue();
@@ -88,7 +91,7 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                     }
                 }
             }
-        }
+        }*/
 
         // TODO: instanceof is used for demonstration.. it is better to use a StmtSwitch for the real implementation
         //handling assignment statements
@@ -106,18 +109,24 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
             }
             else*/
             if(null != prevTarget) {
+                InvokeExpr invokeExpr;
+                if( source instanceof InvokeExpr){
+                    invokeExpr = (InvokeExpr) source;
                 if (target instanceof Local && Pattern.compile("\\b" + prevTarget.toString().replace("$","a") + "\\b").matcher(source.toString().replace("$","a")).find()) {
                     out.add((Local) prevTarget);
-                    if( source instanceof InvokeExpr){
-                        InvokeExpr invokeExpr = (InvokeExpr) source;
-                        if (invokeExpr.getMethod().getName().contains("intValue") || invokeExpr.getMethod().getName().contains("doubleValue") || invokeExpr.getMethod().getName().contains("floatValue")
+                        if (null != invokeExpr && invokeExpr.getMethod().getName().contains("intValue") || invokeExpr.getMethod().getName().contains("doubleValue") || invokeExpr.getMethod().getName().contains("floatValue")
                         || invokeExpr.getMethod().getName().contains("booleanValue") || invokeExpr.getMethod().getName().contains("charValue")){
                             out.add((Local)target);
                         };
                     }
-                    if(!BodyAnalyzer.isArithmeticExpression(source.toString()) && !independentVarsSet.isEmpty() && independentVarsSet.contains(prevTarget.toString()))
+                    if(!BodyAnalyzer.isArithmeticExpression(source.toString()) && !independentVarsSet.isEmpty() && independentVarsSet.contains(prevTarget.toString())
+                            && null != invokeExpr && !BodyAnalyzer.methodNames.contains(invokeExpr.getMethod().getName()))
                         independentVarsSet.remove(prevTarget.toString());
-                } else {
+                }
+                else if(source instanceof Constant){
+                    independentVarsSet.add(target.toString());
+                }
+                else {
                     if(!out.contains(prevTarget))
                         independentVarsSet.add(prevTarget.toString());
                     out.clear();
