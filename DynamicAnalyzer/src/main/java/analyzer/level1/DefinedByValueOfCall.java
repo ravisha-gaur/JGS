@@ -1,12 +1,10 @@
 package analyzer.level1;
 
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import soot.Local;
 import soot.Unit;
 import soot.Value;
-import soot.jimple.Constant;
-import soot.jimple.IdentityStmt;
-import soot.jimple.InvokeExpr;
-import soot.jimple.ReturnStmt;
+import soot.jimple.*;
 import soot.jimple.internal.JAssignStmt;
 import soot.jimple.internal.JIdentityStmt;
 import soot.jimple.internal.JimpleLocalBox;
@@ -23,9 +21,13 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
     public static Set<String> independentVarsSet = new HashSet<String>();
     public static List<Value> identityTargets = new ArrayList<Value>();
     public static HashMap<String, List<HashMap<Integer, Value>>> identityTargetsMap = new HashMap<String, List<HashMap<Integer, Value>>>();
+    public static HashMap<String, Boolean> dynInMethod = new HashMap<String, Boolean>();
+
     private static int index = 0;
     private static List l = new ArrayList();
+    private static Casts casts;
     //private static String callingMethod;
+    private static boolean staticDestination = false;
 
     public DefinedByValueOfCall(DirectedGraph<Unit> graph) {
         super(graph);
@@ -60,10 +62,14 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
         copy(in, out);
         if(isFirstUnit){
             isFirstUnit = false;
-            prevTarget = ((JimpleLocalBox) ((JIdentityStmt) unit).leftBox).getValue();
+            if(unit instanceof JIdentityStmt)
+                prevTarget = ((JimpleLocalBox) ((JIdentityStmt) unit).leftBox).getValue();
+            else if(unit instanceof JAssignStmt)
+                prevTarget = ((JAssignStmt) unit).getLeftOp();
+
             //callingMethod = BodyAnalyzer.callingMethod;
         }
-        if(unit instanceof ReturnStmt){
+        if(unit instanceof ReturnStmt || unit instanceof ReturnVoidStmt){
             l = new ArrayList();
             index = 0;
         }
@@ -95,6 +101,7 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
 
         // TODO: instanceof is used for demonstration.. it is better to use a StmtSwitch for the real implementation
         //handling assignment statements
+        loop1:
         if (unit instanceof JAssignStmt) {
             JAssignStmt assignStmt = (JAssignStmt) unit;
             Value target = assignStmt.getLeftOp();
@@ -112,9 +119,22 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                 InvokeExpr invokeExpr;
                 if( source instanceof InvokeExpr){
                     invokeExpr = (InvokeExpr) source;
-                if (target instanceof Local && Pattern.compile("\\b" + prevTarget.toString().replace("$","a") + "\\b").matcher(source.toString().replace("$","a")).find()) {
-                    out.add((Local) prevTarget);
-                        if (null != invokeExpr && invokeExpr.getMethod().getName().contains("intValue") || invokeExpr.getMethod().getName().contains("doubleValue") || invokeExpr.getMethod().getName().contains("floatValue")
+                    if(Pattern.compile("\\bcast\\b").matcher(source.toString()).find()) {
+                        Casts.ValueConversion conversion = casts.getValueCast(assignStmt);
+                        if (!conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic())
+                            dynInMethod.put(BodyAnalyzer.callingMethod, true);
+                        else if(conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()){
+                            staticDestination = true;
+                            break loop1;
+                        }
+                    }
+                    if (target instanceof Local && Pattern.compile("\\b" + prevTarget.toString().replace("$","a") + "\\b").matcher(source.toString().replace("$","a")).find()) {
+                        out.add((Local) prevTarget);
+                        if(staticDestination){
+                            independentVarsSet.add(target.toString());
+                            break loop1;
+                        }
+                        if (!staticDestination && null != invokeExpr && invokeExpr.getMethod().getName().contains("intValue") || invokeExpr.getMethod().getName().contains("doubleValue") || invokeExpr.getMethod().getName().contains("floatValue")
                         || invokeExpr.getMethod().getName().contains("booleanValue") || invokeExpr.getMethod().getName().contains("charValue")){
                             out.add((Local)target);
                         };
@@ -126,14 +146,23 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                 else if(source instanceof Constant){
                     independentVarsSet.add(target.toString());
                 }
+                //else if(BodyAnalyzer.isArithmeticExpression(source.toString())) {
+                    //String[] tempArray = source.toString().split("[-+*/]");
+                    //independentVarsSet.add(tempArray[0].trim()); // Three address code - source will have only two vars
+                   // independentVarsSet.add(tempArray[1].trim());
+                //}
                 else {
-                    if(!out.contains(prevTarget))
+                    if(!out.contains(prevTarget) && !BodyAnalyzer.isArithmeticExpression(source.toString()))
                         independentVarsSet.add(prevTarget.toString());
                     out.clear();
                 }
             }
-            prevTarget = target;
+            lab:prevTarget = target;
         }
+    }
+
+    static void getCasts(Casts c){
+        casts = c;
     }
 
 }

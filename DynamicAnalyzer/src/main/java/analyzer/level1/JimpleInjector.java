@@ -70,10 +70,11 @@ public class JimpleInjector {
 
     private static int argumentPosition = 0;
 
-    private static ArrayList<String> signatureList = new ArrayList<String>();
-    private static ArrayList<String> noTrackSignatureList = new ArrayList<String>();
+    public static ArrayList<String> signatureList = new ArrayList<String>();
+    public static ArrayList<String> noTrackSignatureList = new ArrayList<String>();
 
     private static  boolean afterAssignArgumentToLocal = false;
+    public static String prevMethodName = "";
 
     public static boolean staticDestination = false;
 
@@ -121,11 +122,15 @@ public class JimpleInjector {
     public static void setReturnLevelAfterInvokeStmt(Local l, Unit pos) {
         Unit invoke = fac.createStmt("setReturnLevelAfterInvokeStmt", StringConstant.v(getSignatureForLocal(l)));
         if(!Pattern.compile("\\bstoreArgumentLevel\\b").matcher(units.toString()).find()){
-            return;
+            JAssignStmt assignStmt = (JAssignStmt) pos;
+            Value source = assignStmt.getRightOp();
+            if(!DefinedByValueOfCall.dynInMethod.containsKey(((InvokeExpr)source).getMethod().getName()))
+                return;
         }
         // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
         if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
             units.insertAfter(invoke, pos);
+            noTrackSignatureList.remove(getSignatureForLocal(l));
         }
     }
 
@@ -422,7 +427,7 @@ public class JimpleInjector {
         );
 
         String key = (pos.toString().split("=")[1]).trim().split(" ")[2].replace(">", "");
-        if(BodyAnalyzer.fieldVarMaps.get(key))
+        if(!BodyAnalyzer.fieldVarMaps.isEmpty() && null != BodyAnalyzer.fieldVarMaps.get(key) && BodyAnalyzer.fieldVarMaps.get(key))
             staticDestination = false;
 
 
@@ -703,6 +708,11 @@ public class JimpleInjector {
     public static void assignArgumentToLocal(int posInArgList, Local local, String methodName) {
         afterAssignArgumentToLocal = true;
 
+        if(!prevMethodName.isEmpty() && !prevMethodName.equals(methodName)) {
+            signatureList = new ArrayList<String>();
+            noTrackSignatureList = new ArrayList<String>();
+        }
+
         List<HashMap<Integer, Boolean>> argList = BodyAnalyzer.argumentMap.get(methodName);
         if(null != argList && !argList.isEmpty()) {
             HashMap<Integer, Boolean> argMap = argList.get(posInArgList);
@@ -717,6 +727,8 @@ public class JimpleInjector {
                 noTrackSignatureList.add(getSignatureForLocal(local));
             }
         }
+
+        prevMethodName = methodName;
     }
 
 
@@ -767,7 +779,7 @@ public class JimpleInjector {
                 signature = getSignatureForLocal(lArguments[i]);
                 Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature));
                 units.insertBefore(invoke, pos);
-
+                noTrackSignatureList.remove(signature);
             }
             lastPos = pos;
         }
@@ -1101,6 +1113,8 @@ public class JimpleInjector {
         instantiation = inst;
         casts = c;
     }
+
+
 
     /**
      * Handle Casts.cast(String s, T local) method
