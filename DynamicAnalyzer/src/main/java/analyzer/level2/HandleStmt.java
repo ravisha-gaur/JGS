@@ -409,11 +409,10 @@ public class HandleStmt {
         // In case somebody wonders: we do not need to check the local pc
         // here. In Jimple, argument-to-local assignments (JIdentityStmt) are always
         // the beginning of the method, where the context is public
-        //if(objectmap.getActualArguments().size() > pos) {
-            //localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
-        localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(0)));
+        if(!objectmap.getActualArguments().isEmpty()) {
+            localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(0)));
             objectmap.getActualArguments().remove(0);
-        //}
+        }
         return localmap.getLevel(signature);
     }
 
@@ -481,13 +480,6 @@ public class HandleStmt {
      * @param dominatorIdentity identity of the postdominator.
      * @param args              List of signatore-string of all locals.
      */
-   /* public void checkCondition(String dominatorIdentity, String... args) {
-        logger.info("Check condition of ifStmt");
-        localmap.pushLocalPC(handleStatementUtils.joinWithLPC(handleStatementUtils.joinLocals(args)), Integer.valueOf(dominatorIdentity));
-        objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
-        logger.info("New LPC is " + localmap.getLocalPC().toString());
-    }*/
-
     public void checkCondition(String dominatorIdentity) {
         logger.info("Check condition of ifStmt");
         localmap.pushLocalPC(handleStatementUtils.joinWithLPC(objectmap.getAssignmentLevel()), Integer.valueOf(dominatorIdentity));

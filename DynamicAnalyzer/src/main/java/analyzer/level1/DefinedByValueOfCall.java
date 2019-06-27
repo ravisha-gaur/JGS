@@ -26,10 +26,9 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
     public static HashMap<String, Boolean> dynInMethod = new HashMap<String, Boolean>();
 
     private static int index = 0;
-    private static List l = new ArrayList();
+    private static List identityList = new ArrayList();
     private static Casts casts;
     private static boolean staticDestination = false;
-    //private static String callingMethod;
 
     public DefinedByValueOfCall(DirectedGraph<Unit> graph) {
         super(graph);
@@ -61,8 +60,7 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
      */
     @Override
     protected void flowThrough(Set<Local> in, Unit unit, Set<Local> out) {
-        //boolean staticDestination = false;
-        String mn = "";
+        String methodName1 = "";
         copy(in, out);
         if(isFirstUnit){
             isFirstUnit = false;
@@ -70,45 +68,39 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                 prevTarget = ((JimpleLocalBox) ((JIdentityStmt) unit).leftBox).getValue();
             else if(unit instanceof JAssignStmt)
                 prevTarget = ((JAssignStmt) unit).getLeftOp();
-
-            //callingMethod = BodyAnalyzer.callingMethod;
         }
-        InvokeExpr is = null;
+
+        InvokeExpr invokeExpr1 = null;
+        //handling method calls not in the main method
         if(BodyAnalyzer.methodCalls.contains(unit)){
             if(unit instanceof JAssignStmt)
-                is = (InvokeExpr) (((JAssignStmt) unit).getRightOp());
+                invokeExpr1 = (InvokeExpr) (((JAssignStmt) unit).getRightOp());
             else if(unit instanceof JInvokeStmt)
-                is = ((JInvokeStmt) unit).getInvokeExpr();
-            String m = "";
-            List<String> l1 = new ArrayList<String>();
+                invokeExpr1 = ((JInvokeStmt) unit).getInvokeExpr();
+            String methodName2 = "";
+            List<String> indVarList = new ArrayList<String>();
             for (int i = 0; i < unit.getUseBoxes().size(); i++) {
                 if(unit.getUseBoxes().get(i) instanceof ImmediateBox) {
-                    l1.add(unit.getUseBoxes().get(i).getValue().toString());
+                    indVarList.add(unit.getUseBoxes().get(i).getValue().toString());
                 }
                 else {
-                    if(null != is)
-                        m = is.getMethod().getName();
+                    if(null != invokeExpr1)
+                        methodName2 = invokeExpr1.getMethod().getName();
                 }
             }
             List<String> ind = new ArrayList<>(independentVarsSet);
-            List<String> r = ind.stream().filter(l1::contains).collect(Collectors.toList());
-            //if(!r.isEmpty()) {
-                if(independentVarsMap.containsKey(m)){
-                    r.addAll(independentVarsMap.get(m));
-                }
-                independentVarsMap.put(m, r);
-            //}
+            List<String> independentVarList = ind.stream().filter(indVarList::contains).collect(Collectors.toList());
+            if(independentVarsMap.containsKey(methodName2)){
+                independentVarList.addAll(independentVarsMap.get(methodName2));
+            }
+            independentVarsMap.put(methodName2, independentVarList);
         }
 
         if(unit instanceof ReturnStmt || unit instanceof ReturnVoidStmt){
-            l = new ArrayList();
+            identityList = new ArrayList();
             index = 0;
             independentVarsSet = new HashSet<String>();
-            /*if(null != methodName && !methodName.isEmpty())
-                independentVarsMap.put(methodName, new ArrayList<>(independentVarsSet));
-            independentVarsSet = new HashSet<String>();*/
         }
-
 
         // handling identity statements (or method params)
         if(unit instanceof IdentityStmt){
@@ -116,47 +108,24 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
 
             HashMap<Integer, Value> hm = new HashMap<Integer, Value>();
             hm.put(index, ((IdentityStmt) unit).getLeftOp());
-            l.add(hm);
-            identityTargetsMap.put(BodyAnalyzer.callingMethod, l);
+            identityList.add(hm);
+            identityTargetsMap.put(BodyAnalyzer.callingMethod, identityList);
             index += 1;
         }
-        /*for(Unit u: BodyAnalyzer.methodCalls){
-            if(u.equals(unit)){
-                for (int i = 0; i < unit.getUseBoxes().size(); i++) {
-                    Value param = unit.getUseBoxes().get(i).getValue();
-                    String s = unit.getUseBoxes().get(i).getValue().toString();
-                    if (!BodyAnalyzer.methodNames.stream().anyMatch(s::contains)) {
-                        if(!identityTargets.isEmpty() && identityTargets.contains(param)){
-                            independentVarsSet.add(param.toString());
-                        }
-                    }
-                }
-            }
-        }*/
 
-        // TODO: instanceof is used for demonstration.. it is better to use a StmtSwitch for the real implementation
-        //handling assignment statements
         loop1:
+        //handling assignment statements
         if (unit instanceof JAssignStmt) {
             JAssignStmt assignStmt = (JAssignStmt) unit;
             Value target = assignStmt.getLeftOp();
             Value source = assignStmt.getRightOp();
-            /*if (target instanceof  Local && source instanceof  Local && in.contains(source)) {
-               out.add((Local) target);
-            } else if (target instanceof  Local && source instanceof InvokeExpr) {
-                InvokeExpr invokeExpr = (InvokeExpr) source;
-                if (invokeExpr.getMethod().getName().contains("valueOf")){
-                   out.add((Local)target);
-                };
-            }
-            else*/
             if(null != prevTarget) {
                 InvokeExpr invokeExpr;
                 if( source instanceof InvokeExpr){
                     invokeExpr = (InvokeExpr) source;
-                    mn = invokeExpr.getMethod().getName();
-                    if(BodyAnalyzer.methodNames.contains(mn))
-                        methodName = mn;
+                    methodName1 = invokeExpr.getMethod().getName();
+                    if(BodyAnalyzer.methodNames.contains(methodName1))
+                        methodName = methodName1;
                     if(Pattern.compile("\\bcast\\b").matcher(source.toString()).find()) {
                         Casts.ValueConversion conversion = casts.getValueCast(assignStmt);
                         if (!conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
@@ -172,7 +141,6 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                         out.add((Local) prevTarget);
                         if(staticDestination){
                             independentVarsSet.add(target.toString());
-
                             break loop1;
                         }
                         if (!staticDestination && null != invokeExpr && invokeExpr.getMethod().getName().contains("intValue") || invokeExpr.getMethod().getName().contains("doubleValue") || invokeExpr.getMethod().getName().contains("floatValue")
@@ -187,11 +155,6 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                 else if(source instanceof Constant){
                     independentVarsSet.add(target.toString());
                 }
-                //else if(BodyAnalyzer.isArithmeticExpression(source.toString())) {
-                    //String[] tempArray = source.toString().split("[-+*/]");
-                    //independentVarsSet.add(tempArray[0].trim()); // Three address code - source will have only two vars
-                   // independentVarsSet.add(tempArray[1].trim());
-                //}
                 else {
                     if(!out.contains(prevTarget) && !BodyAnalyzer.isArithmeticExpression(source.toString()))
                         independentVarsSet.add(prevTarget.toString());

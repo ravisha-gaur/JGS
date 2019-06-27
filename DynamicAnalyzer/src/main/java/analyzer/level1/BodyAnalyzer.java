@@ -127,28 +127,28 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		}
 
 		if (body.getMethod().getName().equals("<init>")){
-			for (SootMethod m : allMethods) {
-				if (!m.getName().equals("<init>") && !m.getName().equals("<clinit>")) {
-					Chain<Unit> units = m.getActiveBody().getUnits();
+			for (SootMethod sootMethod : allMethods) {
+				if (!sootMethod.getName().equals("<init>") && !sootMethod.getName().equals("<clinit>")) {
+					Chain<Unit> units = sootMethod.getActiveBody().getUnits();
 					ArrayList<Unit> unmodifiedStmts = new ArrayList<>(units);
 					for (Unit unit : unmodifiedStmts) {
 						for (String methodName : methodNames) {
 							if (unit.toString().contains(methodName)) {
 								methodCalls.add(unit);
-								if(!m.isMain())
-									methodCallsInsideMethods.put(unit, m.getName());
+								if(!sootMethod.isMain())
+									methodCallsInsideMethods.put(unit, sootMethod.getName()); // Find calls to methods no in the main method
 							}
 						}
 					}
 				}
 			}
 
-			for (SootMethod m : allMethods) {
-				if (!m.getName().equals("<init>") && !m.getName().equals("<clinit>")) {
-					UnitGraph unitGraph = new BriefUnitGraph(m.getActiveBody());
+			for (SootMethod sootMethod : allMethods) {
+				if (!sootMethod.getName().equals("<init>") && !sootMethod.getName().equals("<clinit>")) {
+					UnitGraph unitGraph = new BriefUnitGraph(sootMethod.getActiveBody());
 
 					DefinedByValueOfCall.isFirstUnit = true;
-					callingMethod = m.getName();
+					callingMethod = sootMethod.getName();
 					// to find dependent variable chains and independent variables
 					DefinedByValueOfCall.getCasts(casts);
 					DefinedByValueOfCall defininedByValueOfCall = new DefinedByValueOfCall(unitGraph);
@@ -156,181 +156,135 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			}
 
 
-
-		//int countConstants = 0;
-		//int countLoop = 0;
-		//independentVars = new ArrayList<String>(DefinedByValueOfCall.independentVarsSet);
 			HashMap<String, List<String>> independentVarsMap = DefinedByValueOfCall.independentVarsMap;
 
-			/*for (Unit u: methodCalls) {
-				for (int i = 0; i < u.getUseBoxes().size(); i++) {
-					Value val = u.getUseBoxes().get(i).getValue();
-					List tempList = new ArrayList();
-					if (!BodyAnalyzer.methodNames.stream().anyMatch(val.toString()::contains)) {
-						if(independentVars.contains(val.toString()))
-							tempList.add(val);
+			// for calls to methods not in main method, check if parent is dynamically tracked or not
+            for(Map.Entry<Unit, String> e: methodCallsInsideMethods.entrySet()){
+                String methodName1 = e.getValue();
+                Unit unit = e.getKey();
+                for (int i = 0; i < unit.getUseBoxes().size(); i++) {
+                    int idx = 0;
+                    Value value = unit.getUseBoxes().get(i).getValue();
+                    String methodName2 = BodyAnalyzer.methodNames.stream().findAny().get();
+                    if (!BodyAnalyzer.methodNames.stream().anyMatch(value.toString()::contains)) {
+                        if(DefinedByValueOfCall.identityTargets.contains(value)){
+                            InvokeExpr invokeExpr;
+                            for(Unit s : methodCalls){
+                                if(s instanceof JAssignStmt) {
+                                    JAssignStmt assignStmt = (JAssignStmt) s;
+                                    Value source = assignStmt.getRightOp();
+                                    invokeExpr = (InvokeExpr) source;
+                                }
+                                else {
+                                    InvokeStmt st = (InvokeStmt) s;
+                                    invokeExpr = st.getInvokeExpr();
+                                }
 
-					}
-					//independentVarsMap.put((InvokeExpr)u.get, tempList);
-				}
-			}*/
+                                if(methodName1.equals(invokeExpr.getMethod().getName())){
+                                    independentVars = independentVarsMap.get(methodName1);
+                                    List tempList = new ArrayList();
+                                    for (int j = 0; j < s.getUseBoxes().size(); j++) {
+                                        Value val = s.getUseBoxes().get(j).getValue();
+                                        if (!BodyAnalyzer.methodNames.stream().anyMatch(val.toString()::contains)) {
+                                            if(null != independentVars) {
+                                                if (val instanceof Constant || independentVars.contains(val.toString())) {
+                                                    List<HashMap<Integer, Value>> tempList2 = DefinedByValueOfCall.identityTargetsMap.get(methodName1);
+                                                    HashMap<Integer, Value> tempMap = tempList2.get(idx);
+                                                    tempList.add(tempMap.get(idx).toString());
+                                                }
+                                            }
+                                            idx += 1;
+                                        }
+                                    }
+                                    if(independentVarsMap.containsKey(methodName2)){
+                                        List finalIndVarList = independentVarsMap.get(methodName2);
+                                        finalIndVarList.addAll(tempList);
+                                        independentVarsMap.put(methodName2, finalIndVarList);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
-		for(Map.Entry<Unit, String> e: methodCallsInsideMethods.entrySet()){
-			String mn = e.getValue();
-			Unit u = e.getKey();
-			for (int i = 0; i < u.getUseBoxes().size(); i++) {
-				int idx = 0;
-				Value value = u.getUseBoxes().get(i).getValue();
-				String mn1 = BodyAnalyzer.methodNames.stream().findAny().get();
-				if (!BodyAnalyzer.methodNames.stream().anyMatch(value.toString()::contains)) {
-					if(DefinedByValueOfCall.identityTargets.contains(value)){
-						InvokeExpr invokeExpr;
-						for(Unit s : methodCalls){
-							if(s instanceof JAssignStmt) {
-								JAssignStmt assignStmt = (JAssignStmt) s;
-								Value source = assignStmt.getRightOp();
-								invokeExpr = (InvokeExpr) source;
-							}
-							else {
-								InvokeStmt st = (InvokeStmt) s;
-								invokeExpr = st.getInvokeExpr();
-							}
+            }
 
-							if(mn.equals(invokeExpr.getMethod().getName())){
-								independentVars = independentVarsMap.get(mn);
-								List l1 = new ArrayList();
-								for (int j = 0; j < s.getUseBoxes().size(); j++) {
-									Value val = s.getUseBoxes().get(j).getValue();
-									if (!BodyAnalyzer.methodNames.stream().anyMatch(val.toString()::contains)) {
-										//independentVars = independentVarsMap.get(mn);
-										//if(!(val instanceof Constant) && independentVars.contains(val.toString())){
-										if(null != independentVars) {
-											if (val instanceof Constant || independentVars.contains(val.toString())) {
-												List<HashMap<Integer, Value>> l = DefinedByValueOfCall.identityTargetsMap.get(mn);
-												HashMap<Integer, Value> hm = l.get(idx);
-												//if(!independentVars.contains(hm.get(idx).toString())){
-												l1.add(hm.get(idx).toString());
-												//independentVars.add(hm.get(idx).toString());
-												//independentVars.remove(hm.get(idx).toString());
-												//}
-											}
-										}
-										idx += 1;
-									}
-								}
-								if(independentVarsMap.containsKey(mn1)){
-									List d = independentVarsMap.get(mn1);
-									d.addAll(l1);
-									independentVarsMap.put(mn1, d);
-								}
-							}
-						}
-					}
-				}
-			}
+            // Create "argumentMap" for each argument of each method - 0 -> don't track; 1 -> track
+            if(argumentMap.isEmpty()) {
+                String methodName = "";
+                for (Unit unit: methodCalls) {
+                    int argPosition = 0;
+                    List argumentsList = new ArrayList();
+                    InvokeExpr invokeExpr;
+                    if (unit instanceof JAssignStmt) {
+                        Value source = ((JAssignStmt) unit).getRightOp();
+                        if (source instanceof InvokeExpr) {
+                            invokeExpr = (InvokeExpr) source;
+                            methodName = invokeExpr.getMethod().getName();
+                        }
+                    }
+                    else if(unit instanceof InvokeStmt){
+                        methodName = ((InvokeStmt) unit).getInvokeExpr().getMethod().getName();
+                    }
 
-		}
+                    if (!methodName.isEmpty()) {
+                        for (int i = 0; i < unit.getUseBoxes().size(); i++) {
+                            Value value = unit.getUseBoxes().get(i).getValue();
+                            if (!methodNames.stream().anyMatch(value.toString()::contains)) {
+                                independentVars = independentVarsMap.get(methodName);
+                                // argument is not a constant - eg: add(7,7) or int x = 7 and add(x, x)
+                                if (!(value instanceof Constant) && !independentVars.contains(value.toString())) {
+                                    HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
+                                    tempMap.put(argPosition, true);
+                                    argumentsList.add(tempMap);
+                                    argPosition += 1;
+                                } else {
+                                    if (null == argumentMap.get(methodName)) {
+                                        HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
+                                        tempMap.put(argPosition, false);
+                                        argumentsList.add(tempMap);
+                                        argPosition += 1;
+                                    }
+                                    //if the method is called multiple times, update the argument map for that method i.e if for eg: add(5, x) and (x, 5) argument map for add will have true for argPositions 0 and 1
+                                    else if (null != argumentMap.get(methodName)) {
+                                        List<HashMap<Integer, Boolean>> argList = argumentMap.get(methodName);
+                                        if(!argList.isEmpty()) {
+                                            HashMap<Integer, Boolean> argMap = argList.get(argPosition);
+                                            if (null != argMap.get(argPosition) && argMap.get(argPosition)) {
+                                                HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
+                                                tempMap.put(argPosition, true);
+                                                argumentsList.add(tempMap);
+                                                argPosition += 1;
+                                            }
+                                            else {
+                                                HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
+                                                tempMap.put(argPosition, false);
+                                                argumentsList.add(tempMap);
+                                                argPosition += 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    argumentMap.put(methodName, argumentsList);
+                }
+            }
 
-		if(argumentMap.isEmpty()) {
-			String methodName = "";
-			for (Unit unit: methodCalls) {
-				int argPosition = 0;
-				List argumentsList = new ArrayList();
-				//for (int i = 0; i < unit.getUseBoxes().size(); i++) {
-				InvokeExpr invokeExpr;
-				if (unit instanceof JAssignStmt) {
-					Value source = ((JAssignStmt) unit).getRightOp();
-					if (source instanceof InvokeExpr) {
-						invokeExpr = (InvokeExpr) source;
-						methodName = invokeExpr.getMethod().getName();
-						//break;
-					}
-				}
-				else if(unit instanceof InvokeStmt){
-					methodName = ((InvokeStmt) unit).getInvokeExpr().getMethod().getName();
-				}
-
-					/*String valueString = unit.getUseBoxes().get(i).getValue().toString();
-					if (methodNames.stream().anyMatch(valueString::contains)) {
-						methodName = valueString.split(" ")[3].split("\\(")[0];
-						break;
-					}*/
-				//}
-				if (!methodName.isEmpty()) {
-					for (int i = 0; i < unit.getUseBoxes().size(); i++) {
-						//countLoop += 1;
-						Value value = unit.getUseBoxes().get(i).getValue();
-						if (!methodNames.stream().anyMatch(value.toString()::contains)) {
-							independentVars = independentVarsMap.get(methodName);
-							// argument is not a constant - eg: add(7,7) or int x = 7 and add(x, x)
-							if (!(value instanceof Constant) && !independentVars.contains(value.toString())) {
-								HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
-								tempMap.put(argPosition, true);
-								argumentsList.add(tempMap);
-								argPosition += 1;
-							} else {
-								//countConstants += 1;
-								if (null == argumentMap.get(methodName)) {
-									HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
-									tempMap.put(argPosition, false);
-									argumentsList.add(tempMap);
-									argPosition += 1;
-								}
-								//if the method is called multiple times, update the argument map for that method i.e if for eg: add(5, x) and (x, 5) argument map for add will have true for argPositions 0 and 1
-								else if (null != argumentMap.get(methodName)) {
-									List<HashMap<Integer, Boolean>> argList = argumentMap.get(methodName);
-									if(!argList.isEmpty()) {
-										HashMap<Integer, Boolean> argMap = argList.get(argPosition);
-										if (null != argMap.get(argPosition) && argMap.get(argPosition)) {
-											HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
-											tempMap.put(argPosition, true);
-											argumentsList.add(tempMap);
-											argPosition += 1;
-										}
-										else {
-											HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
-											tempMap.put(argPosition, false);
-											argumentsList.add(tempMap);
-											argPosition += 1;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				argumentMap.put(methodName, argumentsList);
-			}
-		}
-
-		//TODO - clean code
-		System.out.println("++++++++++++++++++++++++++++++++++++++");
-
-		for(Map.Entry<String, List<HashMap<Integer, Boolean>>> e: argumentMap.entrySet()){
-			System.out.print(e.getKey());
-			List<HashMap<Integer, Boolean>> l = e.getValue();
-			for(HashMap<Integer, Boolean> m : l){
-				for(Map.Entry e1 :m.entrySet()){
-					System.out.print(e1.getKey() + "" + e1.getValue());
-				}
-			}
-			System.out.println();
-		}
-
-		System.out.println("++++++++++++++++++++++++++++++++++++++");
+            // Print argumentMap - debugging
+            /*for(Map.Entry<String, List<HashMap<Integer, Boolean>>> e: argumentMap.entrySet()){
+                System.out.print(e.getKey());
+                List<HashMap<Integer, Boolean>> l = e.getValue();
+                for(HashMap<Integer, Boolean> m : l){
+                    for(Map.Entry e1 :m.entrySet()){
+                        System.out.print(e1.getKey() + ": " + e1.getValue());
+                    }
+                }
+                System.out.println();
+            }*/
 
 		}
-
-		/*SootClass cl = sootMethod.getDeclaringClass();
-		Body newMethod = sootMethod.getActiveBody();
-		//SootMethod nm = (SootMethod) sootMethod.method()
-		//nm.setName("newName");
-
-		newMethod.getUnits().getFirst().clone();*/
-		//cl.addMethod(nm);
-
-		//TODO - clean code
-
 
 		SootMethod sootMethod = body.getMethod();
 		Chain<Unit> units  = body.getUnits();
@@ -349,13 +303,6 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		JimpleInjector.setBody(body);
 
 		UnitGraph unitGraph = new BriefUnitGraph(body);
-
-		/*DefinedByValueOfCall defininedByValueOfCall = new DefinedByValueOfCall(unitGraph);
-
-		// TODO: this is output is only for demonstration... it should be removed eventually
-		for (Unit unit : units) {
-			System.out.println(String.format("%s : \n  before: %s\n  after: %s", unit, defininedByValueOfCall.getFlowBefore(unit), defininedByValueOfCall.getFlowAfter(unit)));
-		}*/
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
 		JimpleInjector.setStaticAnalaysisResults(methodTypings.getVarTyping(sootMethod),
@@ -564,19 +511,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							List<Unit> tempSuccessorList = new ArrayList<Unit>();
 							tempSuccessorList.add(unit);
 
-							/*int u = 0;
-							while(unitGraph.getSuccsOf(tempSuccessorList.get(0)).size() > 0){
-								tempSuccessorList.set(0, (unitGraph.getSuccsOf(tempSuccessorList.get(0))).get(0));
-								u += 1;
-							}*/
 							int u = unmodifiedStmts.size() - unmodifiedStmts.indexOf(unit) - 1;
 
 							tempSuccessorList.set(0, unit);
 							if(u > 4)
 								u = 4;
 							// TODO: get rid of hardcoded 4 !!
-							//for (int m = 0; m < 4 && m <= unitStmtsListString.size() - 1; m++) {
-							//for (int m = 0; m < 4 && m < u; m++) {
 							for (int m = 0; m < u; m++) {
 								tempSuccessorList.set(0, (unitGraph.getSuccsOf(tempSuccessorList.get(0))).get(0));
 							}
