@@ -103,7 +103,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 					JimpleInjector.makeLocal((Local) leftOperand, "MEDIUM", stmt);
 					break;
 				case SET_RETURN_LEVEL: // This will be handeled later (by nico)
-					JimpleInjector.setReturnLevelAfterInvokeStmt((Local) leftOperand, stmt);
+					JimpleInjector.setReturnLevelAfterInvokeStmt((Local) leftOperand, stmt, body.getMethod().getName());
 					break;
 				case CAST:    // will also be handled later
 					logger.finest("Cast found at " + stmt);
@@ -138,7 +138,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				int posInArgList = ((ParameterRef) stmt.getRightOp())
 						.getIndex();
 				//JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp());
-				JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp(), body.getMethod().getName());
+				JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp(), body.getMethod().getName(), stmt);
 				//JimpleInjector.assignArgumentToLocal((Local) stmt.getLeftOp(), body.getMethod().getName());
 			}
 		} else if (stmt.getRightOp() instanceof ThisRef) {

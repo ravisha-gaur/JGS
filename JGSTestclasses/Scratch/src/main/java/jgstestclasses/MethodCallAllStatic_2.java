@@ -5,7 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.support.Constraints;
 import de.unifreiburg.cs.proglang.jgs.support.Effects;
 import de.unifreiburg.cs.proglang.jgs.support.IOUtils;
 
-public class MethodCallAllStatic {
+public class MethodCallAllStatic_2 {
 
     @Constraints({"@0 <= @ret", "@1 <= @ret", "@2 <= @ret"})
     @Effects({"LOW"})

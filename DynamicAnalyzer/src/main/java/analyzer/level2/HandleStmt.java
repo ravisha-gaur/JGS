@@ -409,9 +409,11 @@ public class HandleStmt {
         // In case somebody wonders: we do not need to check the local pc
         // here. In Jimple, argument-to-local assignments (JIdentityStmt) are always
         // the beginning of the method, where the context is public
-        if(objectmap.getActualArguments().size() > pos) {
-            localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
-        }
+        //if(objectmap.getActualArguments().size() > pos) {
+            //localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
+        localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(0)));
+            objectmap.getActualArguments().remove(0);
+        //}
         return localmap.getLevel(signature);
     }
 

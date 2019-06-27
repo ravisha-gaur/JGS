@@ -121,6 +121,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			JimpleInjector.signatureList = new ArrayList<String>();
 			JimpleInjector.noTrackSignatureList = new ArrayList<String>();
 			fieldVarMaps = new HashMap<String, Boolean>();
+			DefinedByValueOfCall.independentVarsMap = new HashMap<String, List<String>>();
+			DefinedByValueOfCall.identityTargetsMap = new HashMap<String, List<HashMap<Integer, Value>>>();
+			DefinedByValueOfCall.identityTargets = new ArrayList<Value>();
 		}
 
 		if (body.getMethod().getName().equals("<init>")){
@@ -156,7 +159,21 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		//int countConstants = 0;
 		//int countLoop = 0;
-		independentVars = new ArrayList<String>(DefinedByValueOfCall.independentVarsSet);
+		//independentVars = new ArrayList<String>(DefinedByValueOfCall.independentVarsSet);
+			HashMap<String, List<String>> independentVarsMap = DefinedByValueOfCall.independentVarsMap;
+
+			/*for (Unit u: methodCalls) {
+				for (int i = 0; i < u.getUseBoxes().size(); i++) {
+					Value val = u.getUseBoxes().get(i).getValue();
+					List tempList = new ArrayList();
+					if (!BodyAnalyzer.methodNames.stream().anyMatch(val.toString()::contains)) {
+						if(independentVars.contains(val.toString()))
+							tempList.add(val);
+
+					}
+					//independentVarsMap.put((InvokeExpr)u.get, tempList);
+				}
+			}*/
 
 		for(Map.Entry<Unit, String> e: methodCallsInsideMethods.entrySet()){
 			String mn = e.getValue();
@@ -164,6 +181,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			for (int i = 0; i < u.getUseBoxes().size(); i++) {
 				int idx = 0;
 				Value value = u.getUseBoxes().get(i).getValue();
+				String mn1 = BodyAnalyzer.methodNames.stream().findAny().get();
 				if (!BodyAnalyzer.methodNames.stream().anyMatch(value.toString()::contains)) {
 					if(DefinedByValueOfCall.identityTargets.contains(value)){
 						InvokeExpr invokeExpr;
@@ -179,20 +197,31 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							}
 
 							if(mn.equals(invokeExpr.getMethod().getName())){
+								independentVars = independentVarsMap.get(mn);
+								List l1 = new ArrayList();
 								for (int j = 0; j < s.getUseBoxes().size(); j++) {
 									Value val = s.getUseBoxes().get(j).getValue();
 									if (!BodyAnalyzer.methodNames.stream().anyMatch(val.toString()::contains)) {
+										//independentVars = independentVarsMap.get(mn);
 										//if(!(val instanceof Constant) && independentVars.contains(val.toString())){
-										if(val instanceof Constant || independentVars.contains(val.toString())){
-											List<HashMap<Integer, Value>> l  = DefinedByValueOfCall.identityTargetsMap.get(mn);
-											HashMap<Integer, Value> hm = l.get(idx);
-											if(!independentVars.contains(hm.get(idx).toString())){
-												independentVars.add(hm.get(idx).toString());
+										if(null != independentVars) {
+											if (val instanceof Constant || independentVars.contains(val.toString())) {
+												List<HashMap<Integer, Value>> l = DefinedByValueOfCall.identityTargetsMap.get(mn);
+												HashMap<Integer, Value> hm = l.get(idx);
+												//if(!independentVars.contains(hm.get(idx).toString())){
+												l1.add(hm.get(idx).toString());
+												//independentVars.add(hm.get(idx).toString());
 												//independentVars.remove(hm.get(idx).toString());
+												//}
 											}
 										}
 										idx += 1;
 									}
+								}
+								if(independentVarsMap.containsKey(mn1)){
+									List d = independentVarsMap.get(mn1);
+									d.addAll(l1);
+									independentVarsMap.put(mn1, d);
 								}
 							}
 						}
@@ -204,7 +233,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		if(argumentMap.isEmpty()) {
 			String methodName = "";
-			for (Unit unit : methodCalls) {
+			for (Unit unit: methodCalls) {
 				int argPosition = 0;
 				List argumentsList = new ArrayList();
 				//for (int i = 0; i < unit.getUseBoxes().size(); i++) {
@@ -214,8 +243,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 					if (source instanceof InvokeExpr) {
 						invokeExpr = (InvokeExpr) source;
 						methodName = invokeExpr.getMethod().getName();
-						break;
+						//break;
 					}
+				}
+				else if(unit instanceof InvokeStmt){
+					methodName = ((InvokeStmt) unit).getInvokeExpr().getMethod().getName();
 				}
 
 					/*String valueString = unit.getUseBoxes().get(i).getValue().toString();
@@ -229,6 +261,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 						//countLoop += 1;
 						Value value = unit.getUseBoxes().get(i).getValue();
 						if (!methodNames.stream().anyMatch(value.toString()::contains)) {
+							independentVars = independentVarsMap.get(methodName);
 							// argument is not a constant - eg: add(7,7) or int x = 7 and add(x, x)
 							if (!(value instanceof Constant) && !independentVars.contains(value.toString())) {
 								HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
@@ -246,17 +279,20 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 								//if the method is called multiple times, update the argument map for that method i.e if for eg: add(5, x) and (x, 5) argument map for add will have true for argPositions 0 and 1
 								else if (null != argumentMap.get(methodName)) {
 									List<HashMap<Integer, Boolean>> argList = argumentMap.get(methodName);
-									HashMap<Integer, Boolean> argMap = argList.get(argPosition);
-									if (null != argMap.get(argPosition) && argMap.get(argPosition)) {
-										HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
-										tempMap.put(argPosition, true);
-										argumentsList.add(tempMap);
-										argPosition += 1;
-									} else {
-										HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
-										tempMap.put(argPosition, false);
-										argumentsList.add(tempMap);
-										argPosition += 1;
+									if(!argList.isEmpty()) {
+										HashMap<Integer, Boolean> argMap = argList.get(argPosition);
+										if (null != argMap.get(argPosition) && argMap.get(argPosition)) {
+											HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
+											tempMap.put(argPosition, true);
+											argumentsList.add(tempMap);
+											argPosition += 1;
+										}
+										else {
+											HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
+											tempMap.put(argPosition, false);
+											argumentsList.add(tempMap);
+											argPosition += 1;
+										}
 									}
 								}
 							}
@@ -270,7 +306,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		//TODO - clean code
 		System.out.println("++++++++++++++++++++++++++++++++++++++");
 
-		for(Map.Entry<String, List<HashMap<Integer, Boolean>>> e :argumentMap.entrySet()){
+		for(Map.Entry<String, List<HashMap<Integer, Boolean>>> e: argumentMap.entrySet()){
 			System.out.print(e.getKey());
 			List<HashMap<Integer, Boolean>> l = e.getValue();
 			for(HashMap<Integer, Boolean> m : l){

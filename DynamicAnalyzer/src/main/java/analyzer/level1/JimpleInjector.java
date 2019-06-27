@@ -11,6 +11,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.ImmediateBox;
 import soot.jimple.internal.JAssignStmt;
+import soot.jimple.internal.JInvokeStmt;
 import soot.util.Chain;
 import util.dominator.DominatorFinder;
 import util.exceptions.InternalAnalyzerException;
@@ -75,6 +76,8 @@ public class JimpleInjector {
 
     private static  boolean afterAssignArgumentToLocal = false;
     public static String prevMethodName = "";
+    private static Unit prevUnit;
+
 
     public static boolean staticDestination = false;
 
@@ -119,18 +122,35 @@ public class JimpleInjector {
      *
      * @param pos   Statement / Unit where to insert setReturnLevelAfterInvokeStmt
      */
-    public static void setReturnLevelAfterInvokeStmt(Local l, Unit pos) {
+    public static void setReturnLevelAfterInvokeStmt(Local l, Unit pos, String methodName) {
         Unit invoke = fac.createStmt("setReturnLevelAfterInvokeStmt", StringConstant.v(getSignatureForLocal(l)));
         if(!Pattern.compile("\\bstoreArgumentLevel\\b").matcher(units.toString()).find()){
             JAssignStmt assignStmt = (JAssignStmt) pos;
             Value source = assignStmt.getRightOp();
-            if(!DefinedByValueOfCall.dynInMethod.containsKey(((InvokeExpr)source).getMethod().getName()))
+            String mn = ((InvokeExpr)source).getMethod().getName();
+            String m = "";
+            loop1:if(BodyAnalyzer.methodCallsInsideMethods.values().contains(mn)){
+                InvokeExpr is = null;
+                Unit unit = BodyAnalyzer.methodCallsInsideMethods.keySet().stream().findAny().get();
+                if(unit instanceof JAssignStmt)
+                    is = (InvokeExpr) (((JAssignStmt) unit).getRightOp());
+                else if(unit instanceof JInvokeStmt)
+                    break loop1;
+                if(null != is) {
+                    m = is.getMethod().getName();
+                    if(DefinedByValueOfCall.dynInMethod.containsKey(m))
+                        DefinedByValueOfCall.dynInMethod.put(mn, true);
+                }
+            }
+            if(!DefinedByValueOfCall.dynInMethod.containsKey(mn))
+            //if(!DefinedByValueOfCall.dynInMethod.containsKey(methodName))
                 return;
         }
         // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
         if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
             units.insertAfter(invoke, pos);
-            noTrackSignatureList.remove(getSignatureForLocal(l));
+            noTrackSignatureList.clear();
+            //noTrackSignatureList.remove(getSignatureForLocal(l));
         }
     }
 
@@ -341,6 +361,9 @@ public class JimpleInjector {
      * @param pos   Unit where the local occurs
      */
     public static void addLevelInAssignStmt(Local local, Unit pos) {
+        if(staticCtxCast)
+            return;
+
         // Checking, if current Policy is NSU, before performing the NSU_Check.
         // Means: If not, then we can break up here.
         if (DynamicPolicy.selected != DynamicPolicy.Policy.NSU_POLICY) {
@@ -385,6 +408,9 @@ public class JimpleInjector {
      * @param pos The statement where this field occurs
      */
     public static void addLevelInAssignStmt(InstanceFieldRef f, Unit pos) {
+        if(staticCtxCast)
+            return;
+
         logger.info("Adding level of field "+f.getField().getSignature()+" in assignStmt in method "+  b.getMethod().getName());
 
         String fieldSignature = getSignatureForField(f.getField());
@@ -414,6 +440,9 @@ public class JimpleInjector {
      * @param pos the position where to insert the statement
      */
     public static void addLevelInAssignStmt(StaticFieldRef f, Unit pos) {
+        if(staticCtxCast)
+            return;
+
         logger.info("Adding Level of static Field " + f + " in Method "+b.getMethod());
 
         SootField field = f.getField();
@@ -446,6 +475,9 @@ public class JimpleInjector {
      * @param pos -Unit- The position where this reference occurs
      */
     public static void addLevelInAssignStmt(ArrayRef a, Unit pos) {
+        if(staticCtxCast)
+            return;
+
         logger.info("Add Level of Array " + a + " in assign stmt: "+pos);
 
         String signature = getSignatureForArrayField(a);
@@ -465,21 +497,21 @@ public class JimpleInjector {
         if(staticCtxCast)
             return;
 
-        boolean f = false;
+        boolean checkDynArgs = false;
 
         for (int i = 0; i < pos.getUseBoxes().size(); i++) {
             if(pos.getUseBoxes().get(i) instanceof ImmediateBox) {
-                f = false;
+                checkDynArgs = false;
                 Value param = pos.getUseBoxes().get(i).getValue();
                 String sig = param.getType() + "_" + param;
                 if(noTrackSignatureList.contains(sig)){
-                    f = true;
+                    checkDynArgs = true;
                 }
                 else
                     break;
             }
         }
-        if(f) {
+        if(checkDynArgs) {
             dontSetLocalFlag = true;
             noTrackSignatureList.add(getSignatureForLocal(l));
             return;
@@ -554,6 +586,7 @@ public class JimpleInjector {
     public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
         if(staticCtxCast)
             return;
+
         logger.info("Set level of field "+f.getField().getSignature() + " in assign Statement located in" + b.getMethod().getName());
 
         String fieldSignature = getSignatureForField(f.getField());
@@ -598,6 +631,7 @@ public class JimpleInjector {
     public static void setLevelOfAssignStmt(StaticFieldRef f, Unit pos) {
         if(staticCtxCast)
             return;
+
         logger.info("Set Level of static Field " + f.toString() + " in assign stmt");
 
         SootField field = f.getField();
@@ -642,6 +676,9 @@ public class JimpleInjector {
      *            reference appears.
      */
     public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
+        if(staticCtxCast)
+            return;
+
         logger.info("Set level of array " + a.toString() + " in assign stmt");
 
         String signatureForField = getSignatureForArrayField(a);
@@ -694,7 +731,7 @@ public class JimpleInjector {
     // <editor-fold desc="Assign Stmt - Method -> Interesting for Identity Stmt">
 
     /**
-     * Note: Altough method is not used by jimpleInjector, the corresponding handleStatement method is used in the manually instrumented tests.
+     * Note: Although method is not used by JimpleInjector, the corresponding handleStatement method is used in the manually instrumented tests.
      */
     @SuppressWarnings("unused")
     public static void assignReturnLevelToLocal(Local l, Unit pos) {
@@ -705,13 +742,17 @@ public class JimpleInjector {
         lastPos = assignExpr;
     }
 
-    public static void assignArgumentToLocal(int posInArgList, Local local, String methodName) {
+    public static void assignArgumentToLocal(int posInArgList, Local local, String methodName, Unit pos) {
         afterAssignArgumentToLocal = true;
 
         if(!prevMethodName.isEmpty() && !prevMethodName.equals(methodName)) {
             signatureList = new ArrayList<String>();
             noTrackSignatureList = new ArrayList<String>();
+            //
+            argumentPosition = 0;
         }
+        /*if(null != prevUnit && !prevUnit.equals(pos))
+            argumentPosition = 0;*/
 
         List<HashMap<Integer, Boolean>> argList = BodyAnalyzer.argumentMap.get(methodName);
         if(null != argList && !argList.isEmpty()) {
@@ -729,6 +770,7 @@ public class JimpleInjector {
         }
 
         prevMethodName = methodName;
+        prevUnit = pos;
     }
 
 
@@ -774,8 +816,17 @@ public class JimpleInjector {
         for (int i = 0; i < lArguments.length; i++) {
             String signature = "";
             if (lArguments[i] != null) {
-                if(BodyAnalyzer.independentVars.contains(lArguments[i].toString()))
-                    continue;
+                InvokeExpr is = null;
+                if(pos instanceof JAssignStmt)
+                    is = (InvokeExpr) (((JAssignStmt) pos).getRightOp());
+                else if(pos instanceof JInvokeStmt)
+                    is = ((JInvokeStmt) pos).getInvokeExpr();
+                if(null != is) {
+                    String mn = is.getMethod().getName();
+                    List<String> independentVars = DefinedByValueOfCall.independentVarsMap.get(mn);
+                    if (independentVars.contains(lArguments[i].toString()))
+                        continue;
+                }
                 signature = getSignatureForLocal(lArguments[i]);
                 Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature));
                 units.insertBefore(invoke, pos);
@@ -794,6 +845,9 @@ public class JimpleInjector {
      * Insert the following check: If Local l is high, throw new IFCError
      */
     public static void checkThatLe(Local l, String level, Unit pos, String methodName) {
+        if(staticCtxCast)
+            return;
+
         logger.info("Check that " + l + " is not high");
 
         if (l == null) {
@@ -864,6 +918,8 @@ public class JimpleInjector {
      * @param locals An array of all locals which appear in the condition.
      */
     public static void checkCondition(Unit pos, Local... locals) {
+        if(staticCtxCast)
+            return;
 
         logger.info("Check condition in method " + b.getMethod()+ " IfStmt: " + pos);
 
