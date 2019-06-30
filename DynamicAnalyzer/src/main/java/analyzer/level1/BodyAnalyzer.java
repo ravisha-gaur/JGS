@@ -6,10 +6,13 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import soot.*;
+import soot.baf.internal.BSpecialInvokeInst;
+import soot.baf.internal.BVirtualInvokeInst;
 import soot.jimple.Constant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Stmt;
+import soot.jimple.internal.ImmediateBox;
 import soot.jimple.internal.JAssignStmt;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph;
@@ -64,6 +67,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	public static String callingMethod = "main";
 	public static List<String> independentVars = new ArrayList<String>();
 	private static String prevClassName = "";
+	private static int count = 0;
+	private static Chain<SootField> fields;
+	boolean nonStaticFieldsFlag = false;
 
 	/**
 	 * Constructs an new BodyAnalyzer with the given
@@ -85,7 +91,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	private static Set<String> getMethodNames(List<SootMethod> sootMethods){
 		Set<String> methodNames = new HashSet<String>();
 		for (SootMethod m : Scene.v().getMainClass().getMethods()) {
-			if(!m.isMain() && !m.getName().equals("<init>") && !m.getName().equals("<clinit>")) {
+			if(!m.isMain()) {
 				methodNames.add(m.getName());
 			}
 		}
@@ -103,13 +109,14 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	 */
 	@Override
 	protected void internalTransform(Body body, String s1, Map<String, String> map) {
+		count += 1;
 		logger.info(" Analyze of :" + body.getMethod().getName() + " started.");
 
 		List<SootMethod> allMethods = Scene.v().getMainClass().getMethods();
 
 		methodNames = getMethodNames(allMethods);
 		methodNamesList = new ArrayList<>(methodNames);
-		HashMap<String, HashMap<Integer, Boolean>> mp = new HashMap<String, HashMap<Integer, Boolean>>();
+		ArrayList<String> fieldVars = new ArrayList<String>();
 
 		String className = body.getMethod().getDeclaringClass().getName();
 
@@ -124,11 +131,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			DefinedByValueOfCall.independentVarsMap = new HashMap<String, List<String>>();
 			DefinedByValueOfCall.identityTargetsMap = new HashMap<String, List<HashMap<Integer, Value>>>();
 			DefinedByValueOfCall.identityTargets = new ArrayList<Value>();
+			count = 0;
+			fields.clear();
 		}
 
-		if (body.getMethod().getName().equals("<init>")){
+		if(count == 1){
 			for (SootMethod sootMethod : allMethods) {
-				if (!sootMethod.getName().equals("<init>") && !sootMethod.getName().equals("<clinit>")) {
 					Chain<Unit> units = sootMethod.getActiveBody().getUnits();
 					ArrayList<Unit> unmodifiedStmts = new ArrayList<>(units);
 					for (Unit unit : unmodifiedStmts) {
@@ -140,11 +148,21 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							}
 						}
 					}
+
+				fields = sootMethod.getDeclaringClass().getFields();
+
+				if (sootMethod.getName().equals("<init>")) {
+					for (SootField f : fields) {
+						containsFieldsVarsFlag = true;
+						fieldVars.add(f.getName());
+						if (!f.isStatic()) {
+							nonStaticFieldsFlag = true;
+						}
+					}
 				}
 			}
 
 			for (SootMethod sootMethod : allMethods) {
-				if (!sootMethod.getName().equals("<init>") && !sootMethod.getName().equals("<clinit>")) {
 					UnitGraph unitGraph = new BriefUnitGraph(sootMethod.getActiveBody());
 
 					DefinedByValueOfCall.isFirstUnit = true;
@@ -152,7 +170,6 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 					// to find dependent variable chains and independent variables
 					DefinedByValueOfCall.getCasts(casts);
 					DefinedByValueOfCall defininedByValueOfCall = new DefinedByValueOfCall(unitGraph);
-				}
 			}
 
 
@@ -170,6 +187,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                         if(DefinedByValueOfCall.identityTargets.contains(value)){
                             InvokeExpr invokeExpr;
                             for(Unit s : methodCalls){
+                            	if (s instanceof BSpecialInvokeInst || s instanceof BVirtualInvokeInst)
+                            		continue;
                                 if(s instanceof JAssignStmt) {
                                     JAssignStmt assignStmt = (JAssignStmt) s;
                                     Value source = assignStmt.getRightOp();
@@ -230,7 +249,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                     if (!methodName.isEmpty()) {
                         for (int i = 0; i < unit.getUseBoxes().size(); i++) {
                             Value value = unit.getUseBoxes().get(i).getValue();
-                            if (!methodNames.stream().anyMatch(value.toString()::contains)) {
+                            if (!methodNames.stream().anyMatch(value.toString()::contains) && unit.getUseBoxes().get(i) instanceof ImmediateBox) {
                                 independentVars = independentVarsMap.get(methodName);
                                 // argument is not a constant - eg: add(7,7) or int x = 7 and add(x, x)
                                 if (!(value instanceof Constant) && !independentVars.contains(value.toString())) {
@@ -248,7 +267,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                                     //if the method is called multiple times, update the argument map for that method i.e if for eg: add(5, x) and (x, 5) argument map for add will have true for argPositions 0 and 1
                                     else if (null != argumentMap.get(methodName)) {
                                         List<HashMap<Integer, Boolean>> argList = argumentMap.get(methodName);
-                                        if(!argList.isEmpty()) {
+                                        if(!argList.isEmpty() && argList.size() > argPosition) {
                                             HashMap<Integer, Boolean> argMap = argList.get(argPosition);
                                             if (null != argMap.get(argPosition) && argMap.get(argPosition)) {
                                                 HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
@@ -268,21 +287,22 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                             }
                         }
                     }
-                    argumentMap.put(methodName, argumentsList);
+                    if(!argumentsList.isEmpty()) // specialinvoke r0.<java.lang.Object: void <init>()>(); - always empty
+                    	argumentMap.put(methodName, argumentsList);
                 }
             }
 
             // Print argumentMap - debugging
-            /*for(Map.Entry<String, List<HashMap<Integer, Boolean>>> e: argumentMap.entrySet()){
-                System.out.print(e.getKey());
+            for(Map.Entry<String, List<HashMap<Integer, Boolean>>> e: argumentMap.entrySet()){
+                System.out.print(e.getKey() + " -> ");
                 List<HashMap<Integer, Boolean>> l = e.getValue();
                 for(HashMap<Integer, Boolean> m : l){
                     for(Map.Entry e1 :m.entrySet()){
-                        System.out.print(e1.getKey() + ": " + e1.getValue());
+                        System.out.print(e1.getKey() + ": " + e1.getValue() + ", ");
                     }
                 }
                 System.out.println();
-            }*/
+            }
 
 		}
 
@@ -290,7 +310,6 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		Chain<Unit> units  = body.getUnits();
 
 		AnnotationStmtSwitch stmtSwitch = new AnnotationStmtSwitch(body, casts);
-		Chain<SootField> fields = sootMethod.getDeclaringClass().getFields();
 
 		// Using a copy, such that JimpleInjector could inject directly.
 		ArrayList<Unit> unmodifiedStmts = new ArrayList<>(units);
@@ -328,7 +347,6 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		}
 
 		JimpleInjector.initHandleStmtUtils();
-		ArrayList<String> fieldVars = new ArrayList<String>();
 
 		// <editor-fold desc="Add Fields to Object Map, either static or instance; determined by Method name">
 
@@ -338,14 +356,6 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		 * new object
 		 */
 		if (sootMethod.getName().equals("<init>")) {
-		    boolean nonStaticFieldsFlag = false;
-            for (SootField f : fields) {
-                containsFieldsVarsFlag = true;
-                fieldVars.add(f.getName());
-                if (!f.isStatic()) {
-                    nonStaticFieldsFlag = true;
-                }
-            }
             if(fields.size() > 0 && nonStaticFieldsFlag){
                 JimpleInjector.addInstanceObjectToObjectMap();
             }

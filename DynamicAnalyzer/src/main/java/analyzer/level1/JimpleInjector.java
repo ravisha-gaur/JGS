@@ -83,6 +83,8 @@ public class JimpleInjector {
 
     private static boolean staticCtxCast = false;
 
+    private static boolean dontSetFieldLevel = false;
+
     /**
      * Stores the position of
      * <ul>
@@ -159,13 +161,15 @@ public class JimpleInjector {
      * @param body The body of the analyzed method.
      */
     public static void setBody(Body body) {
-        b = body;
-        units = b.getUnits();
-        locals = b.getLocals();
-        originalLocals = new ArrayList<>(locals);
+        if(null != body) {
+            b = body;
+            units = b.getUnits();
+            locals = b.getLocals();
+            originalLocals = new ArrayList<>(locals);
 
-        lastPos = getUnitOf(units, getStartPos(body));
-        fac.initialise();
+            lastPos = getUnitOf(units, getStartPos(body));
+            fac.initialise();
+        }
     }
 
     // <editor-fold desc="HandleStmt Related Methods">
@@ -251,7 +255,7 @@ public class JimpleInjector {
      * @param pos   position where to insert the created Stmt.
      */
     public static void makeLocal(Local local, String level, Unit pos) {
-        logger.info("Setting " + local + "to new level " + level);
+        logger.info("Setting " + local + " to new level: " + level);
 
         String signature = getSignatureForLocal(local);
         dynamicArgumentFlag = true;
@@ -276,7 +280,7 @@ public class JimpleInjector {
      * This is only done in "init".
      */
     static void addInstanceObjectToObjectMap() {
-        logger.info("Add object "+units.getFirst().getUseBoxes().get(0).getValue()+" to ObjectMap in method "+ b.getMethod().getName());
+        //logger.info("Add object "+units.getFirst().getUseBoxes().get(0).getValue()+" to ObjectMap in method "+ b.getMethod().getName());
         assureThisRef();
         Unit assignExpr = fac.createStmt("addObjectToObjectMap", units.getFirst().getDefBoxes().get(0).getValue());
         units.insertAfter(assignExpr, lastPos);
@@ -375,6 +379,7 @@ public class JimpleInjector {
 
         if(afterAssignArgumentToLocal) {
             if (!signatureList.contains(signature)) {
+                dontSetFieldLevel = true;
                 return;
             }
         }
@@ -392,6 +397,7 @@ public class JimpleInjector {
         // TODO CX is irrelevant here?
         //if(varTyping.getBefore(instantiation, (Stmt) pos, local).isDynamic()){
         if (varTyping.getAfter(instantiation, (Stmt) pos, local).isDynamic()) {
+            dontSetFieldLevel = false;
             units.insertBefore(invoke, pos);
             lastPos = pos;
         }
@@ -409,17 +415,29 @@ public class JimpleInjector {
         if(staticCtxCast)
             return;
 
+        if(dontSetFieldLevel)
+            return;
+
         logger.info("Adding level of field "+f.getField().getSignature()+" in assignStmt in method "+  b.getMethod().getName());
 
         String fieldSignature = getSignatureForField(f.getField());
 
         Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel", f.getBase(), StringConstant.v(fieldSignature));
 
-        String[] tempArr = (pos.toString().split("=")[0]).split(" ");
-        if(tempArr.length > 2) {
-            String key = tempArr[2].replace(">", "");
-            if (BodyAnalyzer.fieldVarMaps.get(key))
-                staticDestination = false;
+        SootField field = f.getField();
+        SootClass sc = field.getDeclaringClass();
+        String tempString;
+
+        if(pos.toString().contains("=")) {
+            String[] tempArr1 = pos.toString().split("=");
+            if(tempArr1[0].contains(sc.toString()))
+                tempString = tempArr1[0];
+            else
+                tempString = tempArr1[1];
+            String[] tempArr = tempString.split(" ");
+                String key = tempArr[tempArr.length - 1].replace(">", "");
+                if (BodyAnalyzer.fieldVarMaps.get(key))
+                    staticDestination = false;
         }
 
         if(!staticDestination) {
@@ -440,6 +458,9 @@ public class JimpleInjector {
         if(staticCtxCast)
             return;
 
+        if(dontSetFieldLevel)
+            return;
+
         logger.info("Adding Level of static Field " + f + " in Method "+b.getMethod());
 
         SootField field = f.getField();
@@ -452,9 +473,24 @@ public class JimpleInjector {
                 StringConstant.v(signature)
         );
 
-        String key = (pos.toString().split("=")[1]).trim().split(" ")[2].replace(">", "");
+        String tempString;
+
+        if(pos.toString().contains("=")) {
+            String[] tempArr1 = pos.toString().split("=");
+            if(tempArr1[0].contains(sc.toString()))
+                tempString = tempArr1[0];
+            else
+                tempString = tempArr1[1];
+            String[] tempArr = tempString.split(" ");
+            String key = tempArr[tempArr.length - 1].replace(">", "");
+            if (BodyAnalyzer.fieldVarMaps.get(key))
+                staticDestination = false;
+        }
+
+
+        /*String key = (pos.toString().split("=")[1]).trim().split(" ")[2].replace(">", "");
         if(!BodyAnalyzer.fieldVarMaps.isEmpty() && null != BodyAnalyzer.fieldVarMaps.get(key) && BodyAnalyzer.fieldVarMaps.get(key))
-            staticDestination = false;
+            staticDestination = false;*/
 
 
         // TODO cannot cast StaticFieldref to Local!
@@ -473,6 +509,9 @@ public class JimpleInjector {
      */
     public static void addLevelInAssignStmt(ArrayRef a, Unit pos) {
         if(staticCtxCast)
+            return;
+
+        if(dontSetFieldLevel)
             return;
 
         logger.info("Add Level of Array " + a + " in assign stmt: "+pos);
@@ -503,8 +542,10 @@ public class JimpleInjector {
                 if(noTrackSignatureList.contains(sig)){
                     checkDynArgs = true;
                 }
-                else
+                else {
+                    dontSetLocalFlag = false;
                     break;
+                }
             }
         }
         if(checkDynArgs) {
@@ -583,6 +624,9 @@ public class JimpleInjector {
         if(staticCtxCast)
             return;
 
+        if(dontSetFieldLevel)
+            return;
+
         logger.info("Set level of field "+f.getField().getSignature() + " in assign Statement located in" + b.getMethod().getName());
 
         String fieldSignature = getSignatureForField(f.getField());
@@ -628,13 +672,15 @@ public class JimpleInjector {
         if(staticCtxCast)
             return;
 
+        if(dontSetFieldLevel)
+            return;
+
         logger.info("Set Level of static Field " + f.toString() + " in assign stmt");
 
         SootField field = f.getField();
 
         String signature = getSignatureForField(field);
         SootClass sc = field.getDeclaringClass();
-
 
         // insert: checkGlobalPC(Object, String)
         Unit checkGlobalPCExpr = fac.createStmt("checkGlobalPC",
@@ -817,7 +863,7 @@ public class JimpleInjector {
                 if(null != invokeExpr) {
                     String methodName = invokeExpr.getMethod().getName();
                     List<String> independentVars = DefinedByValueOfCall.independentVarsMap.get(methodName);
-                    if (independentVars.contains(lArguments[i].toString()))
+                    if (null!= independentVars && independentVars.contains(lArguments[i].toString()))
                         continue;
                 }
                 signature = getSignatureForLocal(lArguments[i]);

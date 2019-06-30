@@ -104,7 +104,9 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
 
         // handling identity statements (or method params)
         if(unit instanceof IdentityStmt){
-            identityTargets.add(((IdentityStmt) unit).getLeftOp());
+            Value obj = unit.getUseBoxes().get(0).getValue();
+            if(!(obj instanceof ThisRef))
+                identityTargets.add(((IdentityStmt) unit).getLeftOp());
 
             HashMap<Integer, Value> hm = new HashMap<Integer, Value>();
             hm.put(index, ((IdentityStmt) unit).getLeftOp());
