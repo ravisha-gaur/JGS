@@ -17,8 +17,6 @@ public class NewInstanceMulConstructorsFailing {
         this.b = b;
     }
 
-    @Constraints({"@0 <= ?", "@1 <= ?"})
-    @Effects({"HIGH", "?", "LOW"})
     NewInstanceMulConstructorsFailing(){
 
     }

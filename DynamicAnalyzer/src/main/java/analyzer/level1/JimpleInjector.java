@@ -222,8 +222,21 @@ public class JimpleInjector {
      * end of every analyzed method.
      */
     static void closeHS() {
-        logger.info("Closing HandleStmt in Method "+b.getMethod().getName());
-        units.insertBefore(fac.createStmt("close"), units.getLast());
+        logger.info("Closing HandleStmt in Method " + b.getMethod().getName());
+        if(units.toString().contains("hs"))
+            units.insertBefore(fac.createStmt("close"), units.getLast());
+        int count = 0;
+        for(Unit unit: units){
+            if(unit.toString().contains("hs")){
+                count += 1;
+            }
+        }
+        if(count == 4){ // no other instrumentation - only (1) hs = new analyzer.level2.HandleStmt (2) hs.init<> (3) hs.initHandleStmtUtils() and (4) hs.close()
+            locals.remove(hs);
+            units.removeIf(s -> s.toString().contains("hs"));
+
+        }
+
     }
 
 

@@ -20,8 +20,10 @@ public class MethodCall_addS_addD_Success {
     @Effects({"LOW"})
     public static void main(String[] args) {
 
-        int x = Casts.cast("? ~> LOW", 7);
-        int z = Casts.cast("? ~> LOW", 7);
+        //int x = Casts.cast("? ~> LOW", 7);
+        //int z = Casts.cast("? ~> LOW", 7);
+        int x = 7;
+        int z = 9;
         int r = addS(x, z);
 
         IOUtils.printSecret(r);

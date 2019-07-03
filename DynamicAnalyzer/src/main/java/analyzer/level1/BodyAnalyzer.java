@@ -131,7 +131,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			DefinedByValueOfCall.independentVarsMap = new HashMap<String, List<String>>();
 			DefinedByValueOfCall.identityTargetsMap = new HashMap<String, List<HashMap<Integer, Value>>>();
 			DefinedByValueOfCall.identityTargets = new ArrayList<Value>();
-			count = 0;
+			count = 1;
 			fields.clear();
 		}
 
@@ -331,10 +331,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 				casts);
 
 
-
 		// invokeHS should be at the beginning of every method-body.
 		// It creates a map for locals.
-		JimpleInjector.invokeHS();
+        JimpleInjector.invokeHS();
 		//JimpleInjector.addNeededLocals();
 
 		// We have to initialize the run-time system at the very beginning.
@@ -343,7 +342,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		// - if there is no clinit, at the beginning of main
 		// TODO: the run-time system should inititalize itself lazily, perhaps (i.e., on-demand)
 		if (isFirstApplicationMethodToRun(sootMethod)) {
-			JimpleInjector.initHS();
+		    JimpleInjector.initHS();
 		}
 
 		JimpleInjector.initHandleStmtUtils();
