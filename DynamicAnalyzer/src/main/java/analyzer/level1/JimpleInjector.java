@@ -223,20 +223,18 @@ public class JimpleInjector {
      */
     static void closeHS() {
         logger.info("Closing HandleStmt in Method " + b.getMethod().getName());
-        if(units.toString().contains("hs"))
-            units.insertBefore(fac.createStmt("close"), units.getLast());
+        units.insertBefore(fac.createStmt("close"), units.getLast());
+        // if no other instrumentation, get rid off all lines involving HandleStmt entirely
         int count = 0;
         for(Unit unit: units){
             if(unit.toString().contains("hs")){
                 count += 1;
             }
         }
-        if(count == 4){ // no other instrumentation - only (1) hs = new analyzer.level2.HandleStmt (2) hs.init<> (3) hs.initHandleStmtUtils() and (4) hs.close()
+        if(count == 4){ // no other instrumentation - only (1) hs = new analyzer.level2.HandleStmt (2) hs.init<> (3) hs.initHandleStmtUtils() and (4) hs.close() => count = 4
             locals.remove(hs);
             units.removeIf(s -> s.toString().contains("hs"));
-
         }
-
     }
 
 
