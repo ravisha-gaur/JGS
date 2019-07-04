@@ -520,13 +520,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseLocal(Local l) {
 		logger.finest("Local identified " + l.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-		    boolean flag = false;
-			//if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag && !JimpleInjector.methodCallFlag && JimpleInjector.dynamicArgumentFlag)
-            /*if(JimpleInjector.methodCallFlag){
-                if(!JimpleInjector.argumentsList.contains(true))
-                    flag = true;
-            }*/
-			//if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag && !flag)
 			if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag)
 				JimpleInjector.addLevelInAssignStmt(l, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {

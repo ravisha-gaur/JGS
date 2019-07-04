@@ -61,7 +61,7 @@ public class JimpleInjector {
 
     public static boolean loopFlag = false;
 
-    private static int count = 0;
+    private static int loopCount = 0;
 
     public static boolean methodCallFlag = false;
 
@@ -982,11 +982,11 @@ public class JimpleInjector {
             throw new InternalAnalyzerException("Argument is null");
 
         if(!loopFlag) {
-            if (count != 1) {
+            if (loopCount != 1) {
                 callJoinLevel(numberOfLocals, false, locals);
                 Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
                 checkConditionCalledFlag = true;
-                count += 1;
+                loopCount += 1;
                 units.insertAfter(invoke, lastPos);
                 lastPos = invoke;
             } else {

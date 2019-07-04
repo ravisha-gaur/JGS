@@ -149,13 +149,6 @@ public class ExternalClasses {
 		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.fine("Join levels for external class arguments");
 			for (Local param : params) {
-				boolean flag = false;
-				//if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag && !JimpleInjector.methodCallFlag && JimpleInjector.dynamicArgumentFlag)
-				/*if(JimpleInjector.methodCallFlag){
-					if(!JimpleInjector.argumentsList.contains(true))
-						flag = true;
-				}*/
-				//if (param != null && !JimpleInjector.dynLabelFlag && !flag) {
 				if (param != null && !JimpleInjector.dynLabelFlag) {
 					parameter = param;
 					JimpleInjector.addLevelInAssignStmt(param, pos);

@@ -671,10 +671,14 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	// find if the var is used again in code. If not, it does not need to be tracked explicitly
 	private static boolean varExists(List<String> unitRhsListString, String unitLhsString){
 		boolean varExistsFlag = false;
-		for(String a : unitRhsListString){    // source : https://stackoverflow.com/questions/25417363/java-string-contains-matches-exact-word
+		if(unitLhsString.contains("$"))
+			unitLhsString = unitLhsString.replace("$","dol");
+		for(String unitRhsString : unitRhsListString){    // source : https://stackoverflow.com/questions/25417363/java-string-contains-matches-exact-word
+			if(unitRhsString.contains("$"))
+				unitRhsString = unitRhsString.replace("$","dol");
 			String pattern = "\\b"+unitLhsString.trim()+"\\b";
 			Pattern p = Pattern.compile(pattern);
-			Matcher m = p.matcher(a);
+			Matcher m = p.matcher(unitRhsString);
 			varExistsFlag = m.find();
 			if(varExistsFlag)
 				break;
