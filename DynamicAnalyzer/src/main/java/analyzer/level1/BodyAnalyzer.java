@@ -19,6 +19,7 @@ import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.MHGDominatorsFinder;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.Chain;
+import util.CommonUtil;
 import util.dominator.DominatorFinder;
 import util.visitor.AnnotationStmtSwitch;
 
@@ -48,28 +49,25 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	private MethodTypings<Level> methodTypings;
 	private Casts<Level> casts;
 	private SignatureTable<Level> signatureTable;
-
 	private List<Unit> successorStmt = new ArrayList<Unit>();
 	private List<Unit> nextSuccessorStmt = new ArrayList<Unit>();
 	private List<String> unitRhsList = new ArrayList<String>();
 	private List<String> unitStmtsListString = new ArrayList<String>();
 	private UnitGraph g;
-
 	private Logger logger = Logger.getLogger(this.getClass().getName());
-
-	private static boolean containsFieldsVarsFlag = false;
-    public static HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
-    public static Set<String> methodNames = new HashSet<String>();
-	public static List<String> methodNamesList = new ArrayList<>();
-	public static HashMap<String, List<HashMap<Integer, Boolean>>> argumentMap = new HashMap<String, List<HashMap<Integer, Boolean>>>();
-	public static List<Unit> methodCalls = new ArrayList<Unit>();
-	public static HashMap<Unit,String> methodCallsInsideMethods = new HashMap<Unit,String>();
-	public static String callingMethod = "main";
-	public static List<String> independentVars = new ArrayList<String>();
-	private static String prevClassName = "";
-	private static int count = 0;
-	private static Chain<SootField> fields;
-	boolean nonStaticFieldsFlag = false;
+	private List<String> methodNamesList = new ArrayList<>();
+	private boolean containsFieldsVarsFlag = false;
+	private HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
+	private Set<String> methodNames = new HashSet<String>();
+	private HashMap<String, List<HashMap<Integer, Boolean>>> argumentMap = new HashMap<String, List<HashMap<Integer, Boolean>>>();
+	private List<Unit> methodCalls = new ArrayList<Unit>();
+	private HashMap<Unit,String> methodCallsInsideMethods = new HashMap<Unit,String>();
+	private List<String> independentVars = new ArrayList<String>();
+	private String callingMethod = "main";
+	private String prevClassName = "";
+	private int count = 0;
+	private Chain<SootField> fields;
+	private boolean nonStaticFieldsFlag = false;
 
 	/**
 	 * Constructs an new BodyAnalyzer with the given
@@ -88,7 +86,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	 * @param sootMethods
 	 * @return
 	 */
-	private static Set<String> getMethodNames(List<SootMethod> sootMethods){
+	private Set<String> getMethodNames(List<SootMethod> sootMethods){
 		Set<String> methodNames = new HashSet<String>();
 		for (SootMethod m : Scene.v().getMainClass().getMethods()) {
 			if(!m.isMain()) {
@@ -121,18 +119,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		String className = body.getMethod().getDeclaringClass().getName();
 
 		if(!prevClassName.isEmpty() && !prevClassName.equals(className)){
-			methodCalls = new ArrayList<Unit>();
-			methodCallsInsideMethods = new HashMap<Unit,String>();
-			argumentMap = new HashMap<String, List<HashMap<Integer, Boolean>>>();
-			JimpleInjector.prevMethodName = "";
-			JimpleInjector.signatureList = new ArrayList<String>();
-			JimpleInjector.noTrackSignatureList = new ArrayList<String>();
-			fieldVarMaps = new HashMap<String, Boolean>();
-			DefinedByValueOfCall.independentVarsMap = new HashMap<String, List<String>>();
-			DefinedByValueOfCall.identityTargetsMap = new HashMap<String, List<HashMap<Integer, Value>>>();
-			DefinedByValueOfCall.identityTargets = new ArrayList<Value>();
-			count = 1;
-			fields.clear();
+			reinitializeObjects();
 		}
 
 		if(count == 1){
@@ -162,6 +149,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 				}
 			}
 
+			HashMap<String, List<String>> independentVarsMap = new HashMap<String, List<String>>();
+			DefinedByValueOfCall.setBodyAnalyzerObjects(callingMethod, methodNames, methodCalls);
+
 			for (SootMethod sootMethod : allMethods) {
 					UnitGraph unitGraph = new BriefUnitGraph(sootMethod.getActiveBody());
 
@@ -169,11 +159,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 					callingMethod = sootMethod.getName();
 					// to find dependent variable chains and independent variables
 					DefinedByValueOfCall.getCasts(casts);
-					DefinedByValueOfCall defininedByValueOfCall = new DefinedByValueOfCall(unitGraph);
+					new DefinedByValueOfCall(unitGraph);
 			}
 
 
-			HashMap<String, List<String>> independentVarsMap = DefinedByValueOfCall.independentVarsMap;
+			independentVarsMap = DefinedByValueOfCall.getIndependentVarsMap();
 
 			// for calls to methods not in main method, check if parent is dynamically tracked or not
             for(Map.Entry<Unit, String> e: methodCallsInsideMethods.entrySet()){
@@ -182,8 +172,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                 for (int i = 0; i < unit.getUseBoxes().size(); i++) {
                     int idx = 0;
                     Value value = unit.getUseBoxes().get(i).getValue();
-                    String methodName2 = BodyAnalyzer.methodNames.stream().findAny().get();
-                    if (!BodyAnalyzer.methodNames.stream().anyMatch(value.toString()::contains)) {
+                    String methodName2 = methodNames.stream().findAny().get();
+                    if (!methodNames.stream().anyMatch(value.toString()::contains)) {
                         if(DefinedByValueOfCall.identityTargets.contains(value)){
                             InvokeExpr invokeExpr;
                             for(Unit s : methodCalls){
@@ -204,7 +194,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                                     List tempList = new ArrayList();
                                     for (int j = 0; j < s.getUseBoxes().size(); j++) {
                                         Value val = s.getUseBoxes().get(j).getValue();
-                                        if (!BodyAnalyzer.methodNames.stream().anyMatch(val.toString()::contains)) {
+                                        if (!methodNames.stream().anyMatch(val.toString()::contains)) {
                                             if(null != independentVars) {
                                                 if (val instanceof Constant || independentVars.contains(val.toString())) {
                                                     List<HashMap<Integer, Value>> tempList2 = DefinedByValueOfCall.identityTargetsMap.get(methodName1);
@@ -329,6 +319,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 				// We set the default type to dyn; our RT-system is able to handle untracked variables.
 				methodTypings.getSingleInstantiation(sootMethod, new TypeViews.Dyn<>()),
 				casts);
+
+		JimpleInjector.setBodyAnalyzerObjects(fieldVarMaps, methodNames, argumentMap, methodCalls, methodCallsInsideMethods, independentVars);
 
 
 		// invokeHS should be at the beginning of every method-body.
@@ -463,7 +455,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			String unitLhsString = "";
 			String unitRhsString = "";
 
-			if(isArithmeticExpression(unit.toString())) {
+			if(CommonUtil.isArithmeticExpression(unit.toString())) {
 				successorStmt = unitGraph.getSuccsOf(unit);
 				//if(!successorStmt.get(0).toString().contains("return") && !successorStmt.get(0).toString().contains("goto"))
 				if(!successorStmt.get(0).toString().contains("return"))
@@ -686,15 +678,6 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		return varExistsFlag;
 	}
 
-	// check if the unit string is an arithmetic expression
-	public static boolean isArithmeticExpression(String s){
-
-		if(Pattern.compile("[-+*/]").matcher(s).find()){
-			return true;
-		}
-
-		return false;
-	}
 
 	/**
 	 * Specifies, if the given Method is the First Application Method,
@@ -723,5 +706,20 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		} else {
 			return false; // neither clinit nor main method
 		}
+	}
+
+	private void reinitializeObjects(){
+		methodCalls = new ArrayList<Unit>();
+		methodCallsInsideMethods = new HashMap<Unit,String>();
+		argumentMap = new HashMap<String, List<HashMap<Integer, Boolean>>>();
+		JimpleInjector.prevMethodName = "";
+		JimpleInjector.signatureList = new ArrayList<String>();
+		JimpleInjector.noTrackSignatureList = new ArrayList<String>();
+		fieldVarMaps = new HashMap<String, Boolean>();
+		DefinedByValueOfCall.independentVarsMap = new HashMap<String, List<String>>();
+		DefinedByValueOfCall.identityTargetsMap = new HashMap<String, List<HashMap<Integer, Value>>>();
+		DefinedByValueOfCall.identityTargets = new ArrayList<Value>();
+		count = 1;
+		fields.clear();
 	}
 }

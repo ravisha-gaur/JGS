@@ -7,7 +7,9 @@ import soot.Value;
 import soot.jimple.*;
 import soot.jimple.internal.*;
 import soot.toolkits.graph.DirectedGraph;
+import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
+import util.CommonUtil;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -15,20 +17,24 @@ import java.util.stream.Collectors;
 
 public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> {
 
-    private static Value prevTarget;
-    private static Value prevSource;
+    private Value prevTarget;
+    private Value prevSource;
     private String methodName;
+    private Set<String> independentVarsSet = new HashSet<String>();
+    private int index = 0;
+    private List identityList = new ArrayList();
+    private boolean staticDestination = false;
+
     public static boolean isFirstUnit;
-    public static Set<String> independentVarsSet = new HashSet<String>();
     public static HashMap<String, List<String>> independentVarsMap = new HashMap<String, List<String>>();
     public static List<Value> identityTargets = new ArrayList<Value>();
     public static HashMap<String, List<HashMap<Integer, Value>>> identityTargetsMap = new HashMap<String, List<HashMap<Integer, Value>>>();
     public static HashMap<String, Boolean> dynInMethod = new HashMap<String, Boolean>();
 
-    private static int index = 0;
-    private static List identityList = new ArrayList();
     private static Casts casts;
-    private static boolean staticDestination = false;
+    private static String callingMethod = "main";
+    private static Set<String> methodNames = new HashSet<String>();
+    private static List<Unit> methodCalls = new ArrayList<Unit>();
 
     public DefinedByValueOfCall(DirectedGraph<Unit> graph) {
         super(graph);
@@ -72,7 +78,7 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
 
         InvokeExpr invokeExpr1 = null;
         //handling method calls not in the main method
-        if(BodyAnalyzer.methodCalls.contains(unit)){
+        if(methodCalls.contains(unit)){
             if(unit instanceof JAssignStmt)
                 invokeExpr1 = (InvokeExpr) (((JAssignStmt) unit).getRightOp());
             else if(unit instanceof JInvokeStmt)
@@ -111,7 +117,7 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
             HashMap<Integer, Value> hm = new HashMap<Integer, Value>();
             hm.put(index, ((IdentityStmt) unit).getLeftOp());
             identityList.add(hm);
-            identityTargetsMap.put(BodyAnalyzer.callingMethod, identityList);
+            identityTargetsMap.put(callingMethod, identityList);
             index += 1;
         }
 
@@ -126,13 +132,13 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                 if( source instanceof InvokeExpr){
                     invokeExpr = (InvokeExpr) source;
                     methodName1 = invokeExpr.getMethod().getName();
-                    if(BodyAnalyzer.methodNames.contains(methodName1))
+                    if(methodNames.contains(methodName1))
                         methodName = methodName1;
                     if(Pattern.compile("\\bcast\\b").matcher(source.toString()).find()) {
                         Casts.ValueConversion conversion = casts.getValueCast(assignStmt);
                         if (!conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                             staticDestination = false;
-                            dynInMethod.put(BodyAnalyzer.callingMethod, true);
+                            dynInMethod.put(callingMethod, true);
                         }
                         else if(conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()){
                             staticDestination = true;
@@ -150,15 +156,15 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                             out.add((Local)target);
                         };
                     }
-                    if(!BodyAnalyzer.isArithmeticExpression(source.toString()) && !independentVarsSet.isEmpty() && independentVarsSet.contains(prevTarget.toString())
-                            && null != invokeExpr && !BodyAnalyzer.methodNames.contains(invokeExpr.getMethod().getName()) && !(prevSource instanceof Constant))
+                    if(!CommonUtil.isArithmeticExpression(source.toString()) && !independentVarsSet.isEmpty() && independentVarsSet.contains(prevTarget.toString())
+                            && null != invokeExpr && !methodNames.contains(invokeExpr.getMethod().getName()) && !(prevSource instanceof Constant))
                         independentVarsSet.remove(prevTarget.toString());
                 }
                 else if(source instanceof Constant){
                     independentVarsSet.add(target.toString());
                 }
                 else {
-                    if(!out.contains(prevTarget) && !BodyAnalyzer.isArithmeticExpression(source.toString()))
+                    if(!out.contains(prevTarget) && !CommonUtil.isArithmeticExpression(source.toString()))
                         independentVarsSet.add(prevTarget.toString());
                     out.clear();
                 }
@@ -168,8 +174,17 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
         }
     }
 
-    static void getCasts(Casts c){
+    protected static void getCasts(Casts c){
         casts = c;
     }
 
+    protected static HashMap<String, List<String>> getIndependentVarsMap(){
+        return independentVarsMap;
+    }
+
+    protected static void setBodyAnalyzerObjects(String callingMthd, Set<String> mthdNames, List<Unit> mthdCalls){
+        callingMethod = callingMthd;
+        methodNames = mthdNames;
+        methodCalls = mthdCalls;
+    }
 }

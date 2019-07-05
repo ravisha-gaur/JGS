@@ -31,59 +31,44 @@ public class JimpleInjector {
 
     /** String for the HandleStmt class. */
     private static final String HANDLE_CLASS = HandleStmt.class.getName();
-
     /** Local which holds the object of HandleStmt. */
     private static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
-
     private static JimpleFactory fac = new JimpleFactory(HandleStmt.class, hs);
-
-
-    // <editor-fold desc="Fields for Body Analysis">
-
     /** The body of the actually analyzed method. */
     private static Body b = Jimple.v().newBody();
-
     /** Chain with all units in the actual method-body.*/
     private static Chain<Unit> units = b.getUnits();
-
     /** Chain with all locals in the actual method-body. */
     private static Chain<Local> locals = b.getLocals();
-
     private static boolean ctxCastCalledFlag = false;
-
     private static Stack stack = new Stack();
+    private static int loopCount = 0;
+    private static int argumentPosition = 0;
+    private static boolean dontSetLocalFlag = false;
+    private static boolean staticDestination = false;
+    private static boolean staticCtxCast = false;
+    private static boolean dontSetFieldLevel = false;
+    private static HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
+    private static Set<String> methodNames = new HashSet<String>();
+    private static HashMap<String, List<HashMap<Integer, Boolean>>> argumentMap = new HashMap<String, List<HashMap<Integer, Boolean>>>();
+    private static List<Unit> methodCalls = new ArrayList<Unit>();
+    private static HashMap<Unit,String> methodCallsInsideMethods = new HashMap<Unit,String>();
+    private static List<String> independentVars = new ArrayList<String>();
+    private static  boolean afterAssignArgumentToLocal = false;
+    private static boolean checkConditionCalledFlag = false;
+    private static boolean methodCallFlag = false;
+    private static boolean dynamicArgumentFlag = true;
+
 
     public static boolean dynLabelFlag = false;
-
     public static boolean arithmeticExpressionFlag = false;
-
-    public static boolean checkConditionCalledFlag = false;
-
     public static boolean loopFlag = false;
-
-    private static int loopCount = 0;
-
-    public static boolean methodCallFlag = false;
-
-    public static boolean dynamicArgumentFlag = true;
-
-    private static boolean dontSetLocalFlag = false;
-
-    private static int argumentPosition = 0;
-
     public static ArrayList<String> signatureList = new ArrayList<String>();
     public static ArrayList<String> noTrackSignatureList = new ArrayList<String>();
-
-    private static  boolean afterAssignArgumentToLocal = false;
     public static String prevMethodName = "";
-    private static Unit prevUnit;
 
 
-    public static boolean staticDestination = false;
 
-    private static boolean staticCtxCast = false;
-
-    private static boolean dontSetFieldLevel = false;
 
     /**
      * Stores the position of
@@ -114,10 +99,26 @@ public class JimpleInjector {
     private static CxTyping cxTyping;
     private static Instantiation instantiation;
 
-    /**
-     * The list of locals of the body *before* instrumentation.
-     */
-    private static List<Local> originalLocals;
+
+    protected static <Level> void setStaticAnalaysisResults(VarTyping<Level> varTy, CxTyping<Level> cxTy, Instantiation<Level> inst,
+                                                  Casts c) {
+        varTyping = varTy;
+        cxTyping = cxTy;
+        instantiation = inst;
+        casts = c;
+    }
+
+    protected static void setBodyAnalyzerObjects(HashMap<String, Boolean> fldVarMaps, Set<String> mthdNames,
+                                                 HashMap<String, List<HashMap<Integer, Boolean>>> argMap, List<Unit> mthdCalls,
+                                                 HashMap<Unit,String> mthdCallsInsideMethods, List<String> indVars){
+
+        fieldVarMaps = fldVarMaps;
+        methodNames = mthdNames;
+        argumentMap = argMap;
+        methodCalls = mthdCalls;
+        methodCallsInsideMethods = mthdCallsInsideMethods;
+        independentVars = indVars;
+    }
 
     /**
      * See method with same name in HandleStatement.
@@ -131,9 +132,9 @@ public class JimpleInjector {
             Value source = assignStmt.getRightOp();
             String methodName = ((InvokeExpr)source).getMethod().getName();
             String methodName2 = "";
-            loop1:if(BodyAnalyzer.methodCallsInsideMethods.values().contains(methodName)){
+            loop1:if(methodCallsInsideMethods.values().contains(methodName)){
                 InvokeExpr invokeExpr = null;
-                Unit unit = BodyAnalyzer.methodCallsInsideMethods.keySet().stream().findAny().get();
+                Unit unit = methodCallsInsideMethods.keySet().stream().findAny().get();
                 if(unit instanceof JAssignStmt)
                     invokeExpr = (InvokeExpr) (((JAssignStmt) unit).getRightOp());
                 else if(unit instanceof JInvokeStmt)
@@ -165,8 +166,6 @@ public class JimpleInjector {
             b = body;
             units = b.getUnits();
             locals = b.getLocals();
-            originalLocals = new ArrayList<>(locals);
-
             lastPos = getUnitOf(units, getStartPos(body));
             fac.initialise();
         }
@@ -398,7 +397,7 @@ public class JimpleInjector {
         if(noTrackSignatureList.contains(signature))
             return;
 
-        for(String methodName: BodyAnalyzer.methodNames){
+        for(String methodName: methodNames){
             if(Pattern.compile("\\b" + methodName + "\\b").matcher(pos.toString()).find()){
                 return;
             }
@@ -447,7 +446,7 @@ public class JimpleInjector {
                 tempString = tempArr1[1];
             String[] tempArr = tempString.split(" ");
                 String key = tempArr[tempArr.length - 1].replace(">", "");
-                if (BodyAnalyzer.fieldVarMaps.get(key))
+                if (fieldVarMaps.get(key))
                     staticDestination = false;
         }
 
@@ -494,7 +493,7 @@ public class JimpleInjector {
                 tempString = tempArr1[1];
             String[] tempArr = tempString.split(" ");
             String key = tempArr[tempArr.length - 1].replace(">", "");
-            if (BodyAnalyzer.fieldVarMaps.get(key))
+            if (fieldVarMaps.get(key))
                 staticDestination = false;
         }
 
@@ -580,7 +579,7 @@ public class JimpleInjector {
         // insert setLocalToCurrentAssignmentLevel, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
         Stmt stmt = (Stmt) pos;
-        for(String methodName: BodyAnalyzer.methodNames){
+        for(String methodName: methodNames){
             if(Pattern.compile("\\b" + methodName + "\\b").matcher(pos.toString()).find()){
                 return;
             }
@@ -804,7 +803,7 @@ public class JimpleInjector {
             argumentPosition = 0;
         }
 
-        List<HashMap<Integer, Boolean>> argList = BodyAnalyzer.argumentMap.get(methodName);
+        List<HashMap<Integer, Boolean>> argList = argumentMap.get(methodName);
         if(null != argList && !argList.isEmpty()) {
             HashMap<Integer, Boolean> argMap = argList.get(posInArgList);
             if (argMap.get(posInArgList)) {
@@ -820,7 +819,6 @@ public class JimpleInjector {
         }
 
         prevMethodName = methodName;
-        prevUnit = pos;
     }
 
 
@@ -1210,14 +1208,6 @@ public class JimpleInjector {
             System.out.println(i + " " + uIt.next().toString());
             i++;
         }
-    }
-
-    static <Level> void setStaticAnalaysisResults(VarTyping<Level> varTy, CxTyping<Level> cxTy, Instantiation<Level> inst,
-                                                  Casts c) {
-        varTyping = varTy;
-        cxTyping = cxTy;
-        instantiation = inst;
-        casts = c;
     }
 
 
