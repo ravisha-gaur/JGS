@@ -150,16 +150,18 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			}
 
 			HashMap<String, List<String>> independentVarsMap = new HashMap<String, List<String>>();
-			DefinedByValueOfCall.setBodyAnalyzerObjects(callingMethod, methodNames, methodCalls);
+			DefinedByValueOfCall.setBodyAnalyzerObjects(methodNames, methodCalls);
 
 			for (SootMethod sootMethod : allMethods) {
-					UnitGraph unitGraph = new BriefUnitGraph(sootMethod.getActiveBody());
+				UnitGraph unitGraph = new BriefUnitGraph(sootMethod.getActiveBody());
 
-					DefinedByValueOfCall.isFirstUnit = true;
-					callingMethod = sootMethod.getName();
-					// to find dependent variable chains and independent variables
-					DefinedByValueOfCall.getCasts(casts);
-					new DefinedByValueOfCall(unitGraph);
+				DefinedByValueOfCall.isFirstUnit = true;
+				callingMethod = sootMethod.getName();
+				DefinedByValueOfCall.setCallingMethod(callingMethod);
+				// to find dependent variable chains and independent variables
+				DefinedByValueOfCall.getCasts(casts);
+				new DefinedByValueOfCall(unitGraph);
+
 			}
 
 
@@ -198,8 +200,10 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                                             if(null != independentVars) {
                                                 if (val instanceof Constant || independentVars.contains(val.toString())) {
                                                     List<HashMap<Integer, Value>> tempList2 = DefinedByValueOfCall.identityTargetsMap.get(methodName1);
-                                                    HashMap<Integer, Value> tempMap = tempList2.get(idx);
-                                                    tempList.add(tempMap.get(idx).toString());
+                                                    if(null != tempList2) {
+														HashMap<Integer, Value> tempMap = tempList2.get(idx);
+														tempList.add(tempMap.get(idx).toString());
+													}
                                                 }
                                             }
                                             idx += 1;
@@ -242,7 +246,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                             if (!methodNames.stream().anyMatch(value.toString()::contains) && unit.getUseBoxes().get(i) instanceof ImmediateBox) {
                                 independentVars = independentVarsMap.get(methodName);
                                 // argument is not a constant - eg: add(7,7) or int x = 7 and add(x, x)
-                                if (!(value instanceof Constant) && !independentVars.contains(value.toString())) {
+                                if (!(value instanceof Constant) && null != independentVars && !independentVars.contains(value.toString())) {
                                     HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>();
                                     tempMap.put(argPosition, true);
                                     argumentsList.add(tempMap);
@@ -432,14 +436,20 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
         }
 
 		for (Unit unit: unmodifiedStmts) {
-			unitStmtsListString.add(unit.toString());
-			if (unit.toString().contains("=")) {
-				unitRhsList.add(unit.toString().split("=")[1]);
-				unitRhsListString.add(unit.toString().split("=")[1]);
+			String unitString = unit.toString();
+			unitStmtsListString.add(unitString);
+			/*if(unitString.contains(">="))
+				unitString = unit.toString().replace(">=", "GE");
+			if(unitString.contains("<="))
+				unitString = unit.toString().replace("<=", "LE");*/
+
+			if (unitString.contains("=") && !unitString.contains("if")) {
+				unitRhsList.add(unitString.split("=")[1]);
+				unitRhsListString.add(unitString.split("=")[1]);
 			}
 			else {
-				unitRhsList.add(unit.toString());
-				unitRhsListString.add(unit.toString());
+				unitRhsList.add(unitString);
+				unitRhsListString.add(unitString);
 			}
 		}
 
@@ -449,8 +459,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		// Analyzing Every Statement, step by step.
 		boolean isNotStringFlag = false;
 		boolean isStringFlag = false;
-		int stmtIndex = 0;
+		//int stmtIndex = 0;
 		for (Unit unit: unmodifiedStmts) {
+			int stmtIndex = 0;
 			boolean dynLabelFlag = false;
 			String unitLhsString = "";
 			String unitRhsString = "";
@@ -483,7 +494,28 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                 if(succ.size() > 0 && (succ.get(0).toString().contains("intValue") || succ.get(0).toString().contains("doubleValue") ||
 							succ.get(0).toString().contains("floatValue") || succ.get(0).toString().contains("booleanValue") || succ.get(0).toString().contains("charValue")))
                 	succ = unitGraph.getSuccsOf(succ.get(0));
-                if(succ.size() > 0 && succ.get(0).toString().contains("=")) {
+
+				String tempString;
+				//SootClass sc = field.getDeclaringClass();
+
+				if(succ.size() > 0 && succ.get(0).toString().contains("=")) {
+					String[] tempArr1 = succ.get(0).toString().split("=");
+					if(tempArr1[0].contains(className))
+						tempString = tempArr1[0];
+					else
+						tempString = tempArr1[1];
+					String[] tempArr = tempString.split(" ");
+					String key = tempArr[tempArr.length - 1].replace(">", "");
+					if (null != fieldVarMaps && !fieldVarMaps.isEmpty()) {
+						if (fieldVarMaps.containsKey(key) && fieldVarMaps.get(key))
+							dynLabelFlag = false;
+					}
+				}
+
+
+
+
+                /*if(succ.size() > 0 && succ.get(0).toString().contains("=")) {
                 	String tempVar = (succ.get(0).toString().split("=")[0]);
                 	if(tempVar.contains(" ")) {
 						String[] tempArr = tempVar.split(" ");
@@ -494,7 +526,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							}
 						}
 					}
-				}
+				}*/
             }
 
 			if(dynLabelFlag){
@@ -506,7 +538,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 						if(stmtIndex + 2 == i) {
 							isNotStringFlag = true;
 							isStringFlag = false;
-							unitLhsString = unitStmtsListString.get(i).split("=")[0];
+							if(unitStmtsListString.size() > i)
+								unitLhsString = unitStmtsListString.get(i).split("=")[0];
 							//int index = i + 1; // to escape the following assignment statement
 							int index = i;
 							List<Unit> tempSuccessorList = new ArrayList<Unit>();
@@ -528,7 +561,10 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 								unitRhsList.remove(0);
 								unitStmtsListString.remove(0);
 							}
-							boolean varExistsFlag = varExists(unitRhsList, unitLhsString);
+							boolean varExistsFlag = true;
+							//boolean varExistsFlag = varExists(unitRhsList, unitLhsString);
+							if(!unitLhsString.isEmpty())
+								varExistsFlag = varExists(unitStmtsListString, unitLhsString);
 							if(!varExistsFlag){
 								JimpleInjector.dynLabelFlag = true;
 								successorStmt = unitGraph.getSuccsOf(unit);
@@ -554,10 +590,15 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							index += 1; // to escape the following makeHigh/makeLow statement
 						for (int k = 0; k <= index; k++) {
 							unitRhsListString.remove(0);
+							unitStmtsListString.remove(0);
 						}
-						boolean varExistsFlag = varExists(unitRhsListString, unitLhsString);
+						//boolean varExistsFlag = varExists(unitRhsListString, unitLhsString);
+						boolean varExistsFlag = varExists(unitStmtsListString, unitLhsString);
 						if(!varExistsFlag){
 							JimpleInjector.dynLabelFlag = true;
+						}
+						else {
+							this.successorStmt.clear();
 						}
 					}
 				}
@@ -570,6 +611,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 					boolean varExistsFlag = varExists(unitRhsListString, unitLhsString);
 					if(!varExistsFlag){
 						JimpleInjector.dynLabelFlag = true;
+					}
+					else {
+						this.successorStmt.clear();
 					}
 				}
 			}
@@ -716,7 +760,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		JimpleInjector.signatureList = new ArrayList<String>();
 		JimpleInjector.noTrackSignatureList = new ArrayList<String>();
 		fieldVarMaps = new HashMap<String, Boolean>();
-		DefinedByValueOfCall.independentVarsMap = new HashMap<String, List<String>>();
+		//DefinedByValueOfCall.independentVarsMap = new HashMap<String, List<String>>();
 		DefinedByValueOfCall.identityTargetsMap = new HashMap<String, List<HashMap<Integer, Value>>>();
 		DefinedByValueOfCall.identityTargets = new ArrayList<Value>();
 		count = 1;

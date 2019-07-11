@@ -398,9 +398,20 @@ public class JimpleInjector {
             return;
 
         for(String methodName: methodNames){
-            if(Pattern.compile("\\b" + methodName + "\\b").matcher(pos.toString()).find()){
-                return;
+
+            if(pos instanceof JAssignStmt) {
+                JAssignStmt assignStmt = (JAssignStmt) pos;
+                Value source = assignStmt.getRightOp();
+                if(source instanceof InvokeExpr) {
+                    String methodName2 = ((InvokeExpr) source).getMethod().getName();
+                    if (null != methodName2 && !methodName2.isEmpty() && methodName.equals(methodName2))
+                        return;
+                }
             }
+
+           /* if(Pattern.compile("\\b" + methodName + "\\b").matcher(pos.toString()).find()){
+                return;
+            }*/
         }
 
         // only insert the joinLevelOfLocal.. stmt if local is in fact dynamically checked
@@ -446,8 +457,10 @@ public class JimpleInjector {
                 tempString = tempArr1[1];
             String[] tempArr = tempString.split(" ");
                 String key = tempArr[tempArr.length - 1].replace(">", "");
-                if (fieldVarMaps.get(key))
+            if (null != fieldVarMaps && !fieldVarMaps.isEmpty()) {
+                if (fieldVarMaps.containsKey(key) && fieldVarMaps.get(key))
                     staticDestination = false;
+            }
         }
 
         if(!staticDestination) {
@@ -493,8 +506,10 @@ public class JimpleInjector {
                 tempString = tempArr1[1];
             String[] tempArr = tempString.split(" ");
             String key = tempArr[tempArr.length - 1].replace(">", "");
-            if (fieldVarMaps.get(key))
-                staticDestination = false;
+            if (null != fieldVarMaps && !fieldVarMaps.isEmpty()) {
+                if(fieldVarMaps.containsKey(key) && fieldVarMaps.get(key))
+                    staticDestination = false;
+            }
         }
 
 
@@ -558,7 +573,7 @@ public class JimpleInjector {
                 }
             }
         }
-        if(checkDynArgs) {
+        if(checkDynArgs && !pos.toString().contains("makeHigh") && !pos.toString().contains("makeLow")) {
             dontSetLocalFlag = true;
             noTrackSignatureList.add(getSignatureForLocal(l));
             return;
@@ -580,9 +595,20 @@ public class JimpleInjector {
         // The local's sec-value is then set to that sec-value.
         Stmt stmt = (Stmt) pos;
         for(String methodName: methodNames){
-            if(Pattern.compile("\\b" + methodName + "\\b").matcher(pos.toString()).find()){
-                return;
+
+            if(pos instanceof JAssignStmt) {
+                JAssignStmt assignStmt = (JAssignStmt) pos;
+                Value source = assignStmt.getRightOp();
+                if(source instanceof InvokeExpr) {
+                    String methodName2 = ((InvokeExpr) source).getMethod().getName();
+                    if (null != methodName2 && !methodName2.isEmpty() && methodName.equals(methodName2))
+                        return;
+                }
             }
+
+           /* if(Pattern.compile("\\b" + methodName + "\\b").matcher(pos.toString()).find()){
+                return;
+            }*/
         }
 
         if(!dynLabelFlag)  {

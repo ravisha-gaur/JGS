@@ -79,8 +79,10 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
         InvokeExpr invokeExpr1 = null;
         //handling method calls not in the main method
         if(methodCalls.contains(unit)){
-            if(unit instanceof JAssignStmt)
-                invokeExpr1 = (InvokeExpr) (((JAssignStmt) unit).getRightOp());
+            if(unit instanceof JAssignStmt) {
+                if (!((JAssignStmt) unit).getRightOp().getType().toString().equals("java.lang.String"))
+                    invokeExpr1 = (InvokeExpr) (((JAssignStmt) unit).getRightOp());
+            }
             else if(unit instanceof JInvokeStmt)
                 invokeExpr1 = ((JInvokeStmt) unit).getInvokeExpr();
             String methodName2 = "";
@@ -99,7 +101,8 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
             if(independentVarsMap.containsKey(methodName2)){
                 independentVarList.addAll(independentVarsMap.get(methodName2));
             }
-            independentVarsMap.put(methodName2, independentVarList);
+            if(!methodName2.isEmpty())
+                independentVarsMap.put(methodName2, independentVarList);
         }
 
         if(unit instanceof ReturnStmt || unit instanceof ReturnVoidStmt){
@@ -134,6 +137,9 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
                     methodName1 = invokeExpr.getMethod().getName();
                     if(methodNames.contains(methodName1))
                         methodName = methodName1;
+                    if(source.toString().contains("makeHigh") || source.toString().contains("makeLow")){
+                        dynInMethod.put(callingMethod, true);
+                    }
                     if(Pattern.compile("\\bcast\\b").matcher(source.toString()).find()) {
                         Casts.ValueConversion conversion = casts.getValueCast(assignStmt);
                         if (!conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
@@ -182,9 +188,14 @@ public class DefinedByValueOfCall extends ForwardFlowAnalysis<Unit, Set<Local>> 
         return independentVarsMap;
     }
 
-    protected static void setBodyAnalyzerObjects(String callingMthd, Set<String> mthdNames, List<Unit> mthdCalls){
-        callingMethod = callingMthd;
+    protected static void setBodyAnalyzerObjects(Set<String> mthdNames, List<Unit> mthdCalls){
+        //callingMethod = callingMthd;
         methodNames = mthdNames;
         methodCalls = mthdCalls;
+        independentVarsMap = new HashMap<String, List<String>>();
+    }
+
+    protected static void setCallingMethod(String callingMthd){
+        callingMethod = callingMthd;
     }
 }
