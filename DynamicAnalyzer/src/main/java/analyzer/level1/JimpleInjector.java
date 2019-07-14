@@ -693,7 +693,7 @@ public class JimpleInjector {
             units.insertBefore(checkGlobalPCExpr, pos);
         }
         else {
-            // only if context ist dynamic / pc is dynamc
+            // only if context ist dynamic / pc is dynamic
             if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
                 units.insertBefore(checkGlobalPCExpr, pos);
             }

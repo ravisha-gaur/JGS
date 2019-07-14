@@ -36,8 +36,7 @@ public class MethodCall_addS_addD_Success {
 
     }
 
-    @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= LOW" +
-            ""})
+    @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= LOW"})
     @Effects({"LOW"})
     public static int addS(int x, int y){
 

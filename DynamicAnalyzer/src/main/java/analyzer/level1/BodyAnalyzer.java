@@ -4,7 +4,9 @@ import analyzer.level2.HandleStmt;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
+import de.unifreiburg.cs.proglang.jgs.signatures.SigConstraint;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import scala.collection.JavaConversions;
 import soot.*;
 import soot.baf.internal.BSpecialInvokeInst;
 import soot.baf.internal.BVirtualInvokeInst;
@@ -302,6 +304,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		SootMethod sootMethod = body.getMethod();
 		Chain<Unit> units  = body.getUnits();
+
+		if(!sootMethod.isMain() && !sootMethod.getName().equals("<init>") && !sootMethod.getName().equals("<clinit>"))
+			analyseMethodSignatures(sootMethod);
 
 		AnnotationStmtSwitch stmtSwitch = new AnnotationStmtSwitch(body, casts);
 
@@ -765,5 +770,67 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		DefinedByValueOfCall.identityTargets = new ArrayList<Value>();
 		count = 1;
 		fields.clear();
+	}
+
+
+	/*
+	* Based on the Method Constraints(irrespective of the type of arguments with which the method call has been made, analyse if method calls can be made with static arguments, dynamic arguments or both)
+	* eg: 1) @Constraints({"@0 <= @ret", "@1 <= @ret", "@1 <= ?", "LOW <= @ret"})
+	* 		 public static void add(int x, int y) - calls possible with public(constant) arguments
+	*        i.e : add(int pub0, int pub1)
+	* 	  2) @Constraints({"@0 <= @ret", "@1 <= @ret"})
+	*        public static void add(int x, int y) - calls possible with both static and dynamic arguments
+	*        i.e : add(int static0, int static1) and add(int dynamic0, int dynamic1)
+	*     3) @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= ?"})
+	*        public static void add(int x, int y) - calls possible with dynamic arguments
+	*        i.e : add(int dynamic0, int dynamic1)
+	*     4) @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= LOW/HIGH"})
+	*        public static void add(int x, int y) - calls possible with static arguments
+	*        i.e : add(int static0, int static1)
+	*/
+	private void analyseMethodSignatures(SootMethod sootMethod) {
+
+		Set constraints = JavaConversions.setAsJavaSet(signatureTable.get(sootMethod).get().constraints.sigSet());
+		List<SigConstraint> constraintsList = new ArrayList(constraints);
+		List<SigConstraint> updatedConstraintsList = new ArrayList();
+
+		for (SigConstraint constraint : constraintsList) {
+			if (!constraint.lhs.equals(constraint.rhs))
+				updatedConstraintsList.add(constraint);
+		}
+
+		String stParams = "";
+		String dynParams = "";
+		String publicParams = "";
+
+		if (!updatedConstraintsList.isEmpty()){
+			System.out.println();
+			System.out.println("Analysing method constraints for method : " + sootMethod.getName());
+
+			for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+				stParams += sootMethod.getParameterTypes().get(i) + " " + "static" + i + ", ";
+				dynParams += sootMethod.getParameterTypes().get(i) + " " + "dynamic" + i + ", ";
+				publicParams += sootMethod.getParameterTypes().get(i) + " " + "pub" + i + ", ";
+			}
+
+			if(updatedConstraintsList.toString().contains("Dyn()") && (updatedConstraintsList.toString().contains("Lit(HIGH)") || updatedConstraintsList.toString().contains("Lit(LOW)"))){
+				System.out.print("Allowed method call : (1)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + publicParams.substring(0, publicParams.lastIndexOf(",")) + ")");
+				System.out.println();
+			}
+			else if (!(updatedConstraintsList.toString().contains("Lit(HIGH)") || updatedConstraintsList.toString().contains("Lit(LOW)") || updatedConstraintsList.toString().contains("Dyn()"))) {
+				System.out.print("Allowed method calls : (1)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + stParams.substring(0, stParams.lastIndexOf(",")) + ")");
+				System.out.println();
+				System.out.print("(2)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + dynParams.substring(0, dynParams.lastIndexOf(",")) + ")");
+				System.out.println();
+			}
+			else if (updatedConstraintsList.toString().contains("Lit(LOW)") || updatedConstraintsList.toString().contains("Lit(HIGH)")) {
+				System.out.print("Allowed method call : (1)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + stParams.substring(0, stParams.lastIndexOf(",")) + ")");
+				System.out.println();
+			}
+			else if (updatedConstraintsList.toString().contains("Dyn()")) {
+				System.out.print("Allowed method call : (1)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + dynParams.substring(0, dynParams.lastIndexOf(",")) + ")");
+				System.out.println();
+			}
+		}
 	}
 }
