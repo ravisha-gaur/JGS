@@ -816,6 +816,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 				String staticArgs = "";
 				String dynArgs = "";
 				String publicArgs = "";
+				String args = "";
 
 				loop1:
 				if (!updatedConstraintsList.isEmpty()) {
@@ -826,30 +827,32 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 						if(independentArgCount != sootMethod.getParameterCount()){
 							HashMap<Integer, Symbol> argEffectMap = getIndependentArgs(updatedConstraintsList);
-							for(Integer argPosition: argEffectMap.keySet()){
-								Symbol symbol = argEffectMap.get(argPosition);
-								String effect = getEffectString(symbol);
-								for(int m = 0; m < sootMethod.getParameterCount(); m++){
-									if(m != argPosition){
-										staticArgs += sootMethod.getParameterTypes().get(m) + " " + "static" + m + "/public" + m + ", ";
-									}
-									else {
-										staticArgs += sootMethod.getParameterTypes().get(m) + " " + effect + m + ", ";
-									}
-									if(m != argPosition){
-										dynArgs += sootMethod.getParameterTypes().get(m) + " " + "dynamic" + m + "/public" + m + ", ";
-									}
-									else {
-										dynArgs += sootMethod.getParameterTypes().get(m) + " " + effect + m + ", ";
-									}
+							if(argEffectMap.isEmpty()){
+								for(int m = 0; m < sootMethod.getParameterCount(); m++) {
+									args += sootMethod.getParameterTypes().get(m) + " static" + m + "/dynamic" + m + "/public" + m + ", ";
 								}
-								System.out.print("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
-								System.out.println();
-								System.out.print("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
-								System.out.println();
+								System.out.print("Allowed method calls : (1)" + methodSignature + args.substring(0, args.lastIndexOf(",")) + ")");
 								break loop1;
 							}
-
+							for(int m = 0; m < sootMethod.getParameterCount(); m++){
+								if(!argEffectMap.keySet().contains(m)){
+									staticArgs += sootMethod.getParameterTypes().get(m) + " " + "static" + m + "/public" + m + ", ";
+								}
+								else {
+									staticArgs += sootMethod.getParameterTypes().get(m) + " " + getEffectString(argEffectMap.get(m)) + m + ", ";
+								}
+								if(!argEffectMap.keySet().contains(m)){
+									dynArgs += sootMethod.getParameterTypes().get(m) + " " + "dynamic" + m + "/public" + m + ", ";
+								}
+								else {
+									dynArgs += sootMethod.getParameterTypes().get(m) + " " + getEffectString(argEffectMap.get(m)) + m + ", ";
+								}
+							}
+							System.out.print("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
+							System.out.println();
+							System.out.print("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+							System.out.println();
+							break loop1;
 						}
 
 						for (int i = 0; i < sootMethod.getParameterCount(); i++) {
