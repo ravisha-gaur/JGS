@@ -6,7 +6,9 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import de.unifreiburg.cs.proglang.jgs.signatures.SigConstraint;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import scala.collection.JavaConversions;
+import scala.collection.immutable.Set;
 import soot.*;
 import soot.baf.internal.BSpecialInvokeInst;
 import soot.baf.internal.BVirtualInvokeInst;
@@ -60,7 +62,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	private List<String> methodNamesList = new ArrayList<>();
 	private boolean containsFieldsVarsFlag = false;
 	private HashMap<String, Boolean> fieldVarMaps = new HashMap<String, Boolean>();
-	private Set<String> methodNames = new HashSet<String>();
+	private java.util.Set<String> methodNames = new HashSet<String>();
 	private HashMap<String, List<HashMap<Integer, Boolean>>> argumentMap = new HashMap<String, List<HashMap<Integer, Boolean>>>();
 	private List<Unit> methodCalls = new ArrayList<Unit>();
 	private HashMap<Unit,String> methodCallsInsideMethods = new HashMap<Unit,String>();
@@ -88,8 +90,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	 * @param sootMethods
 	 * @return
 	 */
-	private Set<String> getMethodNames(List<SootMethod> sootMethods){
-		Set<String> methodNames = new HashSet<String>();
+	private java.util.Set<String> getMethodNames(List<SootMethod> sootMethods){
+		java.util.Set<String> methodNames = new HashSet<String>();
 		for (SootMethod m : Scene.v().getMainClass().getMethods()) {
 			if(!m.isMain()) {
 				methodNames.add(m.getName());
@@ -781,56 +783,132 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	* 	  2) @Constraints({"@0 <= @ret", "@1 <= @ret"})
 	*        public static void add(int x, int y) - calls possible with both static and dynamic arguments
 	*        i.e : add(int static0, int static1) and add(int dynamic0, int dynamic1)
-	*     3) @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= ?"})
-	*        public static void add(int x, int y) - calls possible with dynamic arguments
-	*        i.e : add(int dynamic0, int dynamic1)
-	*     4) @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= LOW/HIGH"})
+	*     3) @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= LOW/HIGH"})
 	*        public static void add(int x, int y) - calls possible with static arguments
 	*        i.e : add(int static0, int static1)
+	*     4) @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= ?"})
+	*        public static void add(int x, int y) - calls possible with dynamic arguments
+	*        i.e : add(int dynamic0, int dynamic1)
 	*/
 	private void analyseMethodSignatures(SootMethod sootMethod) {
 
-		Set constraints = JavaConversions.setAsJavaSet(signatureTable.get(sootMethod).get().constraints.sigSet());
-		List<SigConstraint> constraintsList = new ArrayList(constraints);
-		List<SigConstraint> updatedConstraintsList = new ArrayList();
-
-		for (SigConstraint constraint : constraintsList) {
-			if (!constraint.lhs.equals(constraint.rhs))
-				updatedConstraintsList.add(constraint);
+		Set constraintsSet = null;
+		//Get method constraints
+		if (null != signatureTable){
+			constraintsSet = signatureTable.get(sootMethod).get().constraints.sigSet();
 		}
 
-		String stParams = "";
-		String dynParams = "";
-		String publicParams = "";
+		if (null != constraintsSet) {
+			java.util.Set constraints = JavaConversions.setAsJavaSet(constraintsSet);
+			if (!constraints.isEmpty()) {
+				List<SigConstraint> constraintsList = new ArrayList(constraints);
+				List<SigConstraint> updatedConstraintsList = new ArrayList();
+				int independentArgCount = 0;
 
-		if (!updatedConstraintsList.isEmpty()){
-			System.out.println();
-			System.out.println("Analysing method constraints for method : " + sootMethod.getName());
+				//Omit redundant constraints like @return LE @return or @param2 ~ @param2
+				for (SigConstraint constraint : constraintsList) {
+					if (!constraint.lhs.equals(constraint.rhs))
+						updatedConstraintsList.add(constraint);
+					if(constraint.lhs.toString().contains("@param") && constraint.rhs.toString().contains("@ret"))
+						independentArgCount += 1;
+				}
 
-			for (int i = 0; i < sootMethod.getParameterCount(); i++) {
-				stParams += sootMethod.getParameterTypes().get(i) + " " + "static" + i + ", ";
-				dynParams += sootMethod.getParameterTypes().get(i) + " " + "dynamic" + i + ", ";
-				publicParams += sootMethod.getParameterTypes().get(i) + " " + "pub" + i + ", ";
-			}
+				String staticArgs = "";
+				String dynArgs = "";
+				String publicArgs = "";
 
-			if(updatedConstraintsList.toString().contains("Dyn()") && (updatedConstraintsList.toString().contains("Lit(HIGH)") || updatedConstraintsList.toString().contains("Lit(LOW)"))){
-				System.out.print("Allowed method call : (1)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + publicParams.substring(0, publicParams.lastIndexOf(",")) + ")");
-				System.out.println();
-			}
-			else if (!(updatedConstraintsList.toString().contains("Lit(HIGH)") || updatedConstraintsList.toString().contains("Lit(LOW)") || updatedConstraintsList.toString().contains("Dyn()"))) {
-				System.out.print("Allowed method calls : (1)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + stParams.substring(0, stParams.lastIndexOf(",")) + ")");
-				System.out.println();
-				System.out.print("(2)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + dynParams.substring(0, dynParams.lastIndexOf(",")) + ")");
-				System.out.println();
-			}
-			else if (updatedConstraintsList.toString().contains("Lit(LOW)") || updatedConstraintsList.toString().contains("Lit(HIGH)")) {
-				System.out.print("Allowed method call : (1)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + stParams.substring(0, stParams.lastIndexOf(",")) + ")");
-				System.out.println();
-			}
-			else if (updatedConstraintsList.toString().contains("Dyn()")) {
-				System.out.print("Allowed method call : (1)" + sootMethod.getReturnType() + " " + sootMethod.getName() + "(" + dynParams.substring(0, dynParams.lastIndexOf(",")) + ")");
-				System.out.println();
+				loop1:
+				if (!updatedConstraintsList.isEmpty()) {
+					if (sootMethod.getParameterCount() > 0) {
+						System.out.println();
+						System.out.println("Analysing method constraints for method : " + sootMethod.getName());
+						String methodSignature = sootMethod.getReturnType() + " " + sootMethod.getName() + "(" ;
+
+						if(independentArgCount != sootMethod.getParameterCount()){
+							HashMap<Integer, Symbol> argEffectMap = getIndependentArgs(updatedConstraintsList);
+							for(Integer argPosition: argEffectMap.keySet()){
+								Symbol symbol = argEffectMap.get(argPosition);
+								String effect = getEffectString(symbol);
+								for(int m = 0; m < sootMethod.getParameterCount(); m++){
+									if(m != argPosition){
+										staticArgs += sootMethod.getParameterTypes().get(m) + " " + "static" + m + "/public" + m + ", ";
+									}
+									else {
+										staticArgs += sootMethod.getParameterTypes().get(m) + " " + effect + m + ", ";
+									}
+									if(m != argPosition){
+										dynArgs += sootMethod.getParameterTypes().get(m) + " " + "dynamic" + m + "/public" + m + ", ";
+									}
+									else {
+										dynArgs += sootMethod.getParameterTypes().get(m) + " " + effect + m + ", ";
+									}
+								}
+								System.out.print("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
+								System.out.println();
+								System.out.print("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+								System.out.println();
+								break loop1;
+							}
+
+						}
+
+						for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+							staticArgs += sootMethod.getParameterTypes().get(i) + " " + "static" + i + ", ";
+							dynArgs += sootMethod.getParameterTypes().get(i) + " " + "dynamic" + i + ", ";
+							publicArgs += sootMethod.getParameterTypes().get(i) + " " + "pub" + i + ", ";
+						}
+						// eg 1 in comments above
+						if (updatedConstraintsList.toString().contains("Dyn()") && (updatedConstraintsList.toString().contains("Lit(HIGH)") || updatedConstraintsList.toString().contains("Lit(LOW)"))) {
+							System.out.print("Allowed method call : (1)" + methodSignature + publicArgs.substring(0, publicArgs.lastIndexOf(",")) + ")");
+							System.out.println();
+						}
+						// eg 2
+						else if (!(updatedConstraintsList.toString().contains("Lit(HIGH)") || updatedConstraintsList.toString().contains("Lit(LOW)") || updatedConstraintsList.toString().contains("Dyn()"))) {
+							System.out.print("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
+							System.out.println();
+							System.out.print("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+							System.out.println();
+						}
+						// eg 3
+						else if (updatedConstraintsList.toString().contains("Lit(LOW)") || updatedConstraintsList.toString().contains("Lit(HIGH)")) {
+							System.out.print("Allowed method call : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
+							System.out.println();
+						}
+						// eg 4
+						else if (updatedConstraintsList.toString().contains("Dyn()")) {
+							System.out.print("Allowed method call : (1)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+							System.out.println();
+						}
+					}
+				}
 			}
 		}
+	}
+
+	private static String getEffectString(Symbol symbol){
+		String effectString = "";
+		if(symbol.toString().equals("Dyn()"))
+			effectString = "dynamic";
+		else if(symbol.toString().equals("Lit(HIGH)") || symbol.toString().contains("Lit(LOW)"))
+			effectString = "static";
+		return effectString;
+	}
+
+	private static HashMap getIndependentArgs(List<SigConstraint> updatedConstraintsList){
+		int argPosition = Integer.MAX_VALUE;
+		HashMap argEffectMap = new HashMap();
+		for (SigConstraint constraint : updatedConstraintsList) {
+			String constraintString = constraint.lhs.toString();
+			Symbol effectString = constraint.rhs;
+			if (effectString.toString().contains("Lit(HIGH)") || effectString.toString().contains("Lit(LOW)") || effectString.toString().contains("Dyn()")){
+				for (int i = 0; i < constraintString.length(); i++) {
+					if (Character.isDigit(constraintString.charAt(i))) {
+						argPosition = constraintString.charAt(i);
+						argEffectMap.put(Character.getNumericValue(argPosition), effectString);
+					}
+				}
+			}
+		}
+		return argEffectMap;
 	}
 }
