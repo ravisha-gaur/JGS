@@ -37,6 +37,7 @@ public class IfStmtSuccess {
 			assertEquals(CurrentSecurityDomain.bottom(), hs.getGlobalPC());
 			
 			hs.setLocalFromString("int_x", "HIGH");
+			hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 			
 			hs.checkCondition("123");
 			if (x == 1) {

@@ -63,6 +63,7 @@ public class ForStmtFail {
 		hs.initHandleStmtUtils();
 		hs.addLocal("int_i");
 		hs.setLocalFromString("int_i", "HIGH");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_i");
 		hs.addLocal("int_res");
 		
 		int res = 0;
@@ -95,8 +96,9 @@ public class ForStmtFail {
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_i");
 		hs.setLocalFromString("int_i", "HIGH");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_i");
 		hs.addFieldToObjectMap(this, "int_res");
-		
+
 		int i = 0; // Local
 		int res; // Field
 		

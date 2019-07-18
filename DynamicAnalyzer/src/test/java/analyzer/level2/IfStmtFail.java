@@ -39,8 +39,10 @@ public class IfStmtFail {
 
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getGlobalPC());
-		
+
+		hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 		hs.checkCondition("123");
+
 		if (x == 1) {
 			assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
 			assertEquals(CurrentSecurityDomain.top(), hs.getGlobalPC());

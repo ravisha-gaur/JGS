@@ -32,7 +32,7 @@ public class WhileStmtSuccess {
 		int x = 0;
 		
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
-		
+
 		hs.checkCondition("123");
 		while (x == 0) {
 			
@@ -62,7 +62,8 @@ public class WhileStmtSuccess {
 		int x = 0;
 		
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
-		
+
+		hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 		hs.checkCondition("123");
 		while (x == 0) {
 			

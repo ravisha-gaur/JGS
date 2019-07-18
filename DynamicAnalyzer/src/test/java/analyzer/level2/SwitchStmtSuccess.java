@@ -67,7 +67,8 @@ public class SwitchStmtSuccess {
 		int x = 0;
 		
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
-		
+
+		hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 		hs.checkCondition("123");
 		switch (x) {
 		

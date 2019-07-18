@@ -135,7 +135,6 @@ public class AssignLocalsFail {
 	 * the security-value of res from low to high.
 	 */
 	@SuppressWarnings("unused")
-	@Ignore
 	@Test
 	public void assignMethodResultToLocalSuccess() {
 
@@ -146,6 +145,7 @@ public class AssignLocalsFail {
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
 		hs.addLocal("int_high", CurrentSecurityDomain.top());
+		hs.joinLevelOfLocalAndAssignmentLevel("int_high");
 		
 		TestSubClass ts = new TestSubClass();
 		int res ;
@@ -173,7 +173,6 @@ public class AssignLocalsFail {
 	
 	
 	@SuppressWarnings("unused")
-	@Ignore
 	@Test(expected = IFCError.class)
 	public void assignMethodResultToLocalFail() {
 
@@ -185,6 +184,7 @@ public class AssignLocalsFail {
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
 		hs.addLocal("int_high", CurrentSecurityDomain.top());
+		hs.joinLevelOfLocalAndAssignmentLevel("int_high");
 		TestSubClass ts = new TestSubClass();
 		int res ;
 		int high = 0;
@@ -210,6 +210,8 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 	
 	}
+
+
 	@Test//(expected = IFCError.class)
 	public void assignConstantAndLocalToLocal() {
 		
