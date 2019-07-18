@@ -58,7 +58,7 @@ public class JimpleInjector {
     private static boolean checkConditionCalledFlag = false;
     private static boolean methodCallFlag = false;
     private static boolean dynamicArgumentFlag = true;
-
+    private static boolean staticVarFlag = false;
 
     public static boolean dynLabelFlag = false;
     public static boolean arithmeticExpressionFlag = false;
@@ -421,6 +421,10 @@ public class JimpleInjector {
             dontSetFieldLevel = false;
             units.insertBefore(invoke, pos);
             lastPos = pos;
+            staticVarFlag = false;
+        }
+        else {
+            staticVarFlag = true;
         }
     }
 
@@ -1014,10 +1018,12 @@ public class JimpleInjector {
                 units.insertAfter(invoke, lastPos);
                 lastPos = invoke;
             } else {
-                callJoinLevel(numberOfLocals, true, locals);
-                Unit invokeUpdate = fac.createStmt("updateCondition", StringConstant.v(domIdentity));
-                units.insertAfter(invokeUpdate, lastPos);
-                lastPos = invokeUpdate;
+                if(!staticVarFlag) {
+                    callJoinLevel(numberOfLocals, true, locals);
+                    Unit invokeUpdate = fac.createStmt("updateCondition", StringConstant.v(domIdentity));
+                    units.insertAfter(invokeUpdate, lastPos);
+                    lastPos = invokeUpdate;
+                }
             }
         }
         else {

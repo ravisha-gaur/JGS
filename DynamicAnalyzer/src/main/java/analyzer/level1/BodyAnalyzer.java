@@ -850,7 +850,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							}
 							System.out.print("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
 							System.out.println();
-							System.out.print("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+							if(!staticArgs.equals(dynArgs))
+								System.out.print("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
 							System.out.println();
 							break loop1;
 						}
