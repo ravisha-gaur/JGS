@@ -466,9 +466,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		// Analyzing Every Statement, step by step.
 		boolean isNotStringFlag = false;
 		boolean isStringFlag = false;
-		//int stmtIndex = 0;
+		int stmtIndex = 0;
 		for (Unit unit: unmodifiedStmts) {
-			int stmtIndex = 0;
+			//int stmtIndex = 0;
 			boolean dynLabelFlag = false;
 			String unitLhsString = "";
 			String unitRhsString = "";
@@ -537,6 +537,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
             }
 
 			if(dynLabelFlag){
+				unitRhsList = new ArrayList<>(this.unitRhsList);
+				unitRhsListString = new ArrayList<>(this.unitRhsList);
+				unitStmtsListString = new ArrayList<>(this.unitStmtsListString);
 				// for int, double, boolean, float, char params
 				for(int i = 0; i < unitRhsList.size(); i++) {
 					if (unitRhsList.get(i).contains("intValue") || unitRhsList.get(i).contains("doubleValue") || unitRhsList.get(i).contains("floatValue")
@@ -564,6 +567,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 							if (tempSuccessorList.get(0).toString().contains("makeHigh") || tempSuccessorList.get(0).toString().contains("makeLow"))
 								index = index + 2; // to escape the following assignment and makeHigh/makeLow statements
 
+							if(containsFieldsVarsFlag)
+								//index += 1;
 							for (int j = 0; j <= index; j++) {
 								unitRhsList.remove(0);
 								unitStmtsListString.remove(0);
@@ -577,9 +582,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 								successorStmt = unitGraph.getSuccsOf(unit);
 								this.successorStmt = successorStmt;
 							}
-							unitRhsList = new ArrayList<>(this.unitRhsList);
-							unitStmtsListString = new ArrayList<>(this.unitStmtsListString);
+							//unitRhsList = new ArrayList<>(this.unitRhsList);
+							//unitStmtsListString = new ArrayList<>(this.unitStmtsListString);
 							break;
+						}
+						else {
+							isNotStringFlag = false;
 						}
 					}
 				}
@@ -595,6 +603,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 						successorStmt = unitGraph.getSuccsOf(successorStmt.get(0));
 						if(successorStmt.get(0).toString().contains("makeHigh") || successorStmt.get(0).toString().contains("makeLow"))
 							index += 1; // to escape the following makeHigh/makeLow statement
+						if(containsFieldsVarsFlag)
+							//index += 1;
 						for (int k = 0; k <= index; k++) {
 							unitRhsListString.remove(0);
 							unitStmtsListString.remove(0);

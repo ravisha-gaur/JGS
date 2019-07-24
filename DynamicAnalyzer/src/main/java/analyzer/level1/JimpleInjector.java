@@ -1011,12 +1011,14 @@ public class JimpleInjector {
 
         if(!loopFlag) {
             if (loopCount != 1) {
-                callJoinLevel(numberOfLocals, false, locals);
-                Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
-                checkConditionCalledFlag = true;
-                loopCount += 1;
-                units.insertAfter(invoke, lastPos);
-                lastPos = invoke;
+                if(!staticDestination) {
+                    callJoinLevel(numberOfLocals, false, locals);
+                    Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
+                    checkConditionCalledFlag = true;
+                    loopCount += 1;
+                    units.insertAfter(invoke, lastPos);
+                    lastPos = invoke;
+                }
             } else {
                 if(!staticVarFlag) {
                     callJoinLevel(numberOfLocals, true, locals);
@@ -1027,17 +1029,19 @@ public class JimpleInjector {
             }
         }
         else {
-            if(!lastPos.toString().contains("exitInnerScope")) {
-                callJoinLevel(numberOfLocals, false, locals);
-                Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
-                units.insertAfter(invoke, lastPos);
+            if(!staticDestination) {
+                if (!lastPos.toString().contains("exitInnerScope")) {
+                    callJoinLevel(numberOfLocals, false, locals);
+                    Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
+                    units.insertAfter(invoke, lastPos);
+                }
+
+                callJoinLevel(numberOfLocals, true, locals);
+
+                Unit invokeUpdate = fac.createStmt("updateCondition", StringConstant.v(domIdentity));
+                units.insertAfter(invokeUpdate, lastPos);
+                lastPos = invokeUpdate;
             }
-
-            callJoinLevel(numberOfLocals, true, locals);
-
-            Unit invokeUpdate = fac.createStmt("updateCondition", StringConstant.v(domIdentity));
-            units.insertAfter(invokeUpdate, lastPos);
-            lastPos = invokeUpdate;
         }
     }
 
@@ -1061,25 +1065,27 @@ public class JimpleInjector {
      * @param pos The position of this stmt.
      */
     public static void exitInnerScope(Unit pos) {
-        logger.info("Exit inner scope in method " + b.getMethod().getName());
+        if(!staticDestination) {
+            logger.info("Exit inner scope in method " + b.getMethod().getName());
 
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
+            ArrayList<Type> paramTypes = new ArrayList<>();
+            paramTypes.add(RefType.v("java.lang.String"));
 
-        String domIdentity = DominatorFinder.getIdentityForUnit(pos);
-        logger.info("Dominator \"" + pos.toString()
-                + "\" has identity " + domIdentity);
+            String domIdentity = DominatorFinder.getIdentityForUnit(pos);
+            logger.info("Dominator \"" + pos.toString()
+                    + "\" has identity " + domIdentity);
 
-        Expr specialIn = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "exitInnerScope", paramTypes, VoidType.v(), false),
-                StringConstant.v(domIdentity));
+            Expr specialIn = Jimple.v().newVirtualInvokeExpr(
+                    hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+                            "exitInnerScope", paramTypes, VoidType.v(), false),
+                    StringConstant.v(domIdentity));
 
-        Unit inv = Jimple.v().newInvokeStmt(specialIn);
+            Unit inv = Jimple.v().newInvokeStmt(specialIn);
 
-        units.insertBefore(inv, pos);
-        //lastPos = pos;
-        lastPos = inv;
+            units.insertBefore(inv, pos);
+            //lastPos = pos;
+            lastPos = inv;
+        }
     }
 
 
@@ -1271,7 +1277,7 @@ public class JimpleInjector {
                     logger.fine("Setting destination variable to: " + destLevel);
                     staticDestination = true;
                 } else {
-                    logger.info("Source value is pubilc. Not inserting checks.");
+                    logger.info("Source value is public. Not inserting checks.");
                 }
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Initialisierung eines Security Wert: x = (H => ? ) y

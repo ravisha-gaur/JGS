@@ -60,14 +60,37 @@ public class AllEndToEndTests {
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 	    List<Object[]> cases = Arrays.asList(
+				new Object[] {"NSUPolicy", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int_i0"} },
+				new Object[] {"castDyn2DynSuccess", SecurityMonitoringEvent.PASSED, new String[] {""} },
+				new Object[] {"NSU_ForLoopFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"byte_b1"} },
+				new Object[] {"IfStmtSuccess", SecurityMonitoringEvent.PASSED, new String[] {"byte_b1"} },
+				new Object[] {"IfStmtFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0" } },
+				new Object[] {"EqualObjectsVerifySuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
+                // Implicit flow from high-if guard to low-sec return
+                new Object[] {"ImplicitFlow1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"byte_b1"} },
+                new Object[] {"ImplicitFlow2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
+                new Object[] {"ImplicitFlow3", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
+                new Object[] {"NSU_FieldAccessStatic", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int f"} },
+                new Object[] {"NSU_FieldAccess5", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
+                new Object[] {"NSUPolicy2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"boolean_$z2"} },
+                new Object[] {"NSUPolicy3", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
+                new Object[] {"NSUPolicy4", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"java.lang.String_r5"} },
+                new Object[] {"FieldWriteFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"testclasses.FieldWriteFail<testclasses.FieldWriteFail: int field>"} },
+
+
+
+				new Object[] {"ArrayRefFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.String_$r7"} },
+				new Object[] { "PutfieldHighObject", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {} },
+				new Object[] {"NSU_SwitchStmtFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"java.lang.String_r1" } },
+				new Object[] {"ArrayRefSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
+
 				new Object[] {"AccessFieldsOfObjectsFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.String_$r6" } },
 				new Object[] {"AccessFieldsOfObjectsSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
 				
 				new Object[] {"ArithmeticExpressionsFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0" } },
 				new Object[] {"ArithmeticExpressionsSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
 				
-				new Object[] {"ArrayRefFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.String_$r7"} },
-				new Object[] {"ArrayRefSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
+
 				
 				new Object[] {"BooleanPrintFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"boolean_z1"} },
 
@@ -80,7 +103,7 @@ public class AllEndToEndTests {
 				new Object[] {"castDyn2Static_Success1", SecurityMonitoringEvent.PASSED, new String[] {""} },
 				new Object[] {"castDyn2Static_Success2", SecurityMonitoringEvent.PASSED, new String[] {""} },
 
-				new Object[] {"castDyn2DynSuccess", SecurityMonitoringEvent.PASSED, new String[] {""} },
+
 
 				// not usable bc unit test cannot handle exception thrown in instrumentation phase
 				// new Object[] { "castStatic2Static_Fail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.String"} },
@@ -90,45 +113,37 @@ public class AllEndToEndTests {
 				// ExternalFail1 is fully tested in tests.end2endtest.compileToJarTests
 				new Object[] {"ExternalFail2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0"} },
 				
-				new Object[] {"EqualObjectsVerifySuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
-				
 				new Object[] {"DominatorNullPointer", SecurityMonitoringEvent.PASSED, new String[] {} },
 				
 				new Object[] {"FieldsSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
-				new Object[] {"FieldWriteFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"testclasses.FieldWriteFail<testclasses.FieldWriteFail: int field>"} },
+
 
 				new Object[] {"HighArgument", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0"} },
 
-				new Object[] {"IfStmtSuccess", SecurityMonitoringEvent.PASSED, new String[] {"byte_b1"} },
-				new Object[] {"IfStmtFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0" } },
+
+
 				
-				// Implicit flow from high-if guard to low-sec return
-				new Object[] {"ImplicitFlow1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"byte_b1"} },
-				new Object[] {"ImplicitFlow2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
-				new Object[] {"ImplicitFlow3", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
+
 
 				new Object[] { "LowFieldHighInstance", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"boolean_z0"} },
-				new Object[] { "PutfieldHighObject", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {} },
+
 				new Object[] { "PutfieldHighObjectNSU", SecurityMonitoringEvent.NSU_FAILURE, new String[] {} },
 			
-				// Examples from readme.md
-				new Object[] {"NSUPolicy", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int_i0"} },
-				new Object[] {"NSUPolicy2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"boolean_$z2"} },
-				new Object[] {"NSUPolicy3", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
-				new Object[] {"NSUPolicy4", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"java.lang.String_r5"} },
+
+
 
 				// More NSU Tests
 				new Object[] {"NSU_FieldAccess", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
-				new Object[] {"NSU_FieldAccessStatic", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int f"} },
+
 				new Object[] {"NSU_FieldAccess2", SecurityMonitoringEvent.PASSED, new String[] {} },
 				new Object[] {"NSU_FieldAccess3", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
 				new Object[] {"NSU_FieldAccess4", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
-				new Object[] {"NSU_FieldAccess5", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
+
 				
 				new Object[] {"NSU_ForLoopSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
-				new Object[] {"NSU_ForLoopFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"byte_b1"} },
+
 				
-				new Object[] {"NSU_SwitchStmtFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"java.lang.String_r1" } },
+
 				
 				// two special cases, where compiler optimisation prevents NSU Exceptions
 				new Object[] {"NSU_IfStmtSpecialCase", SecurityMonitoringEvent.PASSED, new String[] {  } },
