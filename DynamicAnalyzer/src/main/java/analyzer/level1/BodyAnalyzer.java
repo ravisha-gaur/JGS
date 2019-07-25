@@ -835,13 +835,21 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 						System.out.println("Analysing method constraints for method : " + sootMethod.getName());
 						String methodSignature = sootMethod.getReturnType() + " " + sootMethod.getName() + "(" ;
 
+						// handle unusual methods where args are independent of each other / return var
 						if(independentArgCount != sootMethod.getParameterCount()){
 							HashMap<Integer, Symbol> argEffectMap = getIndependentArgs(updatedConstraintsList);
+							int argPosn = getArgPosition(updatedConstraintsList);
+							String effectString = "";
+							if(argPosn != Integer.MAX_VALUE) {
+								Symbol symbol = argEffectMap.get(argPosn);
+								effectString = getEffectString(symbol);
+							}
 							if(argEffectMap.isEmpty()){
 								for(int m = 0; m < sootMethod.getParameterCount(); m++) {
 									args += sootMethod.getParameterTypes().get(m) + " static" + m + "/dynamic" + m + "/public" + m + ", ";
 								}
-								System.out.print("Allowed method calls : (1)" + methodSignature + args.substring(0, args.lastIndexOf(",")) + ")");
+								System.out.println("Allowed method calls : (1)" + methodSignature + args.substring(0, args.lastIndexOf(",")) + ")");
+								System.out.println("Allowed return type(s) : static/dynamic/public");
 								break loop1;
 							}
 							for(int m = 0; m < sootMethod.getParameterCount(); m++){
@@ -858,47 +866,62 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 									dynArgs += sootMethod.getParameterTypes().get(m) + " " + getEffectString(argEffectMap.get(m)) + m + ", ";
 								}
 							}
-							System.out.print("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
-							System.out.println();
-							if(!staticArgs.equals(dynArgs))
-								System.out.print("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+							System.out.println("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
+							if(!staticArgs.equals(dynArgs)) {
+								System.out.println("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+							}
+							if(!effectString.isEmpty())
+								System.out.println("Allowed return type(s) : " + effectString);
 							System.out.println();
 							break loop1;
 						}
 
+
+
 						for (int i = 0; i < sootMethod.getParameterCount(); i++) {
-							staticArgs += sootMethod.getParameterTypes().get(i) + " " + "static" + i + ", ";
-							dynArgs += sootMethod.getParameterTypes().get(i) + " " + "dynamic" + i + ", ";
-							publicArgs += sootMethod.getParameterTypes().get(i) + " " + "pub" + i + ", ";
+							staticArgs += sootMethod.getParameterTypes().get(i) + " static" + i + ", ";
+							dynArgs += sootMethod.getParameterTypes().get(i) + " dynamic" + i + ", ";
+							publicArgs += sootMethod.getParameterTypes().get(i) + " public" + i + ", ";
 						}
 						// eg 1 in comments above
 						if (updatedConstraintsList.toString().contains("Dyn()") && (updatedConstraintsList.toString().contains("Lit(HIGH)") || updatedConstraintsList.toString().contains("Lit(LOW)"))) {
-							System.out.print("Allowed method call : (1)" + methodSignature + publicArgs.substring(0, publicArgs.lastIndexOf(",")) + ")");
-							System.out.println();
+							System.out.println("Allowed method call : (1)" + methodSignature + publicArgs.substring(0, publicArgs.lastIndexOf(",")) + ")");
+							System.out.println("Allowed return type(s) : public");
 						}
 						// eg 2
 						else if (!(updatedConstraintsList.toString().contains("Lit(HIGH)") || updatedConstraintsList.toString().contains("Lit(LOW)") || updatedConstraintsList.toString().contains("Dyn()"))) {
-							System.out.print("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
-							System.out.println();
-							System.out.print("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
-							System.out.println();
+							System.out.println("Allowed method calls : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
+							System.out.println("Allowed return type(s) : static");
+							System.out.println("(2)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+							System.out.println("Allowed return type(s) : dynamic");
 						}
 						// eg 3
 						else if (updatedConstraintsList.toString().contains("Lit(LOW)") || updatedConstraintsList.toString().contains("Lit(HIGH)")) {
-							System.out.print("Allowed method call : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
-							System.out.println();
+							System.out.println("Allowed method call : (1)" + methodSignature + staticArgs.substring(0, staticArgs.lastIndexOf(",")) + ")");
+							System.out.println("Allowed return type(s) : static");
 						}
 						// eg 4
 						else if (updatedConstraintsList.toString().contains("Dyn()")) {
-							System.out.print("Allowed method call : (1)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
-							System.out.println();
+							System.out.println("Allowed method call : (1)" + methodSignature + dynArgs.substring(0, dynArgs.lastIndexOf(",")) + ")");
+							System.out.println("Allowed return type(s) : dynamic");
 						}
+					}
+					// method with no arguments
+					else {
+						String effectString = getReturnConstraint(updatedConstraintsList);
+						System.out.println("Analysing method constraints for method : " + sootMethod.getName());
+						System.out.println("Allowed return type(s) for method " + sootMethod.getName() + "() : " + effectString);
 					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * convert symbol to string
+	 * @param symbol
+	 * @return
+	 */
 	private static String getEffectString(Symbol symbol){
 		String effectString = "";
 		if(symbol.toString().equals("Dyn()"))
@@ -908,6 +931,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		return effectString;
 	}
 
+	/**
+	 * get map of arguments independent from the return var / independent of each other
+	 * @param updatedConstraintsList
+	 * @return
+	 */
 	private static HashMap getIndependentArgs(List<SigConstraint> updatedConstraintsList){
 		int argPosition = Integer.MAX_VALUE;
 		HashMap argEffectMap = new HashMap();
@@ -924,5 +952,44 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			}
 		}
 		return argEffectMap;
+	}
+
+
+	/**
+	 * get param on which the return var is dependent
+	 * @param updatedConstraintsList
+	 * @return
+	 */
+	private static int getArgPosition(List<SigConstraint> updatedConstraintsList){
+		int argPosition = Integer.MAX_VALUE;
+		for (SigConstraint constraint : updatedConstraintsList) {
+			String constraintString = constraint.lhs.toString();
+			Symbol rhs = constraint.rhs;
+			if (rhs.toString().contains("@ret")){
+				for (int i = 0; i < constraintString.length(); i++) {
+					if (Character.isDigit(constraintString.charAt(i))) {
+						argPosition = Character.getNumericValue(constraintString.charAt(i));
+					}
+				}
+			}
+		}
+		return argPosition;
+	}
+
+	/**
+	 * get return constraint
+	 * @param updatedConstraintsList
+	 * @return
+	 */
+	private static String getReturnConstraint(List<SigConstraint> updatedConstraintsList){
+		String effectString = "";
+		for (SigConstraint constraint : updatedConstraintsList) {
+			String lhsString = constraint.lhs.toString();
+			if(!lhsString.contains("@ret"))
+				effectString = getEffectString(constraint.lhs);
+			else
+				effectString = getEffectString(constraint.rhs);
+		}
+		return effectString;
 	}
 }
