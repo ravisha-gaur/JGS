@@ -4,13 +4,15 @@ import de.unifreiburg.cs.proglang.jgs.support.*;
 
 public class NewInstance {
 
-    @Sec("?")
-    int a;
+    @Sec("HIGH")
+    static int a;
     @Sec("?")
     double b;
 
-    @Constraints({"@0 <= ?", "@1 <= ?"})
-    NewInstance(int a, double b){
+
+    @Constraints({"@0 <= HIGH", "@1 <= ?"})
+    @Effects({"HIGH"})
+    NewInstance(int a, int b) {
         this.a = a;
         this.b = b;
     }
@@ -18,12 +20,14 @@ public class NewInstance {
     @Constraints("LOW <= @0")
     @Effects({"LOW", "?"})
     public static void main(String[] args) {
-        int x = Casts.cast("LOW ~> ?", 5);
-        double y = Casts.cast("HIGH ~> ?", 7.0);
 
-        NewInstance newInstance = new NewInstance(x, y);
-        //NewInstance newInstance = new NewInstance();
-        newInstance = Casts.cast("LOW ~> ?", newInstance);
-        IOUtils.printSecret(newInstance);
+        int y = Casts.cast("? ~> HIGH", 4);
+        int z = Casts.cast("HIGH ~> ?", 14);
+
+        NewInstance newInstance1 = new NewInstance(y, z);
+        //IOUtils.printSecret(newInstance1.b);
+        newInstance1 = Casts.cast("LOW ~> ?", newInstance1);
+        IOUtils.printSecret(newInstance1);
+
     }
 }

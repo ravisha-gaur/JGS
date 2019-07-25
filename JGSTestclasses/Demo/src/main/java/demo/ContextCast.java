@@ -8,22 +8,21 @@ public class ContextCast {
     static int highField = 45;
 
     @Sec("?")
-    static int dynField;
+    static int dynField = 9;
 
     @Sec("LOW")
-    static int lowField;
+    static int lowField = 8;
 
     @Constraints("LOW <= @0")
-    @Effects({"?","LOW"})
+    @Effects({"HIGH","?"})
     public static void main(String[] args) {
         if (highField == 42) {
-            Casts.castCx("HIGH ~> ?");
-            //dynField = 10; -- NSU Failure
+            Casts.castCx("HIGH ~> ?"); // NSU Failure
+            dynField = 10;
             Casts.castCx("? ~> LOW");
-            //dynField = 5;
             lowField = 5;
             Casts.castCxEnd();
             Casts.castCxEnd();
-       }
+        }
     }
 }

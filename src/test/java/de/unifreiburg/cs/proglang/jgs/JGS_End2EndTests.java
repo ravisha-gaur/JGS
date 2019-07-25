@@ -25,7 +25,7 @@ public class JGS_End2EndTests {
      * @param name
      *            Name of the class
      * @param securityMonitoringEvents
-     *            specifiy if, and what kind of exception is expected
+     *            specify if, and what kind of exception is expected
      * @param involvedVars
      *            variables which are expected to be involved in the exception
      */
@@ -63,7 +63,28 @@ public class JGS_End2EndTests {
                 new Object[]{"PolymorphicMethods2_Success", SecurityMonitoringEvent.PASSED, new String[]{""}},
                 new Object[]{"PolymorphicMethods1_Fail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
                 new Object[]{"PolymorphicMethods2_Fail", SecurityMonitoringEvent.NSU_FAILURE, new String[]{""}},
-                new Object[]{"CxCast_Fail1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}}
+                new Object[]{"CxCast_Fail1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
+                new Object[]{"NewInstanceMulConstructorsFailing", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
+                new Object[]{"NewInstanceMulConstructorsSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"NewInstanceConsOverLoadingFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
+                new Object[]{"NewInstanceConsOverLoadingSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"NewInstanceFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}}, // unusual - added only as another test case
+                new Object[]{"NewInstanceSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"NewInstanceDefaultCons", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCallAllConstants", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCallAllDynamic_Success1", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCallAllDynamic_Fail1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
+                new Object[]{"MethodCallAllStatic_1", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCallAllStatic_2", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCallDynInMethodSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCallDynInMethodFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
+                new Object[]{"MethodCallConstantStatic", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCallConstantDynamicFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
+                new Object[]{"MethodCallConstantDynamicSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCall_addS_addD_Success", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"MethodCall_addS_addD_Fail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
+                new Object[]{"StupidTestCase", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}}, // method where the params are independent of each other or where the return value depends only on one param
+                new Object[]{"MethodCallStaticDynamic", SecurityMonitoringEvent.PASSED, new String[]{""}} // Type-Checker fails this program, added only as another test case
         );
     }
 
