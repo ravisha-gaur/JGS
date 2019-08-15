@@ -10,7 +10,6 @@ import util.logging.L2Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,8 +31,8 @@ public class HandleStmt {
      */
     private static final Logger logger = L2Logger.getLogger();
 
-    private LocalMap localmap;
-    private static ObjectMap objectmap;
+    private LocalMap localMap;
+    private static ObjectMap objectMap;
     private HandleStmtUtils handleStatementUtils;
     PassivController controller;
 
@@ -43,8 +42,8 @@ public class HandleStmt {
      * {@link CurrentSecurityDomain} of the globalPC
      */
     public HandleStmt() {
-        localmap = new LocalMap();
-        objectmap = ObjectMap.getInstance();
+        localMap = new LocalMap();
+        objectMap = ObjectMap.getInstance();
         logger.setLevel(Level.ALL);
     }
 
@@ -54,8 +53,8 @@ public class HandleStmt {
      * of exception we expect
      */
     public void initHandleStmtUtils() {
-        handleStatementUtils = new HandleStmtUtils(localmap, objectmap);
-        objectmap.pushGlobalPC(handleStatementUtils.joinLevels(objectmap.getGlobalPC(), localmap.getLocalPC()));
+        handleStatementUtils = new HandleStmtUtils(localMap, objectMap);
+        objectMap.pushGlobalPC(handleStatementUtils.joinLevels(objectMap.getGlobalPC(), localMap.getLocalPC()));
     }
 
     /**
@@ -70,11 +69,11 @@ public class HandleStmt {
             logger.warning("Set up of logger failed");
             e.printStackTrace();
         }
-        if (objectmap == null) {
-            objectmap = ObjectMap.getInstance();
+        if (objectMap == null) {
+            objectMap = ObjectMap.getInstance();
         }
-        objectmap.flush();
-        objectmap.clearAssignmentLevel();
+        objectMap.flush();
+        objectMap.clearAssignmentLevel();
     }
 
     /**
@@ -83,8 +82,8 @@ public class HandleStmt {
      */
     public void close() {
         logger.log(Level.INFO, "Close HandleStatement");
-        objectmap.popGlobalPC();
-        localmap.checkisLPCStackEmpty();
+        objectMap.popGlobalPC();
+        localMap.checkisLPCStackEmpty();
     }
 
     /**
@@ -94,7 +93,7 @@ public class HandleStmt {
      * @return The new security-level.
      */
     protected Object setActualReturnLevel(Object securityLevel) {
-        return objectmap.setActualReturnLevel(securityLevel);
+        return objectMap.setActualReturnLevel(securityLevel);
     }
 
     /**
@@ -103,7 +102,7 @@ public class HandleStmt {
      * @return The securitylevel of the last return-statement.
      */
     protected Object getActualReturnLevel() {
-        return objectmap.getActualReturnLevel();
+        return objectMap.getActualReturnLevel();
     }
 
     /**
@@ -113,8 +112,8 @@ public class HandleStmt {
      */
     public void addObjectToObjectMap(Object object) {
         logger.log(Level.INFO, "Insert Object {0} to ObjectMap", object);
-        objectmap.insertNewObject(object);
-        if (!objectmap.containsObject(object)) {
+        objectMap.insertNewObject(object);
+        if (!objectMap.containsObject(object)) {
             throw new InternalAnalyzerException("Add object " + object + " to ObjectMap failed.");
         }
     }
@@ -129,8 +128,8 @@ public class HandleStmt {
     public Object addFieldToObjectMap(Object object, String signature) {
         logger.log(Level.INFO, "Add Field {0} to object {1}", new Object[]{signature, object});
         handleStatementUtils.checkIfObjectExists(object);
-        Object fieldLevel = objectmap.setField(object, signature, CurrentSecurityDomain.bottom());
-        if (!objectmap.containsField(object, signature)) {
+        Object fieldLevel = objectMap.setField(object, signature, CurrentSecurityDomain.bottom());
+        if (!objectMap.containsField(object, signature)) {
             throw new InternalAnalyzerException("Add field " + signature + " to ObjectMap failed");
         }
         return fieldLevel;
@@ -163,7 +162,7 @@ public class HandleStmt {
      * @return true, if object is found in ObjectMap
      */
     protected boolean containsObjectInObjectMap(Object object) {
-        return objectmap.containsObject(object);
+        return objectMap.containsObject(object);
     }
 
     /**
@@ -176,7 +175,7 @@ public class HandleStmt {
     protected boolean containsFieldInObjectMap(Object object, String
             signature) {
         handleStatementUtils.checkIfObjectExists(object);
-        return objectmap.containsField(object, signature);
+        return objectMap.containsField(object, signature);
     }
 
     /**
@@ -185,7 +184,7 @@ public class HandleStmt {
      * @return number of elements
      */
     protected int getNumberOfElementsInObjectMap() {
-        return objectmap.getNumberOfElements();
+        return objectMap.getNumberOfElements();
     }
 
     /**
@@ -196,7 +195,7 @@ public class HandleStmt {
      */
     protected int getNumberOfFieldsInObjectMap(Object bject) {
         handleStatementUtils.checkIfObjectExists(bject);
-        return objectmap.getNumberOfFields(bject);
+        return objectMap.getNumberOfFields(bject);
     }
 
     /**
@@ -208,7 +207,7 @@ public class HandleStmt {
      */
     protected Object getFieldLevel(Object object, String signature) {
         handleStatementUtils.checkIfObjectExists(object);
-        return objectmap.getFieldLevel(object, signature);
+        return objectMap.getFieldLevel(object, signature);
     }
 
     /**
@@ -221,7 +220,7 @@ public class HandleStmt {
         logger.log(Level.INFO, "Set SecurityLevel of field {0} to HIGH",
                 signature);
         handleStatementUtils.checkIfObjectExists(object);
-        objectmap.setField(object, signature, CurrentSecurityDomain.top());
+        objectMap.setField(object, signature, CurrentSecurityDomain.top());
     }
 
     /**
@@ -234,7 +233,7 @@ public class HandleStmt {
         logger.log(Level.INFO, "Set SecurityLevel of field {0} to LOW",
                 signature);
         handleStatementUtils.checkIfObjectExists(object);
-        objectmap.setField(object, signature, CurrentSecurityDomain.bottom());
+        objectMap.setField(object, signature, CurrentSecurityDomain.bottom());
     }
 
     /**
@@ -247,7 +246,7 @@ public class HandleStmt {
         logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap",
                 new Object[]{signature, level});
         handleStatementUtils.checkThatLocalDoesNotExist(signature);
-        localmap.setLevel(signature, level);
+        localMap.setLevel(signature, level);
     }
 
     /**
@@ -274,12 +273,12 @@ public class HandleStmt {
      * @return SecurityLevel
      */
     protected Object getLocalLevel(String signature) {
-        return localmap.getLevel(signature);
+        return localMap.getLevel(signature);
     }
 
     public void setLocalFromString(String signature, String level) {
         logger.info("Set level of local " + signature + " to " + level);
-        localmap.setLevel(signature, CurrentSecurityDomain.readLevel(level));
+        localMap.setLevel(signature, CurrentSecurityDomain.readLevel(level));
     }
 
 
@@ -295,10 +294,10 @@ public class HandleStmt {
 //	public void makeLocalHigh(String signature) {
 //		logger.info("Set level of local " + signature
 //				+ " to SecurityLevel.top()");
-//		localmap.initializeLocal(signature);
-//		localmap.setLevel(signature, SecurityLevel.top());
+//		localMap.initializeLocal(signature);
+//		localMap.setLevel(signature, SecurityLevel.top());
 //		logger.info("New securitylevel of local " + signature + " is "
-//				+ localmap.getLevel(signature));
+//				+ localMap.getLevel(signature));
 //	}
 //
 //	/**
@@ -312,8 +311,8 @@ public class HandleStmt {
 //	public void makeLocalLow(String signature) {
 //		logger.info("Set level of " + signature + " to SecurityLevel.bottom
 // ()");
-//		localmap.setLevel(signature, SecurityLevel.bottom());
-//		logger.info("New securitylevel: " + localmap.getLevel(signature));
+//		localMap.setLevel(signature, SecurityLevel.bottom());
+//		logger.info("New securitylevel: " + localMap.getLevel(signature));
 //	}
 
     /**
@@ -342,9 +341,9 @@ public class HandleStmt {
      * @return The new localPC.
      */
     protected Object pushLocalPC(Object securityLevel, int dominatorIdentity) {
-        localmap.pushLocalPC(securityLevel, dominatorIdentity);
-        logger.info("New LPC: " + localmap.getLocalPC().toString());
-        return localmap.getLocalPC();
+        localMap.pushLocalPC(securityLevel, dominatorIdentity);
+        logger.info("New LPC: " + localMap.getLocalPC().toString());
+        return localMap.getLocalPC();
     }
 
     /**
@@ -355,7 +354,7 @@ public class HandleStmt {
      */
     protected void popLocalPC(int dominatorIdentity) {
         logger.info("Pop local pc.");
-        localmap.popLocalPC(dominatorIdentity);
+        localMap.popLocalPC(dominatorIdentity);
     }
 
     /**
@@ -364,7 +363,7 @@ public class HandleStmt {
      * @return localPC
      */
     protected Object getLocalPC() {
-        return localmap.getLocalPC();
+        return localMap.getLocalPC();
     }
 
     /**
@@ -375,8 +374,8 @@ public class HandleStmt {
      */
     protected Object pushGlobalPC(Object securityLevel) {
         logger.log(Level.INFO, "Set globalPC to {0}", securityLevel);
-        objectmap.pushGlobalPC(securityLevel);
-        return objectmap.getGlobalPC();
+        objectMap.pushGlobalPC(securityLevel);
+        return objectMap.getGlobalPC();
     }
 
     /**
@@ -385,7 +384,7 @@ public class HandleStmt {
      * @return SecurityLevel
      */
     protected Object getGlobalPC() {
-        return objectmap.getGlobalPC();
+        return objectMap.getGlobalPC();
     }
 
     /**
@@ -394,7 +393,7 @@ public class HandleStmt {
      * @return SecurityLevel of last GPC
      */
     public Object popGlobalPC() {
-        return objectmap.popGlobalPC();
+        return objectMap.popGlobalPC();
     }
 
     /**
@@ -409,11 +408,11 @@ public class HandleStmt {
         // In case somebody wonders: we do not need to check the local pc
         // here. In Jimple, argument-to-local assignments (JIdentityStmt) are always
         // the beginning of the method, where the context is public
-        if(!objectmap.getActualArguments().isEmpty()) {
-            localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(0)));
-            objectmap.getActualArguments().remove(0);
+        if(!objectMap.getActualArguments().isEmpty()) {
+            localMap.setLevel(signature, handleStatementUtils.joinWithLPC(objectMap.getArgLevelAt(0)));
+            objectMap.getActualArguments().remove(0);
         }
-        return localmap.getLevel(signature);
+        return localMap.getLevel(signature);
     }
 
 
@@ -425,11 +424,11 @@ public class HandleStmt {
      * @param signature signature of local
      */
     public void assignReturnLevelToLocal(String signature) {
-        Object returnLevel = objectmap.getActualReturnLevel();
+        Object returnLevel = objectMap.getActualReturnLevel();
 
         checkLocalPC(signature);
         setLocal(signature, returnLevel);
-        objectmap.setActualReturnLevel(CurrentSecurityDomain.top());
+        objectMap.setActualReturnLevel(CurrentSecurityDomain.top());
     }
 
     /**
@@ -438,7 +437,7 @@ public class HandleStmt {
     public void returnConstant() {
         logger.log(Level.INFO, "Return a constant value.");
 
-        objectmap.setActualReturnLevel(handleStatementUtils
+        objectMap.setActualReturnLevel(handleStatementUtils
                 .joinWithLPC
                         (CurrentSecurityDomain
                                 .bottom
@@ -455,9 +454,9 @@ public class HandleStmt {
      * @param signature signature of local
      */
     public void returnLocal(String signature) {
-        Object level = localmap.getLevel(signature);
+        Object level = localMap.getLevel(signature);
         logger.log(Level.INFO, "Return Local {0} with level {1}", new Object[]{signature, level});
-        objectmap.setActualReturnLevel(level);
+        objectMap.setActualReturnLevel(level);
     }
 
     /**
@@ -466,45 +465,45 @@ public class HandleStmt {
      * @param arguments List of arguments
      */
     public void storeArgumentLevel(String signature) {
-        ArrayList<Object> levelArr = objectmap.getActualArguments();
-        levelArr.add(localmap.getLevel(signature));
-        objectmap.setActualArguments(levelArr);
+        ArrayList<Object> levelArr = objectMap.getActualArguments();
+        levelArr.add(localMap.getLevel(signature));
+        objectMap.setActualArguments(levelArr);
     }
 
     /**
      * Check condition of an if-statement. This operation merges the security-
      * levels of all locals with the actual localPC and stores them together
      * with the identity value of the corresponding postdominator in the
-     * localmap.
+     * localMap.
      *
      * @param dominatorIdentity identity of the postdominator.
      * @param args              List of signatore-string of all locals.
      */
     public void checkCondition(String dominatorIdentity) {
         logger.info("Check condition of ifStmt");
-        localmap.pushLocalPC(handleStatementUtils.joinWithLPC(objectmap.getAssignmentLevel()), Integer.valueOf(dominatorIdentity));
-        objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
-        logger.info("New LPC is " + localmap.getLocalPC().toString());
+        localMap.pushLocalPC(handleStatementUtils.joinWithLPC(objectMap.getAssignmentLevel()), Integer.valueOf(dominatorIdentity));
+        objectMap.pushGlobalPC(handleStatementUtils.joinWithGPC(localMap.getLocalPC()));
+        logger.info("New LPC is " + localMap.getLocalPC().toString());
     }
 
     public void updateCondition(String dominatorIdentity) {
         logger.info("Update condition of ifStmt");
         LinkedList<LPCDominatorPair> localPC = new LinkedList<LPCDominatorPair>();
         localPC.push(new LPCDominatorPair(CurrentSecurityDomain.bottom(), -1));
-        Object securityLevel = handleStatementUtils.joinWithLPC(objectmap.getAssignmentLevel());
+        Object securityLevel = handleStatementUtils.joinWithLPC(objectMap.getAssignmentLevel());
         localPC.push(new LPCDominatorPair(securityLevel, Integer.valueOf(dominatorIdentity)));
-        localmap.setLocalPC(localPC);
+        localMap.setLocalPC(localPC);
         LinkedList<Object> globalPC = new LinkedList<>();
-        globalPC.push(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
-        objectmap.setGlobalPC(globalPC);
-        logger.info("New LPC is " + localmap.getLocalPC().toString());
+        globalPC.push(handleStatementUtils.joinWithGPC(localMap.getLocalPC()));
+        objectMap.setGlobalPC(globalPC);
+        logger.info("New LPC is " + localMap.getLocalPC().toString());
     }
 
     public void ctxCastStToDyn(String dominatorIdentity, String level) {
         logger.info("level : " + level);
-        localmap.pushLocalPC(handleStatementUtils.joinLocalLevel(level), Integer.valueOf(dominatorIdentity));
-        objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
-        logger.info("New LPC is " + localmap.getLocalPC().toString());
+        localMap.pushLocalPC(handleStatementUtils.joinLocalLevel(level), Integer.valueOf(dominatorIdentity));
+        objectMap.pushGlobalPC(handleStatementUtils.joinWithGPC(localMap.getLocalPC()));
+        logger.info("New LPC is " + localMap.getLocalPC().toString());
     }
 
 
@@ -517,10 +516,10 @@ public class HandleStmt {
      * @param dominatorIdentity identity of the dominator.
      */
     public void exitInnerScope(String dominatorIdentity) {
-        while (localmap.dominatorIdentityEquals(Integer.valueOf(dominatorIdentity))) {
+        while (localMap.dominatorIdentityEquals(Integer.valueOf(dominatorIdentity))) {
             logger.info("Pop LPC for identity " + dominatorIdentity);
-            localmap.popLocalPC(Integer.valueOf(dominatorIdentity));
-            objectmap.popGlobalPC();    // pop needs to be removed
+            localMap.popLocalPC(Integer.valueOf(dominatorIdentity));
+            objectMap.popGlobalPC();    // pop needs to be removed
         }
     }
 
@@ -534,10 +533,10 @@ public class HandleStmt {
      * @return security-level of the local.
      */
     public Object joinLevelOfLocalAndAssignmentLevel(String local) {
-        Object localLevel = localmap.getLevel(local);
-        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(), localLevel));
-        logger.log(Level.INFO, "Set assignment-level to level " + objectmap.getAssignmentLevel() + " because of " + local);
-        return objectmap.getAssignmentLevel();
+        Object localLevel = localMap.getLevel(local);
+        objectMap.setAssignmentLevel(handleStatementUtils.joinLevels(objectMap.getAssignmentLevel(), localLevel));
+        logger.log(Level.INFO, "Set assignment-level to level " + objectMap.getAssignmentLevel() + " because of " + local);
+        return objectMap.getAssignmentLevel();
     }
 
     /**
@@ -549,10 +548,10 @@ public class HandleStmt {
      * @return SecurityLevel of the field.
      */
     public Object joinLevelOfFieldAndAssignmentLevel(Object object, String field) {
-        Object fieldLevel = objectmap.getFieldLevel(object, field);
+        Object fieldLevel = objectMap.getFieldLevel(object, field);
         logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of " + "local {1})", new Object[]{fieldLevel, field});
-        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(), fieldLevel));
-        return objectmap.getAssignmentLevel();
+        objectMap.setAssignmentLevel(handleStatementUtils.joinLevels(objectMap.getAssignmentLevel(), fieldLevel));
+        return objectMap.getAssignmentLevel();
     }
 
     /**
@@ -563,10 +562,10 @@ public class HandleStmt {
      * @return SecurityLevel of the field.
      */
     public Object joinLevelOfArrayFieldAndAssignmentLevel(Object object, String field) {
-        Object fieldLevel = objectmap.getFieldLevel(object, field);
+        Object fieldLevel = objectMap.getFieldLevel(object, field);
         logger.log(Level.INFO,  "Set assignment-level to level {0} (which is the level of " + "local {1})", new Object[]{fieldLevel, field});
-        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(), fieldLevel));
-        return objectmap.getAssignmentLevel();
+        objectMap.setAssignmentLevel(handleStatementUtils.joinLevels(objectMap.getAssignmentLevel(), fieldLevel));
+        return objectMap.getAssignmentLevel();
     }
 
     /**
@@ -578,8 +577,8 @@ public class HandleStmt {
      */
     public Object setLocal(String signature, Object securitylevel) {
         logger.log(Level.INFO, "Set level of local {0} to {1}", new Object[]{signature, securitylevel});
-        localmap.setLevel(signature, securitylevel);
-        return localmap.getLevel(signature);
+        localMap.setLevel(signature, securitylevel);
+        return localMap.getLevel(signature);
     }
 
     /**
@@ -590,13 +589,13 @@ public class HandleStmt {
      */
     /*public void setReturnLevelAfterInvokeStmt(String signature) {
 
-        Object leftHandSideSecValue = localmap.getLevel(signature);
-        leftHandSideSecValue = handleStatementUtils.joinLevels(objectmap.getActualReturnLevel(), leftHandSideSecValue);
+        Object leftHandSideSecValue = localMap.getLevel(signature);
+        leftHandSideSecValue = handleStatementUtils.joinLevels(objectMap.getActualReturnLevel(), leftHandSideSecValue);
         setLocal(signature, leftHandSideSecValue);
     }*/
 
     public void setReturnLevelAfterInvokeStmt(String signature) {
-        setLocal(signature, objectmap.getActualReturnLevel());
+        setLocal(signature, objectMap.getActualReturnLevel());
     }
 
     /**
@@ -612,12 +611,12 @@ public class HandleStmt {
         // the local PC (for example, if inside a high-security if), or on either
         // of the right-hand variables' sec-levels, which is accumulated
         // in the assignmentLevel
-        Object newSecValue = handleStatementUtils.joinWithLPC(objectmap.getAssignmentLevel());
+        Object newSecValue = handleStatementUtils.joinWithLPC(objectMap.getAssignmentLevel());
         logger.log(Level.INFO, "Set level of local {0} to {1}", new Object[]{signature, newSecValue});
-        localmap.setLevel(signature, newSecValue);
-        logger.log(Level.INFO, "New level of local {0} is {1} ", new Object[]{signature, localmap.getLevel(signature)});
-        objectmap.clearAssignmentLevel();
-        return localmap.getLevel(signature);
+        localMap.setLevel(signature, newSecValue);
+        logger.log(Level.INFO, "New level of local {0} is {1} ", new Object[]{signature, localMap.getLevel(signature)});
+        objectMap.clearAssignmentLevel();
+        return localMap.getLevel(signature);
     }
 
     /**
@@ -628,11 +627,11 @@ public class HandleStmt {
      * @return The security-level of the field.
      */
     public Object setLevelOfField(Object object, String field) {
-        logger.log(Level.INFO, "Set level of field {0} to {1}", new Object[]{field, handleStatementUtils.joinWithGPC(objectmap.getAssignmentLevel())});
-        objectmap.setField(object, field, handleStatementUtils.joinWithGPC(objectmap.getAssignmentLevel()));
-        logger.log(Level.INFO, "New level of field {0} is {1}", new Object[]{field, objectmap.getFieldLevel(object, field)});
-        objectmap.clearAssignmentLevel();
-        return objectmap.getFieldLevel(object, field);
+        logger.log(Level.INFO, "Set level of field {0} to {1}", new Object[]{field, handleStatementUtils.joinWithGPC(objectMap.getAssignmentLevel())});
+        objectMap.setField(object, field, handleStatementUtils.joinWithGPC(objectMap.getAssignmentLevel()));
+        logger.log(Level.INFO, "New level of field {0} is {1}", new Object[]{field, objectMap.getFieldLevel(object, field)});
+        objectMap.clearAssignmentLevel();
+        return objectMap.getFieldLevel(object, field);
     }
 
     /**
@@ -658,16 +657,16 @@ public class HandleStmt {
                 "Set level of array-field {0} to {1}",
                 new Object[]{
                         field,
-                        handleStatementUtils.joinWithGPC(objectmap
+                        handleStatementUtils.joinWithGPC(objectMap
                                 .getAssignmentLevel())});
 
-        objectmap.setField(object, field, handleStatementUtils
-                .joinWithGPC(objectmap.getAssignmentLevel()));
+        objectMap.setField(object, field, handleStatementUtils
+                .joinWithGPC(objectMap.getAssignmentLevel()));
         logger.log(Level.INFO, "New level of array-field {0} is {1}",
-                new Object[]{field, objectmap.getFieldLevel(object, field)
+                new Object[]{field, objectMap.getFieldLevel(object, field)
                 });
-        objectmap.clearAssignmentLevel();
-        return objectmap.getFieldLevel(object, field);
+        objectMap.clearAssignmentLevel();
+        return objectMap.getFieldLevel(object, field);
     }
 
     /**
@@ -691,16 +690,16 @@ public class HandleStmt {
                 "Set level of array-field {0} to {1}",
                 new Object[]{
                         field,
-                        handleStatementUtils.joinWithGPC(objectmap
+                        handleStatementUtils.joinWithGPC(objectMap
                                 .getAssignmentLevel())});
 
-        objectmap.setField(object, field, handleStatementUtils
-                .joinWithGPC(objectmap.getAssignmentLevel()));
+        objectMap.setField(object, field, handleStatementUtils
+                .joinWithGPC(objectMap.getAssignmentLevel()));
         logger.log(Level.INFO, "New level of array-field {0} is {1}",
-                new Object[]{field, objectmap.getFieldLevel(object, field)
+                new Object[]{field, objectMap.getFieldLevel(object, field)
                 });
-        objectmap.clearAssignmentLevel();
-        return objectmap.getFieldLevel(object, field);
+        objectMap.clearAssignmentLevel();
+        return objectMap.getFieldLevel(object, field);
     }
 
     /**
@@ -739,8 +738,8 @@ public class HandleStmt {
      * @param field
      */
     public void checkGlobalPC(Object object, String field) {
-        Object fieldLevel = objectmap.getFieldLevel(object, field);
-        Object globalPC = objectmap.getGlobalPC();
+        Object fieldLevel = objectMap.getFieldLevel(object, field);
+        Object globalPC = objectMap.getGlobalPC();
 
         if (!CurrentSecurityDomain.le(globalPC, fieldLevel)) {
             handleStatementUtils.abort(new NSUError(NSU_ERROR_MESSAGE + field));
@@ -759,18 +758,18 @@ public class HandleStmt {
     // TODO: before fixing the issue above, check why returning from functions  and assignments are different cases.
     public void checkLocalPC(String signature) {
         logger.log(Level.INFO, "NSU check for local {0}", signature);
-        if (localmap == null) {
+        if (localMap == null) {
             throw new InternalAnalyzerException("LocalMap is null");
         }
         //check if local is initialized
-        if (!localmap.isTracked(signature)) {
+        if (!localMap.isTracked(signature)) {
             logger.log(Level.INFO, "Local {0} is not tracked; skipping NSU check", signature);
             return;
         }
 
         // the following check must only be executed if local is initialised
-        Object level = localmap.getLevel(signature);
-        Object lpc = localmap.getLocalPC();
+        Object level = localMap.getLevel(signature);
+        Object lpc = localMap.getLocalPC();
         logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC",
                 new Object[] {signature, level, lpc });
 
@@ -787,7 +786,7 @@ public class HandleStmt {
      */
     public void checkNonSensitiveLocalPC() {
         logger.info("NSU check for updating public a variable");
-        if (!CurrentSecurityDomain.le(localmap.getLocalPC(),
+        if (!CurrentSecurityDomain.le(localMap.getLocalPC(),
                 CurrentSecurityDomain.bottom())) {
             handleStatementUtils.abort(new NSUError("Sensitive update to public variable"));
         }
@@ -804,7 +803,7 @@ public class HandleStmt {
     public void checkThatLe(String signature, String level) {
         checkThatLe(signature, level,
                 "Passed argument " + signature + " with level "
-                        + localmap.getLevel(signature) + " to some method" +
+                        + localMap.getLevel(signature) + " to some method" +
                         " which requires a"
                         + " security level of less/equal " + level);
     }
@@ -812,13 +811,13 @@ public class HandleStmt {
     public void checkCastToStatic(String signature, String level) {
         checkThatLe(signature, level, "Illegal cast to static type " + level +
                 " of " + signature + "("
-                + localmap.getLevel(signature) + ")");
+                + localMap.getLevel(signature) + ")");
     }
 
     public void checkThatLe(String signature, String level, String msg) {
         logger.info("Check if " + signature + " <= " + level);
 
-        if (!CurrentSecurityDomain.le(localmap.getLevel(signature),
+        if (!CurrentSecurityDomain.le(localMap.getLevel(signature),
                 CurrentSecurityDomain.readLevel(level))) {
             handleStatementUtils.abort(new IllegalFlowError(msg));
         }
@@ -839,7 +838,7 @@ public class HandleStmt {
                         + "PC is less than "
                         + level);
 
-        if (!CurrentSecurityDomain.le(localmap.getLocalPC(),
+        if (!CurrentSecurityDomain.le(localMap.getLocalPC(),
                 CurrentSecurityDomain.readLevel(level))) {
             handleStatementUtils.abort(new IllegalFlowError("Invalid security "
                     + "context: PC "
@@ -847,13 +846,13 @@ public class HandleStmt {
                     + "less/equal " +
                     level + ", but PC "
                     + "was " +
-                    localmap
+                    localMap
                             .getLocalPC()));
         }
     }
 
     public void stopTrackingLocal(String signature) {
         logger.log(Level.INFO, "Stop tracking local {0}",signature);
-        localmap.removeLocal(signature);
+        localMap.removeLocal(signature);
     }
 }
