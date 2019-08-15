@@ -1,7 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import scala.Option;
 import soot.SootMethod;
 
@@ -62,11 +61,11 @@ public class SignatureTable<Level> {
                 // create signatures for different string(and other data types) class methods as and when needed
                 switch (m.getName()){
                     case "substring":
-                        Signature signature = Signature.substringSignature(secDomain, m.getParameterCount());
+                        Signature signature = Signature.exampleSignature(secDomain, m.getParameterCount());
                         result = Option.apply(signature);
                         break;
                     case "indexOf":
-                        signature = Signature.substringSignature(secDomain, m.getParameterCount());
+                        signature = Signature.exampleSignature(secDomain, m.getParameterCount());
                         result = Option.apply(signature);
                         break;
                     default:

@@ -36,7 +36,7 @@ public class Signature<Level> {
         return Pair.of(this.constraints.refines(csets, types, other.constraints), this.effects.refines(types, other.effects));
     }
 
-    public static <Level> Signature<Level> substringSignature(SecDomain<Level> secDomain, int paramCount) {
+    public static <Level> Signature<Level> exampleSignature(SecDomain<Level> secDomain, int paramCount) {
         // { @0 <= @ret, @1 <= @ret, ... }
         List<SigConstraint<Level>> constraints = new ArrayList<>();
         for(int i = 0; i < paramCount; i++) {
