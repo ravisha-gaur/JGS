@@ -128,17 +128,17 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		if(count == 1){
 			for (SootMethod sootMethod : allMethods) {
-					Chain<Unit> units = sootMethod.getActiveBody().getUnits();
-					ArrayList<Unit> unmodifiedStmts = new ArrayList<>(units);
-					for (Unit unit : unmodifiedStmts) {
-						for (String methodName : methodNames) {
-							if (unit.toString().contains(methodName)) {
-								methodCalls.add(unit);
-								if(!sootMethod.isMain())
-									methodCallsInsideMethods.put(unit, sootMethod.getName()); // Find calls to methods no in the main method
-							}
+				Chain<Unit> units = sootMethod.getActiveBody().getUnits();
+				ArrayList<Unit> unmodifiedStmts = new ArrayList<>(units);
+				for (Unit unit : unmodifiedStmts) {
+					for (String methodName : methodNames) {
+						if (unit.toString().contains(methodName)) {
+							methodCalls.add(unit);
+							if(!sootMethod.isMain())
+								methodCallsInsideMethods.put(unit, sootMethod.getName()); // Find calls to methods no in the main method
 						}
 					}
+				}
 
 				fields = sootMethod.getDeclaringClass().getFields();
 
@@ -909,9 +909,19 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 					// method with no arguments
 					else {
 						String effectString = getReturnConstraint(updatedConstraintsList);
+						if(effectString.isEmpty())
+							effectString = "dynamic/ static";
 						System.out.println("Analysing method constraints for method : " + sootMethod.getName());
 						System.out.println("Allowed return type(s) for method " + sootMethod.getName() + "() : " + effectString);
 					}
+				}
+				// method with no arguments
+				else {
+					String effectString = getReturnConstraint(updatedConstraintsList);
+					if(effectString.isEmpty())
+						effectString = "dynamic/ static";
+					System.out.println("Analysing method constraints for method : " + sootMethod.getName());
+					System.out.println("Allowed return type(s) for method " + sootMethod.getName() + "() : " + effectString);
 				}
 			}
 		}
