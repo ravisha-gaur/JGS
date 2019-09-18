@@ -14,7 +14,7 @@ public class ContextCast {
     static int lowField = 8;
 
     @Constraints("LOW <= @0")
-    @Effects({"HIGH","?"})
+    @Effects({"LOW"})
     public static void main(String[] args) {
         if (highField == 42) {
             Casts.castCx("HIGH ~> ?"); // NSU Failure

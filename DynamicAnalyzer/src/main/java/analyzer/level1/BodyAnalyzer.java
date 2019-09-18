@@ -135,7 +135,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 						if (unit.toString().contains(methodName)) {
 							methodCalls.add(unit);
 							if(!sootMethod.isMain())
-								methodCallsInsideMethods.put(unit, sootMethod.getName()); // Find calls to methods no in the main method
+								methodCallsInsideMethods.put(unit, sootMethod.getName()); // Find calls to methods not in the main method
 						}
 					}
 				}
@@ -262,7 +262,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
                                         argumentsList.add(tempMap);
                                         argPosition += 1;
                                     }
-                                    //if the method is called multiple times, update the argument map for that method i.e if for eg: add(5, x) and (x, 5) argument map for add will have true for argPositions 0 and 1
+                                    //if the method is called multiple times, update the argument map for that method i.e if for eg: add(5, x) and (x, 5) argument map for add will have true for argPositions 0 and 1 where x is dynamic
                                     else if (null != argumentMap.get(methodName)) {
                                         List<HashMap<Integer, Boolean>> argList = argumentMap.get(methodName);
                                         if(!argList.isEmpty() && argList.size() > argPosition) {

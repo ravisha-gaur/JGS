@@ -65,7 +65,7 @@ public class JGS_End2EndTests {
                 new Object[]{"PolymorphicMethods2_Fail", SecurityMonitoringEvent.NSU_FAILURE, new String[]{""}},
                 new Object[]{"CxCast_Fail1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
                 new Object[]{"NewInstanceMulConstructorsFailing", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
-                new Object[]{"NewInstanceMulConstructorsSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"Listing37", SecurityMonitoringEvent.PASSED, new String[]{""}},
                 new Object[]{"NewInstanceConsOverLoadingFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
                 new Object[]{"NewInstanceConsOverLoadingSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
                 new Object[]{"NewInstanceFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}}, // unusual - added only as another test case
@@ -85,6 +85,7 @@ public class JGS_End2EndTests {
                 new Object[]{"MethodCall_addS_addD_Fail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
                 new Object[]{"StupidTestCase", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}}, // method where the params are independent of each other or where the return value depends only on one param
                 new Object[]{"MethodCallStaticDynamic", SecurityMonitoringEvent.PASSED, new String[]{""}} // Type-Checker fails this program, added only as another test case
+                
         );
     }
 

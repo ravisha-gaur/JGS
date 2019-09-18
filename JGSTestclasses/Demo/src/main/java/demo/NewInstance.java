@@ -17,9 +17,16 @@ public class NewInstance {
         this.b = b;
     }
 
+    NewInstance(){
+
+    }
+
     @Constraints("LOW <= @0")
     @Effects({"LOW", "?"})
     public static void main(String[] args) {
+
+        NewInstance n = new NewInstance();
+        IOUtils.printSecret(n);
 
         int y = Casts.cast("? ~> HIGH", 4);
         int z = Casts.cast("HIGH ~> ?", 14);

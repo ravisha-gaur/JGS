@@ -12,11 +12,11 @@ public class ValueCast {
     @Effects({"LOW"})
     public static void main(String[] args) {
 
-        String s = Casts.cast("HIGH ~> ?", d);
-        IOUtils.printSecret(s); // breaks with IllegalFlow Error
+        int x = Casts.cast("LOW ~> ?", 7);
+        IOUtils.printSecret(x); // breaks with IllegalFlow Error
 
-        String s1 = Casts.cast("? ~> HIGH", "hello1");
-        IOUtils.printSecret(s1);
+        int y = Casts.cast("? ~> HIGH", 7);
+        IOUtils.printSecret(y);
 
     }
 }

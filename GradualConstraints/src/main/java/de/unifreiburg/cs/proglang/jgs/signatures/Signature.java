@@ -40,7 +40,7 @@ public class Signature<Level> {
         // { @0 <= @ret, @1 <= @ret, ... }
         List<SigConstraint<Level>> constraints = new ArrayList<>();
         for(int i = 0; i < paramCount; i++) {
-            SigConstraint<Level> c1 = MethodSignatures.le(new Param<>(0), new Return<>());
+            SigConstraint<Level> c1 = MethodSignatures.le(new Param<>(i), new Return<>());
             constraints.add(c1);
         }
 

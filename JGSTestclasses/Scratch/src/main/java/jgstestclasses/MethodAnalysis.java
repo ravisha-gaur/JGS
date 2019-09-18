@@ -4,9 +4,8 @@ import de.unifreiburg.cs.proglang.jgs.support.*;
 
 public class MethodAnalysis {
 
-    @Sec("?")
-    static int z;
-
+    @Constraints({"@0 <= LOW"})
+    @Effects({"LOW", "?", "HIGH"})
     public static void main(String args[]){
         int x = Casts.cast("LOW ~> ?", 5);
         int y = Casts.cast("LOW ~> ?", 6);
@@ -25,14 +24,12 @@ public class MethodAnalysis {
         IOUtils.printSecret(i2);
         IOUtils.printSecret(i3);
 
-        /*int i4 = div(6, x);
-        int i5 = div(y1, 3);
+        int i4 = div(5, 5);
         IOUtils.printSecret(i4);
-        IOUtils.printSecret(i5);*/
 
-        //unusual(x1, y);
+        unusual(x1, y);
 
-        //noArgs1();
+        noArgs1();
 
     }
 
@@ -44,7 +41,7 @@ public class MethodAnalysis {
         return a;
     }
 
-    @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= LOW"})
+    @Constraints({"@0 <= @ret", "@1 <= @ret", "@ret <= HIGH"})
     @Effects({"LOW"})
     public static int sub(int x, int y){
 
@@ -60,7 +57,7 @@ public class MethodAnalysis {
         return a;
     }
 
-    /*@Constraints({"@0 <= @ret", "@1 <= @ret", "? <= @ret", "@1 <= LOW"})
+    @Constraints({"@0 <= @ret", "@1 <= @ret", "? <= @ret", "@1 <= LOW", "@0 <= LOW"})
     @Effects({"LOW"})
     public static int div(int x, int y){
 
@@ -68,20 +65,20 @@ public class MethodAnalysis {
         a = Casts.cast("LOW ~> ?", a);
 
         return a;
-    }*/
+    }
 
 
-    /*@Constraints({"@0 <= @ret", "@0 <= HIGH", "@1 <= ?"})
+    @Constraints({"@0 <= @ret", "@0 <= HIGH", "@1 <= ?"})
     @Effects({"HIGH", "?"})
     public static int unusual(int x, int y){
-        z = y;
+        int z = y;
         return x + 1;
-    }*/
+    }
 
-    /*@Constraints({})
+    @Constraints({})
     @Effects({})
     private static void noArgs1() {
 
-    }*/
+    }
 
 }

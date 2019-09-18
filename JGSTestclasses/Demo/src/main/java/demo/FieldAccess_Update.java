@@ -7,14 +7,14 @@ public class FieldAccess_Update {
     @Sec("?")
     String a = Casts.cast("HIGH ~> ?", "hi");             // = "v";
 
-    @Sec("HIGH")
-    static String b = Casts.cast("? ~> LOW", "hello");
+    @Sec("?")
+    static String b = Casts.cast("LOW ~> ?", "hello");
 
     @Sec("?")
-    static String c = DynamicLabel.makeLow("jgvkjdnv");
+    static String c = Casts.cast("LOW ~> ?","jgvkjdnv");
 
-    @Sec("HIGH")
-    String d = Casts.cast("? ~> HIGH", "hello");
+    @Sec("?")
+    String d = Casts.cast("LOW ~> ?", "hello");
 
     @Constraints("LOW <= @0")
     @Effects({"LOW", "?"})
@@ -26,9 +26,9 @@ public class FieldAccess_Update {
         String z = h;
         //IOUtils.printSecret(z);
 
-        String g = DynamicLabel.makeLow("hi");
+        String g = Casts.cast("LOW ~> ?","hi");
         IOUtils.printSecret(g);
-        IOUtils.printSecret(c);
+        //IOUtils.printSecret(c);
     }
 
 }
